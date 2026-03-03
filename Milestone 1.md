@@ -1,12 +1,5 @@
 # Milestone 1
 
-## Problematic (Not finished)
-
-Last year, EA Sports assigned every player a single overall rating in its game FC 25. This number is not simply a reflection of the previous season. It blends positional attribute weighting, a league-level modifier, and an international reputation bonus of up to +3 overall, all assessed by more than 6,000 volunteer scouts worldwide. It is subjective by design.
-
-This project compares those ratings against actual 2024–25 match data to answer one question: **which players earned their rating, and which ones didn't?**
-
----
 
 ## Datasets
 
@@ -33,6 +26,24 @@ This dataset covers **2,854 players** from the top 5 European leagues. It merges
 Beyond goals and assists, FBref provides a much richer picture: expected goals (xG) and expected assisted goals (xAG) to measure attacking contribution independent of finishing luck, shot-creating actions to capture playmaking, progressive carries and passes to quantify ball progression, defensive duels and interceptions for defenders, and Post-Shot xG for goalkeepers, giving each position its own set of relevant performance metrics.
 
 > *Preprocessing: we dropped 97 duplicate columns, filtered players under 300 min played (−24%, 686 rows), standardized nationality codes, mapped FBref positions to EA equivalents.*
+
+---
+
+## Problematic
+
+
+Last year, EA Sports assigned every player a single overall rating in its game FC 25. This number is not simply a reflection of the previous season. It blends positional attribute weighting, a league-level modifier, and an international reputation bonus of up to +3 overall, all assessed by more than 6,000 volunteer scouts worldwide. It is subjective by design. This project compares those game ratings against actual 2024–25 advanced match data (FBref) to answer one central question: **which players actually earned their rating, and which ones didn't?**
+
+**Main Axis & What We Want to Show:**
+The core axis of this visualization is the "Reputation Gap", the distance between a player's perceived value (EA Overall Rating) and their actual on-pitch efficiency (metrics like expected Goals, progressive carries, and defensive actions). Through this lens, the visualization will expose two distinct groups:
+* **The "Legacy" Stars:** Famous players whose high video game ratings significantly outpace their real-world 2024–25 output.
+* **The "Hidden Gems":** Highly productive players who deliver elite stats but remain conservatively rated by EA's scouts because they are less famous or play for smaller clubs.
+
+**Motivation:**
+Video game ratings heavily influence how millions of football fans perceive real-life players. Our motivation is to pierce through this subjective hype using advanced data analytics, visually demonstrating how reputation biases and league popularity can distort the evaluation of modern athletes. 
+
+**Target Audience:**
+This visualization is designed for **football fans, FC 25 gamers, and sports data enthusiasts**. We want to provide an intuitive, engaging tool for gamers to discover underrated talent, and for data analysts to see advanced football metrics translated into a highly relatable, pop-culture context.
 
 ---
 
