@@ -64,9 +64,17 @@ Fuzzy name matching yields **1,869 confirmed pairs, 86.2%** of the FBref sample.
 
 ### Preliminary correlations and outliers
 
-The cross-dataset heatmap surfaces two clear signal pairs: EA `SHO` with FBref `xG` (attackers) and EA `DEF` with `Tkl+Int`. `PAC` has no direct FBref equivalent, progressive carries are only a weak proxy, reinforcing the need for a position-stratified approach.
+Cross-dataset analysis confirms clear "signal pairs" that validate our data:
+* **Shooting/Goal-Scoring**: EA `SHO` correlates strongly with real-world **Expected Goals** (`xG`), validating that high-rated virtual finishers generally reach high-quality scoring chances.
+* **Defensive Skill**: The EA `DEF` rating shows the strongest alignment with actual defensive output, specifically **Tackles + Interceptions** (`Tkl+Int`).
 
-Restricted to attackers and midfielders, an OVR vs `xG+xAG/90` scatter already surfaces two clusters: established stars whose ratings outrun their 2024–25 output, and productive but conservatively rated mid-table players. That gap is what the final visualization sets out to interrogate.
+Conversely, some traits lack a direct statistical match. **Speed** (`PAC`), for instance, only shows a weak link to **Progressive Carries**, reinforcing the need for position-specific analysis rather than a universal metric.
+
+#### The "Reputation Gap"
+
+Mapping **Overall Rating** (`OVR`) against attacking productivity (`xG+xAG/90`) surfaces two key outliers:
+* **"Legacy" Stars**: Established names whose high ratings outpace their current 2024–25 output.
+* **"Hidden Gems"**: Productive mid-table players who remain conservatively rated despite high efficiency.
 
 ![Correlation heatmap](https://github.com/user-attachments/assets/a31761e6-73c1-4b2d-bac4-05dfd5df5e8c)
 
