@@ -26,11 +26,13 @@ The final score blends positional weighting, league modifiers, and a reputation 
 
 > **Source:** [Football Players Stats 2024–2025](https://www.kaggle.com/datasets/hubertsidorowicz/football-players-stats-2024-2025)
 
+For those unfamiliar with football analytics, FBref is one of the most comprehensive and respected public sources of professional football data.
+
 This dataset covers **2,854 players** from the top 5 European leagues. It merges 9 FBref statistical tables into 267 columns, reduced to **170 usable columns** after removing redundant identity fields.
 
 Beyond goals and assists, FBref provides a much richer picture: expected goals (xG) and expected assisted goals (xAG) to measure attacking contribution independent of finishing luck, shot-creating actions to capture playmaking, progressive carries and passes to quantify ball progression, defensive duels and interceptions for defenders, and Post-Shot xG for goalkeepers, giving each position its own set of relevant performance metrics.
 
-> *Preprocessing: dropped 97 duplicate columns, filtered players under 300 min played (−24%, 686 rows), standardized nationality codes, mapped FBref positions to EA equivalents.*
+> *Preprocessing: we dropped 97 duplicate columns, filtered players under 300 min played (−24%, 686 rows), standardized nationality codes, mapped FBref positions to EA equivalents.*
 
 ---
 
@@ -38,7 +40,7 @@ Beyond goals and assists, FBref provides a much richer picture: expected goals (
 
 ### Rating distributions
 
-Restricted to the top-5 male leagues (2,612 players), FC 25 OVR is right-skewed (mean 73.3, median 74, σ 6.4): only 2.3% of players exceed 85. Among the seven composites, `PAC` leads (mean 70.8) while `DEF` has the lowest mean (56.7) and widest spread (σ 17.9), positional variance that makes position-aware normalization essential.
+Restricted to the top-5 male leagues (2,612 players), FC 25 OVR (Overall Rating) is right-skewed (mean 73.3, median 74, σ 6.4): only 2.3% of players exceed 85. Among the seven composites, `PAC` leads (mean 70.8) while `DEF` has the lowest mean (56.7) and widest spread (σ 17.9), positional variance that makes position-aware normalization essential.
 
 ![Composite rating distributions](https://github.com/user-attachments/assets/dc6e98f3-ec27-4bbe-a76e-2395ab73ce04)
 
