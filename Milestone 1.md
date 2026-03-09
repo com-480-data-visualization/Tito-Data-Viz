@@ -32,12 +32,12 @@ Beyond goals and assists, FBref provides a much richer picture: expected goals (
 ## Problematic
 
 
-Last year, EA Sports assigned every player a single overall rating in its game FC 25. This number is not simply a reflection of the previous season. It blends positional attribute weighting, a league-level modifier, and an international reputation bonus of up to +3 overall, all assessed by more than 6,000 volunteer scouts worldwide. It is subjective by design. This project compares those game ratings against actual 2024–25 advanced match data (FBref) to answer one central question: **which players actually earned their rating, and which ones didn't?**
+Every year, EA Sports assigns every player a single overall rating in its game FC 25. This number is not simply a reflection of the previous season. It blends positional attribute weighting, a league-level modifier, and an international reputation bonus of up to +3 overall, all assessed by more than 6,000 volunteer scouts worldwide. It is subjective by design. This project compares these game ratings against actual 2024–25 advanced match data (FBref) to answer one central question: **Does EA Sports objectively honor a player's real-world performance on the pitch, or are their ratings biased by hype, popularity, and legacy?**
 
 **Main Axis & What We Want to Show:**
-The core axis of this visualization is the "Reputation Gap", the distance between a player's perceived value (EA Overall Rating) and their actual on-pitch efficiency (metrics like expected Goals, progressive carries, and defensive actions). Through this lens, the visualization will expose two distinct groups:
+The core axis of this visualization is the "Reputation Gap", the distance between a player's perceived popularity (EA Overall Rating) and their actual on-pitch efficiency (metrics like expected Goals, progressive carries, and defensive actions). Through this lens, the visualization will expose two distinct groups that highlight EA's potential biases:
 * **The "Legacy" Stars:** Famous players whose high video game ratings significantly outpace their real-world 2024–25 output.
-* **The "Hidden Gems":** Highly productive players who deliver elite stats but remain conservatively rated by EA's scouts because they are less famous or play for smaller clubs.
+* **The "Hidden Gems":** Highly productive players who deliver elite stats but remain conservatively rated by EA's scouts because they are less famous or play for smaller, less marketable clubs.
 
 **Motivation:**
 Video game ratings heavily influence how millions of football fans perceive real-life players. Our motivation is to pierce through this subjective hype using advanced data analytics, visually demonstrating how reputation biases and league popularity can distort the evaluation of modern athletes. 
