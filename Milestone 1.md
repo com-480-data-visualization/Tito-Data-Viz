@@ -20,7 +20,7 @@ The rating process relies on a global network of volunteer reviewers who assess 
 
 Drawn from FBref, one of the most comprehensive and respected public sources of professional football data, this dataset covers **2,854 players** from the top 5 European leagues. It merges 9 FBref statistical tables into 267 columns, reduced to **170 usable columns** after removing redundant identity fields.
 
-FBref goes well beyond goals and assists, offering advanced metrics tailored to each position: xG and shot-creating actions for attackers, progressive carries and defensive duels for outfield players, and Post-Shot xG for goalkeepers. This positional granularity is precisely what makes it a meaningful counterpart to EA's composite ratings.
+FBref goes well beyond goals and assists, offering advanced metrics tailored to each position: xG (expected goals) and shot-creating actions for attackers, progressive carries and defensive duels for outfield players, and Post-Shot xG for goalkeepers. This positional granularity is precisely what makes it a meaningful counterpart to EA's composite ratings.
 
 > *Preprocessing: we dropped 97 duplicate columns, filtered players under 300 min played (−24%, 686 rows), standardized nationality codes, mapped FBref positions to EA equivalents.*
 
@@ -75,7 +75,7 @@ Conversely, some traits lack a direct statistical match. **Speed** (`PAC`), for 
 
 *Figure 4: Cross-dataset correlation heatmap. The `SHO`/`xG` and `DEF`/`Tkl+Int` pairs are the strongest signals.*
 
-Mapping Overall Rating against attacking productivity (`xG+xAG/90`) surfaces two key profiles: established names whose high ratings visibly outpace their 2024–25 output, and productive mid-table players who post elite efficiency numbers yet remain conservatively rated by EA's scouts.
+Mapping Overall Rating against attacking productivity (`xG+xAG/90`: expected goals + expected assists per 90 min) surfaces two key profiles: established names whose high ratings visibly outpace their 2024–25 output, and productive mid-table players who post elite efficiency numbers yet remain conservatively rated by EA's scouts.
 
 ![OVR vs xG+xAG scatter](https://github.com/user-attachments/assets/a3f3854b-2139-4452-aa0b-bca07618ab67)
 
@@ -85,7 +85,7 @@ Mapping Overall Rating against attacking productivity (`xG+xAG/90`) surfaces two
 
 ## Related Work
 
-The FC 25 Kaggle dataset has primarily been used for attribute-level EDA and in-game rating prediction: [this notebook by devraai](https://www.kaggle.com/code/devraai/ea-sports-fc-25-player-data-analysis-and-predic) predicts OVR using ML, and [the dataset author's own EDA](https://www.kaggle.com/code/nyagami/exploratory-data-analysis-of-the-fc-25-dataset) explores distributions — both without any real-world performance reference. No existing work crosses the two datasets. Community tools like [SoFIFA](https://sofifa.com) and [FUTWIZ](https://www.futwiz.com) let users browse ratings, while [FBref](https://fbref.com) and [Sofascore](https://www.sofascore.com) offer per-90 dashboards, but each operates in isolation with no shared frame between gaming perception and on-pitch reality.
+The FC 25 Kaggle dataset has primarily been used for attribute-level EDA and in-game rating prediction: [this notebook by devraai](https://www.kaggle.com/code/devraai/ea-sports-fc-25-player-data-analysis-and-predic) predicts OVR using ML, and [the dataset author's own EDA](https://www.kaggle.com/code/nyagami/exploratory-data-analysis-of-the-fc-25-dataset) explores distributions both without any real-world performance reference. No existing work crosses the two datasets. Community tools like [SoFIFA](https://sofifa.com) and [FUTWIZ](https://www.futwiz.com) let users browse ratings, while [FBref](https://fbref.com) and [Sofascore](https://www.sofascore.com) offer per-90 dashboards, but each operates in isolation with no shared frame between gaming perception and on-pitch reality.
 
 Rather than comparing players to one another, we use the EA rating as a proxy for public perceived value and pit it against positional-normalised real-world efficiency metrics. This produces a directional "Reputation Gap" that surfaces overrated legacy stars and underrated hidden gems within a single framework, something neither analytics dashboards nor gaming databases attempt. [Prior ML work on FIFA ratings](https://brentclaypool.com/2021/06/03/machine-learning-analysis-of-ea-sports-fifa/) explicitly identified bias introduced by past-season performance as an unresolved problem; our cross-dataset approach directly addresses it.
 
