@@ -10,7 +10,7 @@ To bridge the gap between EA's scores and real-world performance, we combined tw
 
 This dataset covers **17,737 players** across **56 columns**, including identity data (age, club, nation, position), 7 core composite ratings (`OVR`, `PAC`, `SHO`, `PAS`, `DRI`, `DEF`, `PHY`) on a 0–99 scale, 29 individual sub-attributes, and 5 goalkeeper-specific ratings.
 
-The rating process relies on a global network of volunteer reviewers who assess players by eye; raw stats inform but do not dictate the outcome. The final score then layers on positional weighting, league modifiers, and a reputation bonus of up to +3. That accumulated distance from measurable reality is what this project sets out to explore.
+The rating process relies on a global network of volunteer reviewers who assess players by eye; raw stats inform but do not dictate the outcome. The final score then layers on positional weighting, league modifiers, and a reputation bonus of up to +3. This is exactly the kind of bias our project tries to quantify.
 
 > *Preprocessing: parsed height/weight into numeric cm/kg, separated GK and outfield subsets, tokenized playstyle tags. Restricted to top-5 male leagues to match FBref scope.*
 
@@ -20,7 +20,7 @@ The rating process relies on a global network of volunteer reviewers who assess 
 
 Drawn from FBref, one of the most comprehensive and respected public sources of professional football data, this dataset covers **2,854 players** from the top 5 European leagues. It merges 9 FBref statistical tables into 267 columns, reduced to **170 usable columns** after removing redundant identity fields.
 
-FBref goes well beyond goals and assists, offering advanced metrics tailored to each position: xG (expected goals) and shot-creating actions for attackers, progressive carries and defensive duels for outfield players, and Post-Shot xG for goalkeepers. This positional granularity is precisely what makes it a meaningful counterpart to EA's composite ratings.
+FBref goes well beyond goals and assists, offering advanced metrics tailored to each position: xG (expected goals) and shot-creating actions for attackers, progressive carries and defensive duels for outfield players, and Post-Shot xG for goalkeepers. These position-specific metrics make FBref a natural counterpart to EA's composite ratings.
 
 > *Preprocessing: we dropped 97 duplicate columns, filtered players under 300 min played (−24%, 686 rows), standardized nationality codes, mapped FBref positions to EA equivalents.*
 
@@ -30,9 +30,9 @@ FBref goes well beyond goals and assists, offering advanced metrics tailored to 
 
 Every summer, EA Sports drops a new edition of FC, and for millions of players the most anticipated moment isn't the gameplay: it's the ratings. That number next to a player's name carries real weight, in the game and beyond. But it isn't purely a measure of what a player did last season. EA factors in positional weightings, league modifiers, and an international reputation bonus of up to +3 points, all assessed by a global network of volunteer scouts. A player's marketability, fame, and legacy quietly shape their rating alongside their performances. This project asks a simpler question: **once the season was done, which players actually justified their rating, and which ones either coasted on reputation or deserved far better?**
 
-The core axis of this visualization is what we call the "Reputation Gap": the distance between a player's perceived value as captured by their EA Overall Rating, and their actual on-pitch output as measured by advanced metrics such as expected goals, progressive carries, and defensive actions. Through this lens, the visualization exposes two distinct profiles. On one end, legacy stars whose ratings significantly outpace their real 2024–25 production; on the other, highly efficient players who deliver elite numbers but remain conservatively rated because they are less famous or play for smaller, less marketable clubs.
+The core axis of this visualization is what we call the "Reputation Gap": the distance between a player's perceived value as captured by their EA Overall Rating, and their actual on-pitch output as measured by advanced metrics such as expected goals, progressive carries, and defensive actions. This lets us identify two distinct profiles: on one end, legacy stars whose ratings significantly outpace their real 2024–25 production; on the other, highly efficient players who deliver elite numbers but remain conservatively rated because they are less famous or play for smaller, less marketable clubs.
 
-Video game ratings shape how millions of fans perceive real-life players, often more than the stats do. Our goal is to cut through that noise using advanced football data, and to show visually how reputation, league prestige, and marketability can distort the evaluation of modern athletes. The visualization is designed for football fans, FC 25 gamers, and sports data enthusiasts alike: an intuitive tool for discovering underrated talent, and a way to see advanced metrics translated into a context that feels immediately familiar.
+Video game ratings shape how millions of fans perceive real-life players, often more than the stats do. Our goal is to cut through that noise using advanced football data, and to show visually how reputation, league prestige, and marketability can distort the evaluation of modern athletes. The visualization is designed for football fans, FC 25 gamers, and sports data enthusiasts alike: a way to explore which players are over- or under-valued, using a rating system that most fans already understand.
 
 ---
 
@@ -42,25 +42,25 @@ Video game ratings shape how millions of fans perceive real-life players, often 
 
 Restricted to the top-5 male leagues (2,612 players), FC 25 OVR (Overall Rating) is right-skewed (mean 73.3, median 74, σ 6.4): only 2.3% of players exceed 85. Among the seven composites, `PAC` leads (mean 70.8) while `DEF` has the lowest mean (56.7) and widest spread (σ 17.9), positional variance that makes position-aware normalization essential.
 
-![Composite rating distributions](https://github.com/user-attachments/assets/dc6e98f3-ec27-4bbe-a76e-2395ab73ce04)
+![Composite rating distributions](figures/fc25_composite_distributions.png)
 
 *Figure 1: Distribution of the 7 composite ratings. `DEF` stands out for its high variance, driven by the contrast between defenders and forwards.*
 
-![OVR by position and league](https://github.com/user-attachments/assets/67dfd1cd-0ea6-4a0f-a53c-045d055ab99d)
+![OVR by position and league](figures/fc25_ovr_by_position_league.png)
 
 *Figure 2: OVR by position and league in the top-5 male leagues; IQR 70–77, mean 73.3, median 74, with only 2.3% exceeding 85.*
 
 ### Real-world stats
 
-After the 300-minute filter, 2,168 players remain across the top 5 leagues (DEF 34%, MID 20%, CAM 19%, ATT 12%, GK 8%, CDM 7%) with league sizes between 387 and 474. Goals and assists are zero-inflated (median = 0), as expected in a defender-heavy sample. xG and actual goals correlate at r ≈ 0.93, validating data quality.
+After the 300-minute filter, 2,168 players remain across the top 5 leagues (DF 38%, MF 30%, FW 24%, GK 8%) with league sizes between 387 and 474. Goals and assists are zero-inflated (median = 0), as expected in a defender-heavy sample. xG and actual goals correlate at r = 0.93, validating data quality.
 
-![Position and league breakdown](https://github.com/user-attachments/assets/a669a7e9-26e4-481c-b356-3e2851540bca)
+![Position and league breakdown](figures/fbref_position_league_distribution.png)
 
-*Figure 3: Player distribution by position and league (300-min filter). Defenders dominate in every league, informing our choice to normalize statistics by position group.*
+*Figure 3: Player distribution by broad position group and by league (300-min filter). Defenders dominate the sample, informing our choice to normalize statistics by position group.*
 
 ### Dataset overlap
 
-Fuzzy name matching yields **1,869 confirmed pairs, 86.2%** of the FBref sample. The 299 gaps stem from name format mismatches (reversed Korean names, nicknames like *Vini Jr.*), mid-season transfers, and genuine FC 25 absences; a second pass later will close most of them.
+Fuzzy name matching (with manual overrides for edge cases) yields **2,023 confirmed pairs, 93.3%** of the FBref sample. The remaining 145 gaps stem from mid-season transfers, and genuine FC 25 absences.
 
 ### Preliminary correlations and outliers
 
@@ -71,13 +71,13 @@ Cross-dataset analysis confirms clear "signal pairs" that validate our data:
 Conversely, some traits lack a direct statistical match. **Speed** (`PAC`), for instance, only shows a weak link to **Progressive Carries**, reinforcing the need for position-specific analysis rather than a universal metric.
 
 
-![Correlation heatmap](https://github.com/user-attachments/assets/a31761e6-73c1-4b2d-bac4-05dfd5df5e8c)
+![Correlation heatmap](figures/correlation_heatmap.png)
 
 *Figure 4: Cross-dataset correlation heatmap. The `SHO`/`xG` and `DEF`/`Tkl+Int` pairs are the strongest signals.*
 
-Mapping Overall Rating against attacking productivity (`xG+xAG/90`: expected goals + expected assists per 90 min) surfaces two key profiles: established names whose high ratings visibly outpace their 2024–25 output, and productive mid-table players who post elite efficiency numbers yet remain conservatively rated by EA's scouts.
+Mapping Overall Rating against attacking productivity (`xG+xAG/90`: expected goals + expected assists per 90 min) highlights two kinds of outliers: big names whose ratings clearly exceed their 2024–25 output, and productive mid-table players who put up strong numbers but stay conservatively rated.
 
-![OVR vs xG+xAG scatter](https://github.com/user-attachments/assets/a3f3854b-2139-4452-aa0b-bca07618ab67)
+![OVR vs xG+xAG scatter](figures/ovr_vs_xg_scatter.png)
 
 *Figure 5: OVR vs xG+xAG/90 scatter for attackers and midfielders, surfacing established stars and underrated mid-table players.*
 
@@ -87,6 +87,6 @@ Mapping Overall Rating against attacking productivity (`xG+xAG/90`: expected goa
 
 The FC 25 Kaggle dataset has primarily been used for attribute-level EDA and in-game rating prediction: [this notebook by devraai](https://www.kaggle.com/code/devraai/ea-sports-fc-25-player-data-analysis-and-predic) predicts OVR using ML, and [the dataset author's own EDA](https://www.kaggle.com/code/nyagami/exploratory-data-analysis-of-the-fc-25-dataset) explores distributions both without any real-world performance reference. No existing work crosses the two datasets. Community tools like [SoFIFA](https://sofifa.com) and [FUTWIZ](https://www.futwiz.com) let users browse ratings, while [FBref](https://fbref.com) and [Sofascore](https://www.sofascore.com) offer per-90 dashboards, but each operates in isolation with no shared frame between gaming perception and on-pitch reality.
 
-Rather than comparing players to one another, we use the EA rating as a proxy for public perceived value and pit it against positional-normalised real-world efficiency metrics. This produces a directional "Reputation Gap" that surfaces overrated legacy stars and underrated hidden gems within a single framework, something neither analytics dashboards nor gaming databases attempt. [Prior ML work on FIFA ratings](https://brentclaypool.com/2021/06/03/machine-learning-analysis-of-ea-sports-fifa/) explicitly identified bias introduced by past-season performance as an unresolved problem; our cross-dataset approach directly addresses it.
+Rather than comparing players to one another, we use the EA rating as a proxy for public perceived value and pit it against positional-normalised real-world efficiency metrics. This produces a directional "Reputation Gap" that surfaces overrated legacy stars and underrated hidden gems within a single framework, which, to our knowledge, no existing tool does. [Prior ML work on FIFA ratings](https://brentclaypool.com/2021/06/03/machine-learning-analysis-of-ea-sports-fifa/) explicitly identified bias introduced by past-season performance as an unresolved problem; our cross-dataset approach directly addresses it.
 
 The main scatter (`OVR` vs `xG+xAG/90`, trend line, labeled outliers) draws from three visual references: [Flourish's football scatter](https://flourish.studio/blog/world-cup-euros-football-data-visualization/) uses the same expected-vs-actual structure with annotations; the [NYC Data Science player value analysis](https://nycdatascience.com/blog/student-works/identifying-overvalued-and-undervalued-soccer-players-relative-to-in-season-performance/) classifies players by residual distance from a trend line; and [Soccerment's hidden gems](https://soccerment.com/looking-for-hidden-gems/) plots performance against salary to surface undervalued players by position.
