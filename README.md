@@ -6,7 +6,7 @@
 |Omar Bouden |341381|
 |Alexis Allemand |355689 |
 
-[Milestone 1](https://github.com/com-480-data-visualization/Tito-Data-Viz/blob/master/Milestone%201.md) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
+[Milestone 1](https://github.com/com-480-data-visualization/Tito-Data-Viz/blob/master/milestones/Milestone%201.md) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
 ## Milestone 1 (20th March, 5pm)
 
