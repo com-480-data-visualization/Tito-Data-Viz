@@ -2,7 +2,19 @@
 
 ## Project Goal
 
-TODO: 2-3 paragraphs summarizing the project (reputation gap between EA FC 25 ratings and real FBref 2024-25 stats, top 5 European leagues, ~1700 matched players, scrollytelling in 3 acts).
+**The Reputation Gap** is a data visualization project that questions one of football's most widely trusted numbers: the EA FC 25 Overall Rating.
+
+Every summer, EA Sports releases ratings for thousands of professional footballers. For millions of fans and gamers, these numbers define how good a player "is." But EA's ratings aren't purely built on last season's statistics, they factor in reputation, marketability, and the judgment of volunteer scouts worldwide. A legendary player coasting through their final seasons can still carry a rating that their recent performances no longer justify. Meanwhile, a quietly excellent midfielder at a mid-table club might put up elite numbers while staying conservatively rated, simply because fewer people are watching.
+
+This project puts those two things side by side: EA's perceived value on one hand, and real 2024–25 match data from FBref on the other. Using ~1,700 matched players across the top 5 European leagues, we compute a position-specific composite performance score from advanced metrics (Expected Goals, progressive carries, defensive actions, etc.) and compare it directly to each player's EA OVR. The gap between the two is what we call the **Reputation Gap**, a directional signal that surfaces who's overrated, who's underrated, and how much reputation distorts the way we see modern footballers.
+
+The story unfolds in three acts :
+
+**Act 1** shows the two worlds side by side: who EA thinks the best players are, and who the data says they are.
+
+**Act 2** zooms into the gap itself : a scatter plot where every dot is a player, and distance from the trend line is the story. 
+
+**Act 3** (planned) lets users rebuild the ratings themselves by adjusting the weights of each performance dimension.
 
 ## Visualizations
 
