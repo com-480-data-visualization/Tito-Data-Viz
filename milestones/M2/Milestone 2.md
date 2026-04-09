@@ -63,6 +63,14 @@ Act 3 closes the narrative of the project. The Reputation Gap identified in Act 
 
 ## Tools and Relevant Lectures
 
+| Block | Tools | Relevant Lectures |
+|---|---|---|
+| Global layout: landing page, scrollytelling between acts, ball-button navigation | HTML, CSS, SVG, Vanilla JS, Scrollama, GSAP | Web dev; Javascript; More Javascript; Interaction; Designing viz; Storytelling |
+| Act 1, Two Worlds: split-screen rankings with 8-position toggle, player modal with percentile bars and radar chart | D3.js, SVG, Vanilla JS | D3; More interactive D3; Marks and channels; Perception and colors; Tabular data; Interaction |
+| Act 2, The Reputation Gap: Guess the Gap intro, main scatter (OVR vs composite, regression, gap color encoding), filters, top over/underrated sidebar | D3.js, Vanilla JS | Tabular data; D3; More interactive D3; Marks and channels; Perception and colors; Dos and don'ts; Storytelling |
+| Act 3, Rebuild the Ratings: line-up position picker, opinion quiz, weight sliders with presets, ternary plot of ideal profile, paginated live impact panel | D3.js, SVG, Vanilla JS | Interaction; More interactive D3; Marks and channels; Perception and colors; D3; Designing viz |
+| Data pipeline: scraping, EA ↔ FBref fuzzy name matching, per-position composite score | Python (pandas, numpy, rapidfuzz) | Data |
+
 ### Extra Ideas (enhancements, can be dropped)
 
 - **Non-predetermined "Guess the Gap" mini-game.** At the very end of Act 3, after the user has built their own weights, we replay the Act 2 intro game but with randomly sampled players instead of the two fixed examples, so the user can test their intuition against real gaps they have not seen before.
