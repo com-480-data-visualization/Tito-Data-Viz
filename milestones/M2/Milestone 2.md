@@ -20,9 +20,17 @@ The story unfolds in three acts :
 
 ### Act 1: The Comparison
 
-TODO: describe the split-screen ranking (top 10 EA vs top 10 Real per sub-position) + player modal (EA stats with percentiles, radar charts, composite score).
+Act 1 presents two ranked lists at once: the top 10 players by EA OVR on the left, and the top 10 players by real 2024–25 performance on the right. Both lists are filtered by sub-position (Strikers, Wingers, Central Midfielders, etc.) so the comparison is always fair (e.g defenders aren't ranked against attackers).
 
-*Sketch: TODO insert screenshot of split-screen + modal*
+The real-world composite score is built by percentile-ranking each relevant FBref stat within the same sub-position, then combining them as a weighted average rescaled to the EA OVR distribution. This makes the two columns directly and easily comparable, even though they come from completely different sources.
+
+The key interaction is the **player modal**: clicking any card opens a detailed profile showing the player's EA composite ratings alongside their real-world percentiles, displayed as a "radar chart". This lets users go beyond the headline number and see *why* a player ranks where they do, whether it's finishing, creativity, or defensive output.
+
+![Act 1 player modal](figures/act1-modal.png)
+
+The visual design uses a split-screen layout with a clear left/right separation between the EA world and the real-stats world. Animated lines connecting the same player across both lists (when they appear in both) reinforce where the rankings agree and make the gaps impossible to miss when they don't.
+
+![Act 1 split-screen comparison](figures/act1-split.png)
 
 ### Act 2: The Reputation Gap
 
