@@ -1,4 +1,4 @@
-# M2: The Reputation Gap
+# Milestone 2: The Reputation Gap
 
 **The Reputation Gap** questions one of football's fans most trusted numbers: the EA FC 25 Overall Rating. EA's ratings blend recent statistics with reputation, marketability and volunteer-scout opinion, so legendary players can coast on old glory while quietly excellent midfielders at mid-table clubs stay underrated.
 
