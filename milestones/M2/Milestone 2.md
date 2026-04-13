@@ -34,17 +34,19 @@ The visual design uses a split-screen layout with a clear left/right separation 
 
 ### Act 2: The Reputation Gap
 
-What this act should contain:
+Act 1 lets users see that the two ranking systems disagree, but it only shows the top of each list. Act 2 plots every player at once and turns the disagreement into a measurable quantity: the Reputation Gap.
 
-- Guess the Gap intro: 2 fixed example players, user guesses over/under/fair before the composite is revealed.
-- Main scatter plot: EA OVR vs composite, with regression line. Distance to the line = the gap. Color-code by sign and magnitude.
-- Controls: sub-position toggle (ST, WG, AM, CM, DM, FB, CB, GK) and league filter.
-- Sidebar: top 5 overrated and top 5 underrated for the current selection, click to highlight the dot.
-- Per-attribute gap view: not just composite vs OVR, but one scatter per attribute relevant to the selected position (shooting, passing, dribbling, defending, etc.), so the user can see where the reputation gap actually comes from.
-- Player-vs-player comparison: pick 2 dots, show a merged EA + FBref card with a radar overlay of percentile profiles.
-- Multi-level zoom: drill down from Europe → league → club to see how the gap aggregates at different scales.
+Before showing the data, we engage the user with a short **Guess the Gap** warm-up. A card appears with a player's photo, name, club, sub-position and EA OVR — but not their real composite. The user is asked a simple question: *"Is this player overrated or underrated by EA FC 25?"* Two buttons let them commit to a guess before the answer is revealed. The examples are chosen to be surprising (Griezmann turns out overrated; Marmoush turns out underrated), which primes the user to question their own assumptions before they see the full picture.
 
-*Sketch: TODO insert screenshot of scatter plot*
+![Act 2 Guess the Gap intro](figures/act2-intro.png)
+
+The core visualization is an **interactive scatter plot**. Each dot is a player: the horizontal axis is their EA OVR, the vertical axis is their real-performance composite score. A dashed regression line fitted per sub-position represents what we call the *expected composite* — the real output you would predict from a given OVR if EA's ratings were perfectly calibrated. Distance from this line is the Reputation Gap: players above the line outperform their rating (underrated by EA), players below it underperform (overrated). Dots are color-coded accordingly — green for underrated, red for overrated, grey for players near the trend line whose rating is roughly fair. Dot size encodes minutes played, so that the most reliable data points (full-season regulars) are visually prominent while low-sample players remain visible but smaller. Outlier names are labeled directly on the chart to anchor the reader's attention on the most extreme cases.
+
+The chart is controlled by two filters. A **sub-position toggle** (ST, WG, AM, CM, DM, FB, CB, GK) restricts the view to a single role, which also updates the regression line and the gap calculation to be position-specific — a fair comparison, since what counts as a good score for a striker is very different from what counts for a centre-back. A **league dropdown** further narrows the selection to one of the five leagues (Premier League, La Liga, Serie A, Bundesliga, Ligue 1) or shows all leagues at once. Both filters update the chart, the regression and the sidebar in real time.
+
+The **sidebar** complements the scatter by surfacing the most extreme cases for the current filter. It lists the top 5 overrated and top 5 underrated players, each shown with their photo, name, club, EA OVR, composite score and a colored bar indicating the magnitude of the gap. Hovering over a sidebar entry highlights and enlarges the corresponding dot on the scatter, and conversely, hovering over a dot on the scatter reveals a tooltip with the player's full profile. This two-way interaction lets the user move fluidly between the aggregate view and individual cases.
+
+![Act 2 scatter plot: DM position, Premier League filter, with overrated/underrated sidebar](figures/act2-scatter.png)
 
 ### Act 3: Rebuild the Ratings
 
