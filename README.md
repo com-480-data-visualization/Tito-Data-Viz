@@ -6,18 +6,19 @@
 |Omar Bouden |341381|
 |Alexis Allemand |355689 |
 
-[Milestone 1](milestones/Milestone%201.md) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
+[Milestone 1](milestones/M1/Milestone%201.md) • [Milestone 2](milestones/M2/Milestone%202.pdf) • [Milestone 3](#milestone-3)
 
 ## Milestone 1 (20th March, 5pm)
 
 **10% of the final grade**
 
-See [Milestone 1](milestones/Milestone%201.md).
+See [Milestone 1](milestones/M1/Milestone%201.md).
 
 ## Milestone 2 (17th April, 5pm)
 
 **10% of the final grade**
 
+See [Milestone 2](milestones/M2/Milestone%202.pdf).
 
 ## Milestone 3 (29th May, 5pm)
 
