@@ -18,7 +18,7 @@ See [Milestone 1](milestones/M1/Milestone%201.md).
 
 **10% of the final grade**
 
-See [Milestone 2](milestones/M2/Milestone%202.pdf).
+See [Milestone 2](milestones/M2/Milestone%202.pdf) and [com-480-data-visualization.github.io/Tito-Data-Viz](https://com-480-data-visualization.github.io/Tito-Data-Viz/)
 
 ## Milestone 3 (29th May, 5pm)
 
