@@ -486,7 +486,7 @@ a {
     display: flex;
     align-items: center;
     gap: 0.65rem;
-    padding: 0.55rem 2.1rem 0.55rem 0.75rem;
+    padding: 0.55rem 3.2rem 0.55rem 0.75rem;
     border-radius: 8px;
     transition: transform 0.18s ease, box-shadow 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
     cursor: pointer;
@@ -726,10 +726,12 @@ a {
 
 .delta-chip {
     position: absolute;
-    top: 50%; right: 0.5rem;
+    top: 50%; right: 0.6rem;
     transform: translateY(-50%);
-    display: inline-flex; align-items: center; gap: 2px;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 2px;
     padding: 2px 6px;
+    min-width: 28px;
     border-radius: 10px;
     font-size: 0.62rem; font-weight: 700;
     line-height: 1;
