@@ -1330,3 +1330,529 @@ a {
 
 /* Guess done subtitle */
 .guess-done-sub { font-size: 0.8rem; opacity: 0.6; }
+
+/* ===== Act 1 modal — enhanced sections (pitch, PT, passing, carries, discipline, impact, SCA, GK) ===== */
+
+/* --- Section containers --- */
+.modal-new-section {
+  margin-top: 0.8rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.modal-new-section-title {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.6rem;
+  cursor: help;
+}
+
+/* --- Pitch Heatmap --- */
+.pitch-container {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+}
+.pitch-wrap {
+  text-align: center;
+}
+.pitch-label {
+  font-size: 0.6rem;
+  opacity: 0.5;
+  margin-top: 0.3rem;
+}
+.pitch-zone-count {
+  font-size: 0.55rem;
+  font-weight: 600;
+  fill: #fff;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* --- Playing Time --- */
+.pt-bar-track {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.pt-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), #60a5fa);
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+.pt-bar-label {
+  font-size: 0.65rem;
+  opacity: 0.5;
+  margin-top: 0.2rem;
+}
+.pt-dots {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.pt-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  font-size: 0.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pt-dot-starter {
+  background: var(--blue);
+  color: #fff;
+}
+.pt-dot-sub {
+  border: 1.5px solid #60a5fa;
+  color: #60a5fa;
+}
+.pt-dot-absent {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+}
+.pt-legend {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.4rem;
+  font-size: 0.6rem;
+  opacity: 0.5;
+}
+.pt-legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 0.2rem;
+}
+.pt-extra-stats {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+/* --- Passing Breakdown --- */
+.pass-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.pass-donut-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.pass-donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.pass-donut-total {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.pass-donut-label {
+  font-size: 0.45rem;
+  opacity: 0.4;
+}
+.pass-bars {
+  flex: 1;
+  min-width: 140px;
+}
+.pass-bar-row {
+  margin-bottom: 0.4rem;
+}
+.pass-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  margin-bottom: 0.1rem;
+}
+.pass-bar-name {
+  opacity: 0.7;
+}
+.pass-bar-val {
+  font-weight: 600;
+}
+.pass-bar-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+}
+.pass-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+.pass-bonus {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+/* --- Carries --- */
+.carries-container {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.carries-pitch-wrap {
+  flex-shrink: 0;
+  text-align: center;
+}
+.carries-stats {
+  flex: 1;
+  min-width: 140px;
+}
+.carries-stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  font-size: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.carries-stat-label {
+  opacity: 0.6;
+}
+.carries-stat-val {
+  font-weight: 600;
+}
+
+/* --- Discipline --- */
+.disc-cards {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.disc-card {
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+.disc-card-yellow {
+  width: 28px;
+  height: 38px;
+  background: linear-gradient(135deg, #facc15, #eab308);
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.4);
+  color: #1a1a1a;
+  font-size: 1rem;
+}
+.disc-card-red {
+  width: 28px;
+  height: 38px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  color: #fff;
+  font-size: 1rem;
+}
+.disc-card-2y {
+  position: relative;
+  width: 34px;
+  height: 38px;
+}
+.disc-card-2y-yellow {
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 24px;
+  height: 32px;
+  background: linear-gradient(135deg, #facc15, #eab308);
+  border-radius: 2px;
+  transform: rotate(-8deg);
+}
+.disc-card-2y-red {
+  position: absolute;
+  left: 8px;
+  top: 0;
+  width: 24px;
+  height: 32px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-radius: 2px;
+  transform: rotate(4deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: #fff;
+}
+.disc-incidents {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.disc-incident {
+  font-size: 0.8rem;
+}
+.disc-incident-icon {
+  font-size: 1.1rem;
+}
+.disc-incident-val {
+  font-weight: 700;
+}
+
+/* --- Team Impact --- */
+.impact-badges {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+.impact-badge {
+  border-radius: 20px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.impact-badge-positive {
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+}
+.impact-badge-negative {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  color: #f87171;
+}
+.impact-badge-neutral {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+/* On-Off comparison row */
+.impact-onoff-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin: 0.5rem 0;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.impact-onoff-col {
+  flex: 1;
+  text-align: center;
+}
+.impact-onoff-val {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.impact-onoff-center {
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 0 0.8rem;
+  cursor: help;
+}
+.impact-onoff-delta {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.impact-onoff-delta.positive { color: #4ade80; }
+.impact-onoff-delta.negative { color: #f87171; }
+.impact-onoff-sub {
+  font-size: 0.55rem;
+  opacity: 0.45;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.15rem;
+}
+
+/* Per-90 impact bars */
+.impact-bars {
+  margin: 0.5rem 0;
+}
+.impact-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.3rem;
+  cursor: help;
+}
+.impact-bar-label {
+  width: 60px;
+  text-align: right;
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.impact-bar-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.impact-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.impact-bar-val {
+  width: 36px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* --- SCA/GCA Breakdown --- */
+.sca-container {
+  margin-top: 0.3rem;
+}
+.sca-bar-row {
+  margin-bottom: 0.6rem;
+}
+.sca-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  margin-bottom: 0.25rem;
+}
+.sca-bar-title {
+  font-weight: 600;
+}
+.sca-bar-total {
+  opacity: 0.5;
+}
+.sca-stacked-bar {
+  display: flex;
+  height: 18px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.sca-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  font-weight: 600;
+  min-width: 2px;
+}
+.sca-legend {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+  font-size: 0.6rem;
+  opacity: 0.6;
+}
+.sca-legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 0.2rem;
+}
+
+/* --- GK Panel --- */
+.gk-panel {
+  border-top-color: rgba(34, 197, 94, 0.3);
+  border-top-width: 2px;
+}
+.gk-panel .modal-new-section-title {
+  color: #22c55e;
+}
+.gk-sub-section {
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.gk-sub-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.gk-sub-title {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  margin-bottom: 0.4rem;
+}
+.gk-big-stat {
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+.gk-big-stat-val {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+.gk-big-stat-label {
+  font-size: 0.55rem;
+  opacity: 0.4;
+}
+.gk-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem;
+}
+.gk-stat-cell {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+.gk-stat-cell-label {
+  opacity: 0.6;
+}
+.gk-stat-cell-val {
+  font-weight: 600;
+}
+.gk-record-bar {
+  display: flex;
+  height: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 0.3rem 0;
+}
+.gk-record-w { background: #4ade80; }
+.gk-record-d { background: #a3a3a3; }
+.gk-record-l { background: #f87171; }
+.gk-record-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.gk-record-legend {
+  display: flex;
+  gap: 0.8rem;
+  font-size: 0.6rem;
+  opacity: 0.5;
+  margin-top: 0.2rem;
+}
+.gk-icon-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.3rem;
+}
+.gk-icon-stat-icon { font-size: 1rem; }
+.gk-icon-stat-val { font-weight: 700; }
