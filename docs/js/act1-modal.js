@@ -42,10 +42,25 @@ function pctColorClass(pct) {
 
 // --- Radar chart (D3) ---
 
+const RADAR_LABEL_ABBREV = {
+    gls: "Goals", gpk: "NP Goals", xg90: "xG", npxg90: "npxG", gxg: "G-xG", npgxg: "npG-xG",
+    sh90: "Shots", sot90: "SoT", sotpct: "SoT%", npxgpsh: "npxG/Sh", dist: "Sh Dist", fkGoals: "FK",
+    ast: "Assists", gpa: "G+A", xag90: "xAG", axag: "A-xAG", sca90: "SCA", gca90: "GCA",
+    kp90: "Key P", ppa90: "PPA", crspa90: "CrsPA", tb90: "Through", xa90: "xA",
+    prgc90: "Prog C", prgp90: "Prog P", cpa90: "CPA", final3rd90: "Final 3rd",
+    to90: "Take-On", succpct: "TO Win%", mis90: "Miscntl",
+    tklint90: "Tkl+Int", tkl90: "Tackles", tklpct: "Tkl%", int90: "Int",
+    blocks90: "Blocks", clr90: "Clear", shblocks90: "Sh Blk", recov90: "Recov", aerialwon: "Aerial%",
+    fls90: "Fouls", fld90: "Fouled", offsides90: "Offside",
+    cmppct: "Pass%",
+    psxgpm90: "PSxG+/-", savepct: "Save%", cspct: "CS%", gkdist: "Pass%",
+    opa90: "OPA", stppct: "Cross Stp", launchpct: "Launch%"
+};
+
 function drawRadarChart(container, axes, size) {
     if (!axes || axes.length < 3) return;
 
-    const margin = 30;
+    const margin = 36;
     const radius = (size - margin * 2) / 2;
     const cx = size / 2, cy = size / 2;
     const n = axes.length;
@@ -61,6 +76,14 @@ function drawRadarChart(container, axes, size) {
         g.append("circle").attr("cx", cx).attr("cy", cy)
             .attr("r", (radius / 4) * lvl).attr("class", "radar-grid-circle");
     }
+
+    // Ring labels (25/50/75 at the top)
+    [25, 50, 75].forEach(p => {
+        g.append("text")
+            .attr("x", cx + 2).attr("y", cy - (radius * p / 100))
+            .attr("class", "radar-ring-label")
+            .text("P" + p);
+    });
 
     // Axes + polygon points
     const points = axes.map((a, i) => {
@@ -86,13 +109,13 @@ function drawRadarChart(container, axes, size) {
     // Dots
     points.forEach(pt => {
         g.append("circle").attr("cx", pt.x).attr("cy", pt.y)
-            .attr("r", 2.5).attr("class", "radar-dot");
+            .attr("r", 2.8).attr("class", "radar-dot");
     });
 
     // Labels
     axes.forEach((a, i) => {
         const angle = slice * i - Math.PI / 2;
-        const lR = radius + 12;
+        const lR = radius + 16;
         const x = cx + lR * Math.cos(angle);
         const y = cy + lR * Math.sin(angle);
         const cos = Math.cos(angle);
@@ -101,9 +124,8 @@ function drawRadarChart(container, axes, size) {
         if (a.rawValue != null) tip += ": " + formatStat(a.key, a.rawValue);
         if (a.percentile != null) tip += " (P" + a.percentile + ")";
 
-        // Truncate label to 6 chars
-        let short = a.label.replace(/\/90$/, "").replace(/\s*%$/, "%");
-        if (short.length > 6) short = short.substring(0, 5) + ".";
+        const short = RADAR_LABEL_ABBREV[a.key] ||
+            a.label.replace(/\/90$/, "").replace(/\s*%$/, "%").slice(0, 8);
 
         g.append("text").attr("x", x).attr("y", y)
             .attr("text-anchor", cos > 0.3 ? "start" : cos < -0.3 ? "end" : "middle")
@@ -337,7 +359,7 @@ function createModalManager(statTipEl) {
             const cell = document.createElement("div");
             cell.className = "radar-cell";
             cell.innerHTML = '<div class="radar-cell-title">' + grp.name + '</div>';
-            drawRadarChart(cell, grp.axes, 180);
+            drawRadarChart(cell, grp.axes, 260);
             row.appendChild(cell);
         });
 
@@ -435,7 +457,7 @@ function createModalManager(statTipEl) {
         const wrap = document.createElement("div");
         wrap.className = "pitch-wrap";
 
-        const W = 110, H = 160;
+        const W = 125, H = 170;
         const svgNS = "http://www.w3.org/2000/svg";
         const svg = document.createElementNS(svgNS, "svg");
         svg.setAttribute("width", W);
@@ -448,19 +470,23 @@ function createModalManager(statTipEl) {
             const att3rdOuter = Math.max(0, (r.touchAtt3rd || 0) - (r.touchAttPen || 0));
             const def3rdOuter = Math.max(0, (r.touchDef3rd || 0) - (r.touchDefPen || 0));
             zones = [
-                { key: "touchAttPen", label: "Att. Pen.", value: r.touchAttPen, x: 30, y: 4, w: 50, h: 28 },
-                { key: "touchAtt3rd", label: "Att. 3rd (outside box)", value: att3rdOuter, rawKey: r.touchAtt3rd, x: 4, y: 4, w: 102, h: 50, exclude: { x: 30, y: 4, w: 50, h: 28 } },
-                { key: "touchMid3rd", label: "Mid. 3rd", value: r.touchMid3rd, x: 4, y: 56, w: 102, h: 48 },
-                { key: "touchDef3rd", label: "Def. 3rd (outside box)", value: def3rdOuter, rawKey: r.touchDef3rd, x: 4, y: 106, w: 102, h: 50, exclude: { x: 30, y: 128, w: 50, h: 28 } },
-                { key: "touchDefPen", label: "Def. Pen.", value: r.touchDefPen, x: 30, y: 128, w: 50, h: 28 }
+                { key: "touchAttPen", label: "Att. Pen.", value: r.touchAttPen, x: 32, y: 4, w: 61, h: 32 },
+                { key: "touchAtt3rd", label: "Att. 3rd (outside box)", value: att3rdOuter, rawKey: r.touchAtt3rd,
+                  x: 4, y: 4, w: 117, h: 54, exclude: { x: 32, y: 4, w: 61, h: 32 },
+                  labelX: 62, labelY: 47 },
+                { key: "touchMid3rd", label: "Mid. 3rd", value: r.touchMid3rd, x: 4, y: 58, w: 117, h: 54 },
+                { key: "touchDef3rd", label: "Def. 3rd (outside box)", value: def3rdOuter, rawKey: r.touchDef3rd,
+                  x: 4, y: 112, w: 117, h: 54, exclude: { x: 32, y: 134, w: 61, h: 32 },
+                  labelX: 62, labelY: 123 },
+                { key: "touchDefPen", label: "Def. Pen.", value: r.touchDefPen, x: 32, y: 134, w: 61, h: 32 }
             ];
             interp = (typeof d3 !== "undefined") ? d3.interpolateBlues : null;
             title = "Touches";
         } else {
             zones = [
-                { key: "tklAtt3rd", label: "Att. 3rd Tackles", value: r.tklAtt3rd, x: 4, y: 4, w: 102, h: 50 },
-                { key: "tklMid3rd", label: "Mid. 3rd Tackles", value: r.tklMid3rd, x: 4, y: 56, w: 102, h: 48 },
-                { key: "tklDef3rd", label: "Def. 3rd Tackles", value: r.tklDef3rd, x: 4, y: 106, w: 102, h: 50 }
+                { key: "tklAtt3rd", label: "Att. 3rd Tackles", value: r.tklAtt3rd, x: 4, y: 4, w: 117, h: 54 },
+                { key: "tklMid3rd", label: "Mid. 3rd Tackles", value: r.tklMid3rd, x: 4, y: 58, w: 117, h: 54 },
+                { key: "tklDef3rd", label: "Def. 3rd Tackles", value: r.tklDef3rd, x: 4, y: 112, w: 117, h: 54 }
             ];
             interp = (typeof d3 !== "undefined") ? d3.interpolateReds : null;
             title = "Tackles";
@@ -500,10 +526,10 @@ function createModalManager(statTipEl) {
                 svg.appendChild(rect);
             }
 
-            // Zone count label
+            // Zone count label (custom position for path zones, center for rects)
             const label = document.createElementNS(svgNS, "text");
-            const cx = z.x + z.w / 2;
-            const cy = z.y + z.h / 2;
+            const cx = z.labelX != null ? z.labelX : z.x + z.w / 2;
+            const cy = z.labelY != null ? z.labelY : z.y + z.h / 2;
             label.setAttribute("x", cx);
             label.setAttribute("y", cy);
             label.setAttribute("class", "pitch-zone-count");
@@ -513,9 +539,9 @@ function createModalManager(statTipEl) {
 
         // Midline
         const mid = document.createElementNS(svgNS, "line");
-        mid.setAttribute("x1", 4); mid.setAttribute("x2", 106);
-        mid.setAttribute("y1", 80); mid.setAttribute("y2", 80);
-        mid.setAttribute("stroke", "rgba(255,255,255,0.2)");
+        mid.setAttribute("x1", 4); mid.setAttribute("x2", W - 4);
+        mid.setAttribute("y1", H / 2); mid.setAttribute("y2", H / 2);
+        mid.setAttribute("stroke", "rgba(255,255,255,0.25)");
         mid.setAttribute("stroke-width", "0.8");
         svg.appendChild(mid);
 
@@ -983,7 +1009,7 @@ function createModalManager(statTipEl) {
             SCA_TYPES.forEach(t => {
                 const v = r[t.key];
                 if (v == null || v === 0) return;
-                segHtml += '<div class="sca-segment" style="flex:' + v + ';background:' + t.color + '" data-tip="' + escapeAttr(t.label + ": " + v) + '">' + (v >= 3 ? v : "") + '</div>';
+                segHtml += '<div class="sca-segment" style="flex:' + v + ';background:' + t.color + '" data-tip="' + escapeAttr(t.label + ": " + v) + '">' + v + '</div>';
             });
             row.innerHTML =
                 '<div class="sca-bar-header">' +
