@@ -76,6 +76,7 @@ function initBall() {
         ball.classList.add("docked");
         resetDepth();
         document.body.style.overflow = "";
+        landing.style.display = "none";
         phase = 4; busy = false; dockedOpen = false;
     }
 
@@ -169,6 +170,8 @@ function initBall() {
                 gsap.set(panel, { top: C.panelDockedTop, left: C.dockedLeft, right: "auto" });
                 resetDepth();
                 document.body.style.overflow = "";
+                landing.style.display = "none";
+                window.scrollTo(0, 0);
                 phase = 4; setBusy(false);
                 if (scrollTarget) setTimeout(() => scrollTarget.scrollIntoView({ behavior: "smooth" }), 100);
             }
@@ -285,6 +288,23 @@ function initBall() {
             }
         });
     });
+
+    // --- Rolling on scroll (docked) ---
+
+    const ballPattern = ball.querySelector(".ball-pattern");
+    let rollAngle = 0, lastScrollY = window.scrollY, rollingTimer = null;
+
+    window.addEventListener("scroll", function () {
+        const y = window.scrollY;
+        const dy = y - lastScrollY;
+        lastScrollY = y;
+        if (phase !== 4 || !ballPattern) return;
+        rollAngle = (rollAngle + dy * 0.9) % 360;
+        ballPattern.setAttribute("transform", "rotate(" + rollAngle.toFixed(2) + " 50 50)");
+        ball.classList.add("rolling");
+        clearTimeout(rollingTimer);
+        rollingTimer = setTimeout(function () { ball.classList.remove("rolling"); }, 200);
+    }, { passive: true });
 }
 
 // --- Scrollama ---

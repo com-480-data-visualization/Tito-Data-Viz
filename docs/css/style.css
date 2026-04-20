@@ -116,16 +116,31 @@ a {
     width: 52px; height: 52px;
     cursor: pointer;
     opacity: 0; pointer-events: none;
-    filter: drop-shadow(0 4px 16px rgba(0,0,0,0.6));
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,0.55));
+    transition: filter 0.25s ease;
 }
-.the-ball svg { width: 100%; height: 100%; }
+.the-ball .ball-svg {
+    width: 100%; height: 100%;
+    display: block;
+    will-change: transform;
+}
 .the-ball:hover {
-    filter: drop-shadow(0 4px 22px rgba(212,175,55,0.5));
+    filter: drop-shadow(0 6px 26px rgba(212,175,55,0.6));
 }
 
 /* Docked size */
 .the-ball.docked {
     width: 38px; height: 38px;
+}
+.the-ball.docked .ball-svg {
+    animation: ballFloat 2.8s ease-in-out infinite;
+}
+.the-ball.rolling .ball-svg {
+    animation-play-state: paused;
+}
+@keyframes ballFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
 }
 
 /* --- Sommaire Panel (clip-path reveal from ball) --- */
