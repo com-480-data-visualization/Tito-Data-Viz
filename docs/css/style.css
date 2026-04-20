@@ -2064,6 +2064,51 @@ a {
 .gk-icon-stat-val { font-weight: 700; }
 
 /* ==========================================================
+   ACT 2 — SHARED EDITORIAL CHAPTER LABEL
+   Numbered section divider reused across §.01 (scatter),
+   §.02 (wall), §.03 (radar), §.04 (map). Scoped to #act2.
+   ========================================================== */
+
+#act2 .chapter-head {
+    max-width: 1080px;
+    margin: 2.5rem auto 1.25rem;
+    padding: 1.4rem 1rem 0.1rem;
+    text-align: left;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+#act2 .chapter-kicker {
+    display: inline-block;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.55rem;
+    padding: 0.2rem 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+}
+#act2 .chapter-title {
+    font-family: "Fraunces", "Times New Roman", serif;
+    font-variation-settings: "opsz" 72, "SOFT" 25, "wght" 520;
+    font-weight: 520;
+    font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+    line-height: 1.08;
+    letter-spacing: -0.012em;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+    -webkit-text-fill-color: currentColor;
+    background: none;
+}
+#act2 .chapter-sub {
+    font-family: "Manrope", system-ui, -apple-system, sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+    max-width: 54em;
+    letter-spacing: 0.005em;
+}
+
+/* ==========================================================
    ACT 2 — WALL OF FAME / WALL OF SHAME
    Editorial-dossier aesthetic: serif display, mono numerals,
    dual-scroll ledger columns with pull-quote divider.
@@ -2075,7 +2120,7 @@ a {
     --wall-paper:   #0c0f18;
     --wall-paper-2: #10141f;
     --wall-rule:    rgba(233, 228, 212, 0.12);
-    --wall-gold:    #c8a64b;
+    --wall-gold:    var(--gold);
     --wall-green:   #6dbf8a;
     --wall-red:     #e66a5c;
     --wall-dim:     rgba(233, 228, 212, 0.55);
@@ -2122,8 +2167,8 @@ a {
     color: var(--wall-gold);
     text-transform: uppercase;
     margin-bottom: 0.75rem;
-    padding: 0.25rem 0;
-    border-bottom: 1px solid rgba(200, 166, 75, 0.25);
+    padding: 0.2rem 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.28);
 }
 .wall-title {
     font-family: var(--wall-serif);
