@@ -2062,3 +2062,547 @@ a {
 }
 .gk-icon-stat-icon { font-size: 1rem; }
 .gk-icon-stat-val { font-weight: 700; }
+
+/* ==========================================================
+   ACT 2 — WALL OF FAME / WALL OF SHAME
+   Editorial-dossier aesthetic: serif display, mono numerals,
+   dual-scroll ledger columns with pull-quote divider.
+   All styles scoped to #wall-fame-shame to leave Acts 1/3 alone.
+   ========================================================== */
+
+#wall-fame-shame {
+    --wall-ink:     #e9e4d4;
+    --wall-paper:   #0c0f18;
+    --wall-paper-2: #10141f;
+    --wall-rule:    rgba(233, 228, 212, 0.12);
+    --wall-gold:    #c8a64b;
+    --wall-green:   #6dbf8a;
+    --wall-red:     #e66a5c;
+    --wall-dim:     rgba(233, 228, 212, 0.55);
+    --wall-muted:   rgba(233, 228, 212, 0.32);
+
+    --wall-serif: "Fraunces", "Times New Roman", serif;
+    --wall-sans:  "Manrope", system-ui, -apple-system, sans-serif;
+    --wall-mono:  "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+    margin-top: 5rem;
+    padding: 3rem 0 1rem;
+    color: var(--wall-ink);
+    font-family: var(--wall-sans);
+    position: relative;
+}
+
+/* Subtle paper-grain backdrop */
+#wall-fame-shame::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(200, 166, 75, 0.05), transparent 60%),
+        radial-gradient(900px 500px at 80% 100%, rgba(230, 106, 92, 0.035), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0) 40%);
+    pointer-events: none;
+    z-index: 0;
+}
+#wall-fame-shame > * { position: relative; z-index: 1; }
+
+/* --- Header --- */
+.wall-head {
+    max-width: 1080px;
+    margin: 0 auto 2.25rem;
+    padding: 0 1rem;
+    text-align: left;
+    border-top: 1px solid var(--wall-rule);
+    padding-top: 2rem;
+}
+.wall-kicker {
+    display: inline-block;
+    font-family: var(--wall-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    color: var(--wall-gold);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(200, 166, 75, 0.25);
+}
+.wall-title {
+    font-family: var(--wall-serif);
+    font-variation-settings: "opsz" 96, "SOFT" 30, "wght" 500;
+    font-weight: 500;
+    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    color: var(--wall-ink);
+    margin-bottom: 0.5rem;
+    -webkit-text-fill-color: currentColor;
+    background: none;
+}
+.wall-title::first-letter {
+    font-variation-settings: "opsz" 144, "SOFT" 100, "wght" 400;
+    color: var(--wall-gold);
+}
+.wall-sub {
+    font-family: var(--wall-sans);
+    font-size: 0.92rem;
+    color: var(--wall-dim);
+    max-width: 38em;
+    letter-spacing: 0.01em;
+}
+
+/* --- Filter row --- */
+.wall-filter-row {
+    max-width: 1080px;
+    margin: 0 auto 1.5rem;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--wall-rule);
+    border-bottom: 1px solid var(--wall-rule);
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+}
+.wall-filter-label {
+    font-family: var(--wall-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    color: var(--wall-muted);
+    text-transform: uppercase;
+}
+.wall-pos-toggle {
+    padding-top: 0;
+    margin-bottom: 0;
+}
+.wall-pos-toggle .pos-btn {
+    font-family: var(--wall-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    background: transparent;
+    border-color: var(--wall-rule);
+    color: var(--wall-dim);
+    padding: 0.4rem 0.9rem;
+}
+.wall-pos-toggle .pos-btn.active {
+    background: var(--wall-ink);
+    color: var(--wall-paper);
+    border-color: var(--wall-ink);
+    box-shadow: none;
+}
+.wall-pos-toggle .pos-btn:hover:not(.active) {
+    background: rgba(233, 228, 212, 0.06);
+    color: var(--wall-ink);
+    border-color: var(--wall-rule);
+    transform: none;
+    box-shadow: none;
+}
+
+/* --- Grid layout --- */
+.wall-grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    align-items: stretch;
+}
+
+/* --- Columns --- */
+.wall-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.wall-col-gems { padding-right: 1.25rem; }
+.wall-col-tax  { padding-left: 1.25rem; }
+
+.wall-col-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: end;
+    gap: 0.9rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 2px solid var(--wall-ink);
+    margin-bottom: 1rem;
+}
+.wall-col-num {
+    font-family: var(--wall-serif);
+    font-variation-settings: "opsz" 144, "SOFT" 0, "wght" 300;
+    font-size: 3.2rem;
+    line-height: 0.8;
+    color: var(--wall-muted);
+    letter-spacing: -0.02em;
+}
+.wall-col-gems .wall-col-num { color: var(--wall-green); }
+.wall-col-tax  .wall-col-num { color: var(--wall-red); }
+
+.wall-col-heading { min-width: 0; }
+.wall-col-title {
+    font-family: var(--wall-serif);
+    font-variation-settings: "opsz" 72, "SOFT" 20, "wght" 600;
+    font-weight: 600;
+    font-size: 1.6rem;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--wall-ink);
+    margin-bottom: 0.2rem;
+}
+.wall-col-tag {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--wall-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--wall-dim);
+}
+.wall-tri { font-size: 0.7rem; }
+.wall-tri-up { color: var(--wall-green); }
+.wall-tri-dn { color: var(--wall-red); }
+
+.wall-col-count {
+    font-family: var(--wall-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    color: var(--wall-muted);
+    border: 1px solid var(--wall-rule);
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    align-self: center;
+}
+
+.wall-col-scroll {
+    overflow-y: auto;
+    max-height: 72vh;
+    padding-right: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    scroll-behavior: smooth;
+}
+
+/* --- Divider (middle pull-quote) --- */
+.wall-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 78px;
+    padding: 0 0.5rem;
+    margin-top: 0;
+}
+.wall-divider-rule {
+    flex: 1;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, var(--wall-rule) 20%, var(--wall-rule) 80%, transparent);
+    min-height: 60px;
+}
+.wall-divider-text {
+    padding: 1rem 0.25rem;
+    text-align: center;
+    color: var(--wall-dim);
+    max-width: 140px;
+}
+.wall-quote-mark {
+    display: block;
+    font-family: var(--wall-serif);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "wght" 300;
+    font-size: 3.5rem;
+    line-height: 0.5;
+    color: var(--wall-gold);
+    margin-bottom: 0.8rem;
+}
+.wall-quote {
+    font-family: var(--wall-serif);
+    font-variation-settings: "opsz" 24, "SOFT" 40, "wght" 400;
+    font-style: italic;
+    font-size: 0.92rem;
+    line-height: 1.35;
+    color: var(--wall-ink);
+    margin-bottom: 0.6rem;
+    white-space: normal;
+    /* vertical layout for narrow divider */
+    writing-mode: horizontal-tb;
+}
+.wall-quote-caption {
+    display: block;
+    font-family: var(--wall-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--wall-muted);
+}
+
+/* --- Card --- */
+.wall-card {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 32px 48px 1fr;
+    gap: 0.85rem;
+    padding: 0.9rem 1rem 0.95rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.016), rgba(255,255,255,0.005));
+    border: 1px solid var(--wall-rule);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.22s cubic-bezier(.2,.8,.2,1),
+                background 0.22s ease,
+                border-color 0.22s ease,
+                box-shadow 0.22s ease;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: wallFadeUp 0.5s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes wallFadeUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.wall-card::before {
+    /* Left accent stripe */
+    content: "";
+    position: absolute;
+    left: -1px; top: -1px; bottom: -1px;
+    width: 3px;
+    background: transparent;
+    transition: background 0.22s ease;
+}
+.wall-card-gem::before { background: linear-gradient(180deg, var(--wall-green), transparent); }
+.wall-card-tax::before { background: linear-gradient(180deg, var(--wall-red),   transparent); }
+
+.wall-card:hover {
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.012));
+    border-color: rgba(233, 228, 212, 0.22);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -20px rgba(0,0,0,0.8);
+}
+.wall-card-gem:hover { box-shadow: 0 10px 30px -15px rgba(109, 191, 138, 0.35); }
+.wall-card-tax:hover { box-shadow: 0 10px 30px -15px rgba(230, 106, 92, 0.30); }
+
+.wall-card:focus-visible {
+    outline: 2px solid var(--wall-gold);
+    outline-offset: 2px;
+}
+
+.wall-rank {
+    font-family: var(--wall-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--wall-muted);
+    letter-spacing: 0.05em;
+    align-self: start;
+    padding-top: 0.1rem;
+}
+
+.wall-avatar {
+    width: 48px; height: 48px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--wall-paper-2);
+    border: 1px solid var(--wall-rule);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.wall-avatar-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.wall-avatar-fallback {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--wall-mono);
+    font-size: 0.85rem; font-weight: 600;
+    color: var(--wall-dim);
+    background: var(--wall-paper-2);
+}
+
+.wall-card-body {
+    min-width: 0;
+    display: flex; flex-direction: column;
+    gap: 0.45rem;
+}
+
+.wall-card-top {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 0.75rem;
+}
+.wall-name-block {
+    min-width: 0;
+    display: flex; flex-direction: column;
+}
+.wall-name {
+    font-family: var(--wall-serif);
+    font-variation-settings: "opsz" 36, "SOFT" 25, "wght" 560;
+    font-weight: 560;
+    font-size: 1.06rem;
+    line-height: 1.15;
+    color: var(--wall-ink);
+    letter-spacing: -0.005em;
+    white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
+}
+.wall-meta {
+    font-family: var(--wall-sans);
+    font-size: 0.72rem;
+    color: var(--wall-dim);
+    margin-top: 0.12rem;
+    white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
+}
+
+.wall-gap {
+    display: flex; align-items: baseline; gap: 0.3rem;
+    font-family: var(--wall-mono);
+    font-variant-numeric: tabular-nums;
+}
+.wall-gap-tri { font-size: 0.72rem; }
+.wall-gap-num {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* --- Dumbbell rail --- */
+.wall-rail {
+    position: relative;
+    height: 22px;
+    margin-top: 0.15rem;
+    padding-top: 8px;
+}
+.wall-rail-track {
+    position: absolute;
+    top: 12px; left: 0; right: 0;
+    height: 1px;
+    background: var(--wall-rule);
+}
+.wall-rail-fill {
+    position: absolute;
+    top: 11px;
+    height: 3px;
+    border-radius: 2px;
+    opacity: 0.55;
+}
+.wall-rail-dot {
+    position: absolute;
+    top: 6px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    transform: translate(-50%, 0);
+    border: 2px solid var(--wall-paper);
+    box-sizing: content-box;
+}
+.wall-rail-ovr { background: var(--wall-gold); }
+.wall-rail-cmp { background: #6aa6ff; }
+
+.wall-rail-scale {
+    position: absolute;
+    top: 18px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--wall-mono);
+    font-size: 0.58rem;
+    color: var(--wall-muted);
+    padding-top: 0.15rem;
+}
+
+/* --- Number line under rail --- */
+.wall-numbers {
+    display: flex; flex-wrap: wrap;
+    gap: 0.15rem 1.1rem;
+    margin-top: 0.9rem;
+    font-family: var(--wall-mono);
+    font-size: 0.72rem;
+    color: var(--wall-dim);
+    font-variant-numeric: tabular-nums;
+}
+.wall-numbers b { color: var(--wall-ink); font-weight: 600; }
+.wall-num-dot {
+    display: inline-block;
+    width: 7px; height: 7px; border-radius: 50%;
+    margin-right: 0.3rem;
+    transform: translateY(-1px);
+}
+.wall-num-ea .wall-num-dot { background: var(--wall-gold); }
+.wall-num-cmp .wall-num-dot { background: #6aa6ff; }
+.wall-num-min {
+    margin-left: auto;
+    color: var(--wall-muted);
+}
+
+/* --- Insight --- */
+.wall-insight {
+    font-family: var(--wall-serif);
+    font-variation-settings: "opsz" 14, "SOFT" 30, "wght" 350;
+    font-style: italic;
+    font-size: 0.84rem;
+    line-height: 1.4;
+    color: var(--wall-ink);
+    opacity: 0.85;
+    padding-top: 0.45rem;
+    border-top: 1px dashed var(--wall-rule);
+    margin: 0;
+}
+.wall-card-gem .wall-insight::before {
+    content: "▲ ";
+    color: var(--wall-green);
+    font-style: normal;
+    font-family: var(--wall-sans);
+    font-size: 0.7rem;
+    margin-right: 0.1rem;
+}
+.wall-card-tax .wall-insight::before {
+    content: "▼ ";
+    color: var(--wall-red);
+    font-style: normal;
+    font-family: var(--wall-sans);
+    font-size: 0.7rem;
+    margin-right: 0.1rem;
+}
+
+.wall-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    font-family: var(--wall-serif);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--wall-dim);
+    border: 1px dashed var(--wall-rule);
+    border-radius: 4px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 980px) {
+    .wall-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .wall-col-gems, .wall-col-tax { padding: 0; }
+    .wall-divider {
+        width: 100%;
+        flex-direction: row;
+        max-width: none;
+    }
+    .wall-divider-rule {
+        flex: 1;
+        width: auto;
+        height: 1px;
+        min-height: 0;
+        background: linear-gradient(90deg, transparent, var(--wall-rule) 20%, var(--wall-rule) 80%, transparent);
+    }
+    .wall-divider-text {
+        padding: 0 1rem;
+        max-width: 280px;
+    }
+    .wall-col-scroll { max-height: none; }
+}
+@media (max-width: 600px) {
+    .wall-card {
+        grid-template-columns: 28px 40px 1fr;
+        padding: 0.75rem 0.75rem 0.85rem;
+    }
+    .wall-avatar { width: 40px; height: 40px; }
+    .wall-title { font-size: 2rem; }
+}
