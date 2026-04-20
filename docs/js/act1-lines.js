@@ -4,9 +4,21 @@ function createLinesManager(splitContainer, eaCardsEl, statsCardsEl) {
     splitContainer.appendChild(svg);
 
     let activePlayer = null;
+    let eaRankMap = {}, statsRankMap = {};
+
+    function setRankMaps(ea, st) { eaRankMap = ea || {}; statsRankMap = st || {}; }
 
     function findPath(name) {
         return svg.querySelector('path[data-player="' + CSS.escape(name) + '"]');
+    }
+
+    function deltaClass(name) {
+        const ea = eaRankMap[name], st = statsRankMap[name];
+        if (ea == null || st == null) return "link-fair";
+        const diff = ea - st; // + = better on real (underrated)
+        if (diff >= 3) return "link-under";
+        if (diff <= -3) return "link-over";
+        return "link-fair";
     }
 
     function drawLines(sharedNames) {
@@ -33,35 +45,22 @@ function createLinesManager(splitContainer, eaCardsEl, statsCardsEl) {
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
             path.setAttribute("d", `M ${x1} ${y1} Q ${midX} ${cpY} ${x2} ${y2}`);
             path.setAttribute("data-player", name);
+            path.setAttribute("class", deltaClass(name));
             svg.appendChild(path);
 
-            const len = path.getTotalLength();
-            path.style.strokeDasharray = len;
-            path.style.strokeDashoffset = len;
-            path.style.transition = "opacity 0.35s ease, stroke-dashoffset 0.5s ease";
-
-            if (activePlayer === name) {
-                path.classList.add("link-visible");
-                path.style.strokeDashoffset = "0";
-            }
+            if (activePlayer === name) path.classList.add("link-bright");
         }
     }
 
     function showLine(name, sharedNames) {
         if (!sharedNames[name]) return;
         const path = findPath(name);
-        if (path) {
-            path.classList.add("link-visible", "link-bright");
-            path.style.strokeDashoffset = "0";
-        }
+        if (path) path.classList.add("link-bright");
     }
 
     function hideLine(name) {
         const path = findPath(name);
-        if (path) {
-            path.classList.remove("link-visible", "link-bright");
-            path.style.strokeDashoffset = path.getTotalLength();
-        }
+        if (path) path.classList.remove("link-bright");
     }
 
     function attachHoverListeners(sharedNames) {
@@ -84,7 +83,7 @@ function createLinesManager(splitContainer, eaCardsEl, statsCardsEl) {
     }
 
     return {
-        drawLines, showLine, hideLine, attachHoverListeners,
+        drawLines, showLine, hideLine, attachHoverListeners, setRankMaps,
         get activePlayer() { return activePlayer; },
         set activePlayer(v) { activePlayer = v; }
     };

@@ -476,153 +476,296 @@ a {
 .card-list {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.45rem;
     flex: 1;
 }
 
-/* --- FUT Cards --- */
+/* --- Cards (shared base) --- */
 
 .fut-card {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.4rem 0.6rem;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid transparent;
-    transition: border-color 0.2s ease, background 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    gap: 0.65rem;
+    padding: 0.55rem 2.1rem 0.55rem 0.75rem;
+    border-radius: 8px;
+    transition: transform 0.18s ease, box-shadow 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
     cursor: pointer;
-    min-height: 44px;
+    min-height: 58px;
+    position: relative;
 }
 
-.fut-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.06);
-    transform: translateX(2px);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-.fut-card.highlighted {
-    border-color: var(--gold);
-    background: rgba(212, 175, 55, 0.06);
-    box-shadow: 0 0 16px rgba(212, 175, 55, 0.15);
-    transform: translateX(3px);
-}
-.panel-stats .fut-card.highlighted {
-    border-color: var(--blue);
-    background: rgba(77, 166, 255, 0.06);
-    box-shadow: 0 0 16px rgba(77, 166, 255, 0.15);
-}
-.panel-ea .fut-card:hover {
-    border-color: rgba(212, 175, 55, 0.3);
-}
-.panel-stats .fut-card:hover {
-    border-color: rgba(77, 166, 255, 0.3);
-}
-
-.fut-card.dimmed {
-    opacity: 0.3;
-    transform: none;
-}
-
-.fut-card.absent {
-    opacity: 0.45;
-}
-.fut-card.absent:hover {
-    opacity: 1;
-}
+.fut-card.absent { opacity: 0.38; }
+.fut-card.dimmed { opacity: 0.28; }
+.fut-card.highlighted { opacity: 1; }
 
 .card-rank {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     color: var(--text-muted);
-    width: 20px;
+    width: 26px;
     text-align: center;
     flex-shrink: 0;
+    letter-spacing: 0.02em;
 }
 
 .card-avatar {
-    width: 30px;
-    height: 30px;
+    width: 38px; height: 38px;
     border-radius: 50%;
     background: var(--bg-panel);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.6rem;
-    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700;
     flex-shrink: 0;
     border: 1.5px solid var(--border);
     overflow: hidden;
 }
-
-.card-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.ea-avatar {
-    border-color: rgba(212, 175, 55, 0.3);
-    color: var(--gold);
-}
-
-.stats-avatar {
-    border-color: rgba(77, 166, 255, 0.3);
-    color: var(--blue);
-}
+.card-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.ea-avatar { border-color: rgba(212, 175, 55, 0.45); color: var(--gold); }
+.stats-avatar { border-color: rgba(77, 166, 255, 0.45); color: var(--blue); }
 
 .card-info {
     flex: 1;
-    min-width: 80px;
+    min-width: 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
 }
-
 .card-name {
-    font-size: 0.78rem;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 0.82rem; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    letter-spacing: 0.01em;
+}
+.card-club { font-size: 0.66rem; color: var(--text-dim); }
+
+/* --- EA (FUT-flavor) cards --- */
+
+.fut-flavor {
+    background:
+        radial-gradient(circle at 18% 20%, rgba(255, 230, 150, 0.18), transparent 55%),
+        linear-gradient(135deg, rgba(245,215,110,0.12) 0%, rgba(212,175,55,0.06) 38%, rgba(20,15,5,0.3) 100%),
+        linear-gradient(180deg, #1c1608 0%, #0e0b05 100%);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 225, 140, 0.18),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.fut-flavor:hover {
+    transform: translateX(3px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 225, 140, 0.28),
+        0 4px 18px rgba(212, 175, 55, 0.22);
+    border-color: rgba(245, 215, 110, 0.55);
+}
+.fut-flavor.highlighted {
+    border-color: var(--gold-light);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 225, 140, 0.35),
+        0 0 20px rgba(245, 215, 110, 0.32);
+    transform: translateX(4px);
 }
 
-.card-club {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-}
-
-.score-badge {
-    font-size: 0.8rem;
-    font-weight: 700;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
+.fut-corner {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 38px; padding: 0.15rem 0.35rem;
+    border-radius: 5px;
+    background: linear-gradient(180deg, rgba(245,215,110,0.22), rgba(212,175,55,0.08));
+    border: 1px solid rgba(245, 215, 110, 0.35);
     flex-shrink: 0;
+    line-height: 1;
+}
+.fut-ovr {
+    font-size: 1.05rem; font-weight: 800; color: var(--gold-light);
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.4);
+}
+.fut-pos {
+    font-size: 0.56rem; font-weight: 700; color: rgba(245,215,110,0.75);
+    letter-spacing: 0.1em; margin-top: 2px;
 }
 
-.mini-stats {
-    font-size: 0.6rem;
-    color: var(--text-dim);
+.fut-stats {
     display: grid;
-    grid-template-columns: repeat(3, auto);
-    gap: 0.1rem 0.3rem;
-    flex-shrink: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px 10px;
+    flex: 1 1 auto;
+    min-width: 160px;
+    max-width: 340px;
 }
-
-.mini-stat {
+.fut-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    cursor: help;
+}
+.fs-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px;
+    font-size: 0.6rem;
+    line-height: 1.1;
+}
+.fs-label {
+    color: rgba(245, 215, 110, 0.7);
+    font-weight: 600;
+    letter-spacing: 0.05em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-.ms-label {
-    color: var(--text-muted);
-    margin-right: 2px;
+.fs-val {
+    color: #f5e7b8;
+    font-weight: 700;
+    white-space: nowrap;
+    font-size: 0.62rem;
+}
+.fs-track {
+    display: block;
+    height: 3px;
+    background: rgba(245, 215, 110, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.fs-fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.55), rgba(245, 215, 110, 0.95));
+    border-radius: 2px;
+    transition: width 0.4s ease;
 }
 
-.ms-val {
+/* --- Stats (analyst-flavor) cards --- */
+
+.analyst-flavor {
+    background: linear-gradient(180deg, rgba(20, 32, 56, 0.45) 0%, rgba(10, 16, 28, 0.6) 100%);
+    border: 1px solid rgba(77, 166, 255, 0.16);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.analyst-flavor:hover {
+    transform: translateX(-3px);
+    border-color: rgba(77, 166, 255, 0.5);
+    box-shadow: 0 4px 18px rgba(77, 166, 255, 0.2);
+}
+.analyst-flavor.highlighted {
+    border-color: var(--blue);
+    box-shadow: 0 0 20px rgba(77, 166, 255, 0.32);
+    transform: translateX(-4px);
+}
+
+.analyst-score {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 42px; padding: 0.2rem 0.4rem;
+    border-radius: 5px;
+    background: linear-gradient(180deg, rgba(77,166,255,0.18), rgba(77,166,255,0.05));
+    border: 1px solid rgba(77, 166, 255, 0.3);
+    flex-shrink: 0; line-height: 1;
+}
+.as-val {
+    font-size: 0.98rem; font-weight: 800; color: #bfe0ff;
+    letter-spacing: 0.01em;
+}
+.as-label {
+    font-size: 0.54rem; font-weight: 700; color: rgba(155, 200, 255, 0.7);
+    letter-spacing: 0.12em; margin-top: 2px;
+}
+
+.stat-bars {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px 10px;
+    flex: 1 1 auto;
+    min-width: 160px;
+    max-width: 340px;
+}
+.analyst-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    cursor: help;
+}
+.as-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px;
+    font-size: 0.6rem;
+    line-height: 1.1;
+}
+.as-slabel {
+    color: rgba(170, 200, 230, 0.65);
     font-weight: 600;
-    color: var(--text-dim);
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+.as-sval {
+    color: #dbecff;
+    font-weight: 700;
+    white-space: nowrap;
+    font-size: 0.62rem;
+}
+.as-track {
+    display: block;
+    height: 3px;
+    background: rgba(77, 166, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.as-fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(77, 166, 255, 0.55), rgba(130, 200, 255, 0.9));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+/* --- Delta chip (shared-player rank change) --- */
+
+.delta-chip {
+    position: absolute;
+    top: 50%; right: 0.5rem;
+    transform: translateY(-50%);
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.62rem; font-weight: 700;
+    line-height: 1;
+    cursor: help;
+    z-index: 2;
+}
+.dc-arrow { font-size: 0.58rem; }
+.delta-chip.dc-up {
+    color: #79e2a1;
+    background: rgba(46, 204, 113, 0.14);
+    border: 1px solid rgba(46, 204, 113, 0.4);
+}
+.delta-chip.dc-down {
+    color: #ff9a8a;
+    background: rgba(231, 76, 60, 0.14);
+    border: 1px solid rgba(231, 76, 60, 0.4);
+}
+.delta-chip.dc-neutral {
+    color: var(--text-dim);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Legacy support — still used elsewhere */
+.score-badge {
+    font-size: 0.8rem; font-weight: 700;
+    padding: 0.15rem 0.4rem; border-radius: 4px; flex-shrink: 0;
+}
+.mini-stats {
+    font-size: 0.6rem; color: var(--text-dim);
+    display: grid; grid-template-columns: repeat(3, auto);
+    gap: 0.1rem 0.3rem; flex-shrink: 0;
+}
+.mini-stat { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ms-label { color: var(--text-muted); margin-right: 2px; }
+.ms-val { font-weight: 600; color: var(--text-dim); }
 
 /* --- Guess the Gap (Act 2) --- */
 
@@ -1079,11 +1222,20 @@ a {
     pointer-events: none; z-index: 5;
 }
 .split-link-overlay path {
-    fill: none; stroke: var(--gold); stroke-width: 1.5;
-    opacity: 0; transition: opacity 0.35s ease;
+    fill: none;
+    stroke-width: 1.2;
+    opacity: 0;
+    transition: opacity 0.25s ease, stroke-width 0.25s ease;
+    stroke-linecap: round;
 }
-.split-link-overlay path.link-visible { opacity: 1; }
-.split-link-overlay path.link-bright { opacity: 1; stroke-width: 2; }
+.split-link-overlay path.link-under { stroke: #2ecc71; }
+.split-link-overlay path.link-over  { stroke: #e74c3c; }
+.split-link-overlay path.link-fair  { stroke: rgba(200, 200, 220, 0.45); }
+.split-link-overlay path.link-bright {
+    opacity: 1;
+    stroke-width: 2.2;
+    filter: drop-shadow(0 0 6px currentColor);
+}
 
 /* --- Modal (Act 1 player detail) --- */
 
@@ -1206,9 +1358,11 @@ a {
 
 /* Card photo avatar */
 .card-photo {
-    width: 30px; height: 30px; border-radius: 50%; object-fit: cover;
-    border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;
+    width: 38px; height: 38px; border-radius: 50%; object-fit: cover;
+    border: 1.5px solid rgba(255,255,255,0.12); flex-shrink: 0;
 }
+.card-photo.ea-avatar { border-color: rgba(245, 215, 110, 0.45); }
+.card-photo.stats-avatar { border-color: rgba(77, 166, 255, 0.45); }
 
 /* Scatter tooltip avatar */
 .tt-avatar-img {

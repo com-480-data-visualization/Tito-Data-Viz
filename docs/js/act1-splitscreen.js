@@ -62,16 +62,33 @@ function initAct1(data) {
             });
         }
 
+        // Rank-in-top-N lookup (for delta chips — undefined if not in other side's top-N)
+        const eaTopRank = {}, statsTopRank = {};
+        eaTop.forEach((p, i) => { eaTopRank[p.name] = i + 1; });
+        statsTop.forEach((p, i) => { statsTopRank[p.name] = i + 1; });
+
+        // Per-stat max across top-10 of the stats side — used to size mini bars
+        const posKeys = POS_KEY_STATS[pos] || [];
+        const statScales = {};
+        posKeys.forEach(k => {
+            let max = 0;
+            for (const pl of statsTop) {
+                const v = pl.real ? pl.real[k] : null;
+                if (v != null && v > max) max = v;
+            }
+            statScales[k] = { max };
+        });
+
         eaCardsEl.innerHTML = "";
         eaTop.forEach((p, i) => {
-            const card = buildEACard(p, i, !statsNames.has(p.name), group);
+            const card = buildEACard(p, i, !statsNames.has(p.name), group, pos, statsTopRank[p.name]);
             card.addEventListener("click", () => onCardClick(p));
             eaCardsEl.appendChild(card);
         });
 
         statsCardsEl.innerHTML = "";
         statsTop.forEach((p, i) => {
-            const card = buildStatsCard(p, i, !eaNames.has(p.name), pos);
+            const card = buildStatsCard(p, i, !eaNames.has(p.name), pos, eaTopRank[p.name], statScales);
             card.addEventListener("click", () => onCardClick(p));
             statsCardsEl.appendChild(card);
         });
@@ -84,6 +101,7 @@ function initAct1(data) {
         if (stTitle) stTitle.textContent = "Real Ranking - " + label;
 
         updateCompositeTooltip();
+        lines.setRankMaps(eaTopRank, statsTopRank);
         requestAnimationFrame(() => { lines.drawLines(shared); lines.attachHoverListeners(shared); });
     }
 

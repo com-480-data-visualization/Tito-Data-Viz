@@ -18,57 +18,96 @@ const CARD_SHORT = {
     prgc90: "PrgC", succpct: "Drib%", kp90: "KP", prgp90: "PrgP",
     tklint90: "T+I", cmppct: "Pass%", blocks90: "BLK", clr90: "CLR",
     aerialwon: "AER", psxgpm90: "PSxG", savepct: "SV%", cspct: "CS%",
-    gkdist: "DIST", opa90: "OPA", stppct: "Stp%"
+    gkdist: "DIST", opa90: "OPA", stppct: "Stp%", sot90: "SoT"
 };
 
-function buildEACard(p, index, absent, pos) {
+function deltaChipHTML(thisRank, otherRank) {
+    if (otherRank == null) return "";
+    const diff = thisRank - otherRank; // positive = better on other side
+    let cls = "dc-neutral", arrow = "=", label = "Same rank";
+    if (diff > 0) { cls = "dc-up"; arrow = "▲"; label = "Up " + diff + " on the other side"; }
+    else if (diff < 0) { cls = "dc-down"; arrow = "▼"; label = "Down " + (-diff) + " on the other side"; }
+    const mag = diff === 0 ? "" : Math.abs(diff);
+    return '<span class="delta-chip ' + cls + '" data-tip="' + escapeAttr(label) + '">' +
+        '<span class="dc-arrow">' + arrow + '</span>' +
+        (mag !== "" ? '<span class="dc-mag">' + mag + '</span>' : "") +
+        '</span>';
+}
+
+// --- EA card: FUT-inspired ---
+
+function buildEACard(p, index, absent, pos, subPos, otherRank) {
     const card = document.createElement("div");
-    card.className = "fut-card ea-card" + (absent ? " absent" : "");
+    card.className = "fut-card ea-card fut-flavor" + (absent ? " absent" : "");
     card.setAttribute("data-player", p.name);
 
     const attrs = EA_CARD_STATS[pos] || EA_FACE_STATS;
     const miniHtml = attrs.map(a => {
         const val = p.ea[a.key];
-        return '<div class="mini-stat"><span class="ms-label" data-tip="' +
-            escapeAttr(getStatTooltip(a.key)) + '">' + a.label +
-            '</span> <span class="ms-val">' + (val != null ? val : "-") + '</span></div>';
+        const shown = val != null ? val : "-";
+        const pct = val != null ? Math.max(4, Math.min(100, (val / 99) * 100)) : 0;
+        return '<div class="fut-stat" data-tip="' + escapeAttr(getStatTooltip(a.key)) + '">' +
+            '<div class="fs-top">' +
+                '<span class="fs-label">' + a.label + '</span>' +
+                '<span class="fs-val">' + shown + '</span>' +
+            '</div>' +
+            '<span class="fs-track"><span class="fs-fill" style="width:' + pct.toFixed(1) + '%"></span></span>' +
+            '</div>';
     }).join("");
 
     card.innerHTML =
-        '<span class="card-rank">' + (index + 1) + '</span>' +
+        '<div class="card-rank">#' + (index + 1) + '</div>' +
+        '<div class="fut-corner" data-tip="' + escapeAttr(STAT_INFO.ovr) + '">' +
+            '<span class="fut-ovr">' + p.ea.ovr + '</span>' +
+            '<span class="fut-pos">' + (subPos || pos || "") + '</span>' +
+        '</div>' +
         avatarHTMLString(p.photo, p.name, "card-photo ea-avatar", "card-avatar ea-avatar") +
         '<div class="card-info">' +
             '<div class="card-name">' + p.name + '</div>' +
             '<div class="card-club">' + p.club + '</div>' +
         '</div>' +
-        '<div class="mini-stats">' + miniHtml + '</div>' +
-        '<span class="score-badge ea-badge" data-tip="' + escapeAttr(STAT_INFO.ovr) + '">' + p.ea.ovr + '</span>';
+        '<div class="fut-stats">' + miniHtml + '</div>' +
+        deltaChipHTML(index + 1, otherRank);
 
     return card;
 }
 
-function buildStatsCard(p, index, absent, pos) {
+// --- Stats card: analyst dashboard ---
+
+function buildStatsCard(p, index, absent, pos, otherRank, statScales) {
     const card = document.createElement("div");
-    card.className = "fut-card stats-card" + (absent ? " absent" : "");
+    card.className = "fut-card stats-card analyst-flavor" + (absent ? " absent" : "");
     card.setAttribute("data-player", p.name);
 
     const keys = POS_KEY_STATS[pos] || [];
-    const metricsHtml = keys.map(k => {
-        const val = (p.real && p.real[k] != null) ? formatStat(k, p.real[k]) : "-";
-        return '<div class="mini-stat"><span class="ms-label" data-tip="' +
-            escapeAttr(getStatTooltip(k)) + '">' + (CARD_SHORT[k] || statLabel(k)) +
-            '</span> <span class="ms-val">' + val + '</span></div>';
+    const barsHtml = keys.map(k => {
+        const raw = p.real ? p.real[k] : null;
+        const val = raw != null ? formatStat(k, raw) : "-";
+        const scale = statScales && statScales[k];
+        let pct = 0;
+        if (raw != null && scale && scale.max > 0) pct = Math.max(4, Math.min(100, (raw / scale.max) * 100));
+        return '<div class="analyst-stat" data-tip="' + escapeAttr(getStatTooltip(k)) + '">' +
+            '<div class="as-top">' +
+                '<span class="as-slabel">' + (CARD_SHORT[k] || statLabel(k)) + '</span>' +
+                '<span class="as-sval">' + val + '</span>' +
+            '</div>' +
+            '<span class="as-track"><span class="as-fill" style="width:' + pct.toFixed(1) + '%"></span></span>' +
+            '</div>';
     }).join("");
 
     card.innerHTML =
-        '<span class="score-badge stats-badge" data-tip="' + escapeAttr(compositeInfo(pos, p.subPos)) + '">' + p.composite.toFixed(1) + '</span>' +
+        '<div class="card-rank">#' + (index + 1) + '</div>' +
+        '<div class="analyst-score" data-tip="' + escapeAttr(compositeInfo(pos, p.subPos)) + '">' +
+            '<span class="as-val">' + p.composite.toFixed(1) + '</span>' +
+            '<span class="as-label">COMP</span>' +
+        '</div>' +
+        avatarHTMLString(p.photo, p.name, "card-photo stats-avatar", "card-avatar stats-avatar") +
         '<div class="card-info">' +
             '<div class="card-name">' + p.name + '</div>' +
             '<div class="card-club">' + p.club + '</div>' +
         '</div>' +
-        '<div class="mini-stats">' + metricsHtml + '</div>' +
-        avatarHTMLString(p.photo, p.name, "card-photo stats-avatar", "card-avatar stats-avatar") +
-        '<span class="card-rank">' + (index + 1) + '</span>';
+        '<div class="stat-bars">' + barsHtml + '</div>' +
+        deltaChipHTML(index + 1, otherRank);
 
     return card;
 }
