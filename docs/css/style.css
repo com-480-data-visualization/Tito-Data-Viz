@@ -2074,38 +2074,32 @@ a {
     margin: 2.5rem auto 1.25rem;
     padding: 1.4rem 1rem 0.1rem;
     text-align: left;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--border);
 }
 #act2 .chapter-kicker {
     display: inline-block;
-    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
     font-size: 0.72rem;
+    font-weight: 700;
     letter-spacing: 0.22em;
     color: var(--gold);
     text-transform: uppercase;
     margin-bottom: 0.55rem;
     padding: 0.2rem 0;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
 }
 #act2 .chapter-title {
-    font-family: "Fraunces", "Times New Roman", serif;
-    font-variation-settings: "opsz" 72, "SOFT" 25, "wght" 520;
-    font-weight: 520;
+    font-weight: 700;
     font-size: clamp(1.5rem, 2.8vw, 2.1rem);
-    line-height: 1.08;
-    letter-spacing: -0.012em;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
     color: var(--text);
-    margin-bottom: 0.3rem;
-    -webkit-text-fill-color: currentColor;
-    background: none;
+    margin-bottom: 0.35rem;
 }
 #act2 .chapter-sub {
-    font-family: "Manrope", system-ui, -apple-system, sans-serif;
-    font-size: 0.88rem;
-    line-height: 1.55;
+    font-size: 0.92rem;
+    line-height: 1.6;
     color: var(--text-dim);
     max-width: 54em;
-    letter-spacing: 0.005em;
 }
 
 /* ==========================================================
@@ -2126,14 +2120,13 @@ a {
     --wall-dim:     var(--text-dim);
     --wall-muted:   var(--text-muted);
 
-    --wall-serif: "Fraunces", "Times New Roman", serif;
-    --wall-sans:  "Manrope", system-ui, -apple-system, sans-serif;
-    --wall-mono:  "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --wall-serif: inherit;
+    --wall-sans:  inherit;
+    --wall-mono:  ui-monospace, Menlo, monospace;
 
     margin-top: 5rem;
     padding: 3rem 0 1rem;
     color: var(--wall-ink);
-    font-family: var(--wall-sans);
     position: relative;
 }
 
@@ -2153,45 +2146,35 @@ a {
 /* --- Header --- */
 .wall-head {
     max-width: 1080px;
-    margin: 0 auto 2.25rem;
-    padding: 0 1rem;
+    margin: 0 auto 1.75rem;
+    padding: 1.4rem 1rem 0.1rem;
     text-align: left;
     border-top: 1px solid var(--wall-rule);
-    padding-top: 2rem;
 }
 .wall-kicker {
     display: inline-block;
-    font-family: var(--wall-mono);
     font-size: 0.72rem;
+    font-weight: 700;
     letter-spacing: 0.22em;
     color: var(--wall-gold);
     text-transform: uppercase;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.55rem;
     padding: 0.2rem 0;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
 }
 .wall-title {
-    font-family: var(--wall-serif);
-    font-variation-settings: "opsz" 96, "SOFT" 30, "wght" 500;
-    font-weight: 500;
-    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
-    line-height: 1.02;
-    letter-spacing: -0.015em;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
     color: var(--wall-ink);
-    margin-bottom: 0.5rem;
-    -webkit-text-fill-color: currentColor;
-    background: none;
-}
-.wall-title::first-letter {
-    font-variation-settings: "opsz" 144, "SOFT" 100, "wght" 400;
-    color: var(--wall-gold);
+    margin-bottom: 0.35rem;
 }
 .wall-sub {
-    font-family: var(--wall-sans);
     font-size: 0.92rem;
+    line-height: 1.6;
     color: var(--wall-dim);
-    max-width: 38em;
-    letter-spacing: 0.01em;
+    max-width: 54em;
 }
 
 /* --- Filter row --- */
@@ -2273,24 +2256,21 @@ a {
     margin-bottom: 1rem;
 }
 .wall-col-num {
-    font-family: var(--wall-serif);
-    font-variation-settings: "opsz" 144, "SOFT" 0, "wght" 300;
     font-size: 3.2rem;
-    line-height: 0.8;
+    font-weight: 800;
+    line-height: 0.85;
     color: var(--wall-muted);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
 }
 .wall-col-gems .wall-col-num { color: var(--wall-green); }
 .wall-col-tax  .wall-col-num { color: var(--wall-red); }
 
 .wall-col-heading { min-width: 0; }
 .wall-col-title {
-    font-family: var(--wall-serif);
-    font-variation-settings: "opsz" 72, "SOFT" 20, "wght" 600;
-    font-weight: 600;
-    font-size: 1.6rem;
-    line-height: 1.05;
-    letter-spacing: -0.01em;
+    font-weight: 800;
+    font-size: 1.55rem;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
     color: var(--wall-ink);
     margin-bottom: 0.2rem;
 }
@@ -2350,23 +2330,19 @@ a {
 }
 .wall-quote-mark {
     display: block;
-    font-family: var(--wall-serif);
-    font-variation-settings: "opsz" 144, "SOFT" 100, "wght" 300;
-    font-size: 3.5rem;
-    line-height: 0.5;
+    font-size: 3rem;
+    font-weight: 400;
+    line-height: 0.6;
     color: var(--wall-gold);
     margin-bottom: 0.8rem;
 }
 .wall-quote {
-    font-family: var(--wall-serif);
-    font-variation-settings: "opsz" 24, "SOFT" 40, "wght" 400;
     font-style: italic;
-    font-size: 0.92rem;
-    line-height: 1.35;
+    font-size: 0.88rem;
+    line-height: 1.45;
     color: var(--wall-ink);
     margin-bottom: 0.6rem;
     white-space: normal;
-    /* vertical layout for narrow divider */
     writing-mode: horizontal-tb;
 }
 .wall-quote-caption {
@@ -2480,11 +2456,9 @@ a {
     display: flex; flex-direction: column;
 }
 .wall-name {
-    font-family: var(--wall-serif);
-    font-variation-settings: "opsz" 36, "SOFT" 25, "wght" 560;
-    font-weight: 560;
-    font-size: 1.06rem;
-    line-height: 1.15;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.2;
     color: var(--wall-ink);
     letter-spacing: -0.005em;
     white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
@@ -2579,13 +2553,9 @@ a {
 
 /* --- Insight --- */
 .wall-insight {
-    font-family: var(--wall-serif);
-    font-variation-settings: "opsz" 14, "SOFT" 30, "wght" 350;
-    font-style: italic;
-    font-size: 0.84rem;
-    line-height: 1.4;
-    color: var(--wall-ink);
-    opacity: 0.85;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--wall-dim);
     padding-top: 0.45rem;
     border-top: 1px dashed var(--wall-rule);
     margin: 0;
@@ -2610,7 +2580,6 @@ a {
 .wall-empty {
     padding: 2rem 1rem;
     text-align: center;
-    font-family: var(--wall-serif);
     font-style: italic;
     font-size: 0.9rem;
     color: var(--wall-dim);
@@ -2651,3 +2620,4 @@ a {
     .wall-avatar { width: 40px; height: 40px; }
     .wall-title { font-size: 2rem; }
 }
+
