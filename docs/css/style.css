@@ -2116,15 +2116,15 @@ a {
    ========================================================== */
 
 #wall-fame-shame {
-    --wall-ink:     #e9e4d4;
-    --wall-paper:   #0c0f18;
-    --wall-paper-2: #10141f;
-    --wall-rule:    rgba(233, 228, 212, 0.12);
+    --wall-ink:     var(--text);
+    --wall-paper:   var(--bg-dark);
+    --wall-paper-2: var(--bg-panel);
+    --wall-rule:    var(--border);
     --wall-gold:    var(--gold);
-    --wall-green:   #6dbf8a;
-    --wall-red:     #e66a5c;
-    --wall-dim:     rgba(233, 228, 212, 0.55);
-    --wall-muted:   rgba(233, 228, 212, 0.32);
+    --wall-green:   var(--green);
+    --wall-red:     var(--red);
+    --wall-dim:     var(--text-dim);
+    --wall-muted:   var(--text-muted);
 
     --wall-serif: "Fraunces", "Times New Roman", serif;
     --wall-sans:  "Manrope", system-ui, -apple-system, sans-serif;
@@ -2236,7 +2236,7 @@ a {
     box-shadow: none;
 }
 .wall-pos-toggle .pos-btn:hover:not(.active) {
-    background: rgba(233, 228, 212, 0.06);
+    background: rgba(224, 224, 224, 0.06);
     color: var(--wall-ink);
     border-color: var(--wall-rule);
     transform: none;
@@ -2418,12 +2418,12 @@ a {
 
 .wall-card:hover {
     background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.012));
-    border-color: rgba(233, 228, 212, 0.22);
+    border-color: rgba(224, 224, 224, 0.22);
     transform: translateY(-2px);
     box-shadow: 0 10px 30px -20px rgba(0,0,0,0.8);
 }
-.wall-card-gem:hover { box-shadow: 0 10px 30px -15px rgba(109, 191, 138, 0.35); }
-.wall-card-tax:hover { box-shadow: 0 10px 30px -15px rgba(230, 106, 92, 0.30); }
+.wall-card-gem:hover { box-shadow: 0 10px 30px -15px rgba(46, 204, 113, 0.35); }
+.wall-card-tax:hover { box-shadow: 0 10px 30px -15px rgba(231, 76, 60, 0.30); }
 
 .wall-card:focus-visible {
     outline: 2px solid var(--wall-gold);
@@ -2539,7 +2539,7 @@ a {
     box-sizing: content-box;
 }
 .wall-rail-ovr { background: var(--wall-gold); }
-.wall-rail-cmp { background: #6aa6ff; }
+.wall-rail-cmp { background: var(--blue); }
 
 .wall-rail-scale {
     position: absolute;
@@ -2571,7 +2571,7 @@ a {
     transform: translateY(-1px);
 }
 .wall-num-ea .wall-num-dot { background: var(--wall-gold); }
-.wall-num-cmp .wall-num-dot { background: #6aa6ff; }
+.wall-num-cmp .wall-num-dot { background: var(--blue); }
 .wall-num-min {
     margin-left: auto;
     color: var(--wall-muted);
