@@ -15,6 +15,7 @@ function boot() {
     initGuessTheGap(DATA);
     initScatter(DATA);
     initWallOfFameShame(DATA);
+    initOverlay(DATA);
 }
 
 // --- Ball + Sommaire ---

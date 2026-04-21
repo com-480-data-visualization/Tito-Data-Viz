@@ -2608,3 +2608,491 @@ a {
     .wall-title { font-size: 2rem; }
 }
 
+/* ==========================================================
+   ACT 2 — §.03 THE OVERLAY (multi-player radar comparison)
+   Typography/colors inherit from the site's system stack and
+   palette so the section reads homogeneous with Acts 1/3.
+   All styles scoped to #overlay-section.
+   ========================================================== */
+
+#overlay-section {
+    --ov-ink:         var(--text);
+    --ov-ink-soft:    rgba(224, 224, 224, 0.72);
+    --ov-ink-dim:     var(--text-dim);
+    --ov-paper:       var(--bg-dark);
+    --ov-paper-2:     var(--bg-panel);
+    --ov-rule:        var(--border);
+    --ov-rule-strong: rgba(224, 224, 224, 0.18);
+    --ov-gold:        var(--gold);
+    --ov-blue:        var(--blue);
+    --ov-plum:        #b37aa8;
+    --ov-green:       var(--green);
+    --ov-red:         var(--red);
+
+    --ov-serif: inherit;
+    --ov-sans:  inherit;
+    --ov-mono:  ui-monospace, Menlo, monospace;
+
+    max-width: 1200px;
+    margin: 4.5rem auto 5rem;
+    padding: 0 1.75rem;
+    color: var(--ov-ink);
+}
+
+/* --- Picker row --- */
+
+#overlay-section .overlay-picker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem;
+    margin-top: 2rem;
+    padding: 0.9rem 1rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0));
+    border: 1px solid var(--ov-rule);
+    border-radius: 12px;
+}
+
+#overlay-section .overlay-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 0 1 auto;
+}
+
+#overlay-section .overlay-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.5rem 0.35rem 0.6rem;
+    background: var(--chip-tint);
+    border: 1px solid var(--chip-color);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--ov-ink);
+    transition: background .18s ease;
+}
+#overlay-section .overlay-chip-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--chip-color);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.06);
+}
+#overlay-section .overlay-chip-name { white-space: nowrap; }
+#overlay-section .overlay-chip-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    margin-left: 0.1rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--ov-ink-soft);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background .15s ease, color .15s ease;
+}
+#overlay-section .overlay-chip-x:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--ov-ink);
+}
+#overlay-section .overlay-chip-slot {
+    font-family: var(--ov-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ov-ink-dim);
+    padding-left: 0.35rem;
+}
+#overlay-section .overlay-chip-slot-full { color: var(--ov-ink-soft); }
+
+#overlay-section .overlay-search-wrap {
+    position: relative;
+    flex: 1 1 260px;
+    min-width: 220px;
+}
+#overlay-section .overlay-input {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--ov-rule);
+    border-radius: 8px;
+    padding: 0.55rem 0.8rem;
+    color: var(--ov-ink);
+    font-family: var(--ov-sans);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color .18s ease, background .18s ease;
+}
+#overlay-section .overlay-input::placeholder { color: var(--ov-ink-dim); }
+#overlay-section .overlay-input:focus {
+    border-color: var(--ov-gold);
+    background: rgba(255,255,255,0.06);
+}
+
+#overlay-section .overlay-suggestions {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: #141822;
+    border: 1px solid var(--ov-rule-strong);
+    border-radius: 10px;
+    box-shadow: 0 18px 36px rgba(0,0,0,0.45);
+    z-index: 40;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 0.25rem;
+    display: none;
+}
+#overlay-section .overlay-suggestions.open { display: block; }
+#overlay-section .overlay-sug-empty {
+    padding: 0.75rem 0.8rem;
+    color: var(--ov-ink-dim);
+    font-size: 0.82rem;
+    font-style: italic;
+}
+#overlay-section .overlay-sug-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.45rem 0.55rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--ov-ink);
+    text-align: left;
+    font-family: var(--ov-sans);
+    cursor: pointer;
+    transition: background .12s ease;
+}
+#overlay-section .overlay-sug-item:hover,
+#overlay-section .overlay-sug-item.is-active { background: rgba(212, 162, 46, 0.12); }
+#overlay-section .overlay-sug-item.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+#overlay-section .overlay-sug-avatar {
+    flex: 0 0 auto;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+}
+#overlay-section .overlay-sug-avatar-img {
+    width: 100%; height: 100%; object-fit: cover;
+}
+#overlay-section .overlay-sug-avatar-fallback {
+    font-family: var(--ov-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--ov-ink-soft);
+}
+#overlay-section .overlay-sug-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+#overlay-section .overlay-sug-name {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--ov-ink);
+}
+#overlay-section .overlay-sug-meta {
+    font-family: var(--ov-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: var(--ov-ink-dim);
+    margin-top: 2px;
+}
+
+/* --- Body: radar + legend --- */
+
+#overlay-section .overlay-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, 1fr);
+    gap: 2.4rem;
+    align-items: center;
+    margin-top: 2.6rem;
+}
+
+#overlay-section .overlay-radar-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#overlay-section .overlay-radar-svg {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    overflow: visible;
+}
+
+#overlay-section .overlay-radar-ring {
+    fill: none;
+    stroke: var(--ov-rule);
+    stroke-width: 1;
+}
+#overlay-section .overlay-radar-ring.is-outer {
+    stroke: var(--ov-rule-strong);
+    stroke-width: 1.2;
+}
+#overlay-section .overlay-radar-spoke {
+    stroke: var(--ov-rule);
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
+}
+#overlay-section .overlay-radar-ringlabel {
+    fill: var(--ov-ink-dim);
+    font-family: var(--ov-mono);
+    font-size: 9px;
+    letter-spacing: 0.04em;
+}
+#overlay-section .overlay-radar-axislabel {
+    fill: var(--ov-ink-soft);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+#overlay-section .overlay-radar-poly {
+    fill-opacity: 1;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    transition: fill-opacity .25s ease;
+}
+#overlay-section .overlay-radar-dot {
+    stroke: var(--ov-paper);
+    stroke-width: 1.5;
+    transition: r .18s ease;
+    cursor: default;
+}
+#overlay-section .overlay-radar-dot:hover { r: 5.5; }
+
+/* --- Legend cards --- */
+
+#overlay-section .overlay-legend-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+#overlay-section .overlay-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 6px 52px 1fr;
+    gap: 0.9rem;
+    align-items: center;
+    padding: 0.85rem 1rem 0.85rem 0;
+    background: var(--ov-paper-2);
+    border: 1px solid var(--ov-rule);
+    border-radius: 10px;
+    overflow: hidden;
+}
+#overlay-section .overlay-card-swatch {
+    align-self: stretch;
+    background: var(--slot-color);
+    box-shadow: 0 0 18px -4px var(--slot-color);
+}
+#overlay-section .overlay-card-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+#overlay-section .overlay-card-avatar-img { width: 100%; height: 100%; object-fit: cover; }
+#overlay-section .overlay-card-avatar-fallback {
+    font-family: var(--ov-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ov-ink-soft);
+}
+#overlay-section .overlay-card-text { min-width: 0; }
+#overlay-section .overlay-card-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    line-height: 1.15;
+    color: var(--ov-ink);
+}
+#overlay-section .overlay-card-meta {
+    margin-top: 3px;
+    font-family: var(--ov-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ov-ink-dim);
+}
+#overlay-section .overlay-card-nums {
+    display: flex;
+    gap: 0.85rem;
+    margin-top: 0.5rem;
+}
+#overlay-section .overlay-card-num {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+#overlay-section .overlay-card-num-l {
+    font-family: var(--ov-mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.14em;
+    color: var(--ov-ink-dim);
+    text-transform: uppercase;
+}
+#overlay-section .overlay-card-num-v {
+    font-family: var(--ov-mono);
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: var(--ov-ink);
+    margin-top: 3px;
+}
+#overlay-section .overlay-card-gap.is-under .overlay-card-num-v { color: var(--ov-green); }
+#overlay-section .overlay-card-gap.is-over  .overlay-card-num-v { color: var(--ov-red); }
+
+/* --- Comparison table --- */
+
+#overlay-section .overlay-table-wrap {
+    margin-top: 2.8rem;
+    border: 1px solid var(--ov-rule);
+    border-radius: 12px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
+}
+#overlay-section .overlay-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--ov-sans);
+}
+#overlay-section .overlay-table thead {
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--ov-rule-strong);
+}
+#overlay-section .overlay-th {
+    position: relative;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-family: var(--ov-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ov-ink-soft);
+}
+#overlay-section .overlay-th-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--slot-color);
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.04);
+}
+#overlay-section .overlay-th-name { vertical-align: middle; }
+#overlay-section .overlay-rowhead {
+    padding: 0.65rem 1rem;
+    text-align: left;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ov-ink-soft);
+    width: 38%;
+    min-width: 140px;
+}
+#overlay-section .overlay-rowhead-top {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ov-ink-dim);
+}
+#overlay-section .overlay-table tbody tr {
+    border-top: 1px solid var(--ov-rule);
+}
+#overlay-section .overlay-table tbody tr:first-child { border-top: none; }
+#overlay-section .overlay-td {
+    position: relative;
+    padding: 0.7rem 1rem;
+    font-family: var(--ov-mono);
+    font-size: 0.95rem;
+    color: var(--ov-ink);
+    width: calc((100% - 38%) / 3);
+    min-width: 90px;
+}
+#overlay-section .overlay-td-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: calc(var(--cell-ratio, 0) * 100%);
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--slot-color) 20%, transparent),
+        color-mix(in srgb, var(--slot-color) 4%, transparent));
+    pointer-events: none;
+}
+#overlay-section .overlay-td-val {
+    position: relative;
+    z-index: 1;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+}
+#overlay-section .overlay-td.is-best .overlay-td-val {
+    color: var(--slot-color);
+    font-weight: 700;
+}
+#overlay-section .overlay-td.is-best::after {
+    content: '';
+    position: absolute;
+    left: 0.6rem; right: 0.6rem;
+    bottom: 0.35rem; height: 1px;
+    background: var(--slot-color);
+    opacity: 0.65;
+}
+
+#overlay-section .overlay-sep td {
+    padding: 0;
+    border-top: 1px solid var(--ov-rule-strong);
+    height: 0;
+}
+#overlay-section .overlay-td-summary {
+    background: rgba(255,255,255,0.015);
+}
+#overlay-section .overlay-td-summary .overlay-td-val {
+    color: var(--gap-color, var(--ov-ink));
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* --- Responsive --- */
+
+@media (max-width: 960px) {
+    #overlay-section .overlay-body {
+        grid-template-columns: 1fr;
+        gap: 1.8rem;
+    }
+    #overlay-section .overlay-radar-svg { max-width: 480px; }
+    #overlay-section .overlay-legend-col {
+        flex-direction: row;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 0.6rem;
+        padding-bottom: 0.25rem;
+    }
+    #overlay-section .overlay-card {
+        flex: 0 0 280px;
+        scroll-snap-align: start;
+    }
+}
+@media (max-width: 600px) {
+    #overlay-section {
+        margin: 3rem auto 3.5rem;
+        padding: 0 1rem;
+    }
+    #overlay-section .overlay-picker { flex-direction: column; align-items: stretch; }
+    #overlay-section .overlay-rowhead { font-size: 0.85rem; width: 42%; }
+    #overlay-section .overlay-td { font-size: 0.85rem; padding: 0.55rem 0.7rem; }
+    #overlay-section .overlay-th { padding: 0.6rem 0.7rem; font-size: 0.62rem; }
+}
