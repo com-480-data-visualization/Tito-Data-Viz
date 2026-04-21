@@ -6,7 +6,7 @@ function initWallOfFameShame(data) {
     const section = document.getElementById("wall-fame-shame");
     if (!section || !data?.length) return;
 
-    const MIN_MINUTES = 900;
+    const MIN_MINUTES = 600;
     const TOP_N = 20;
     const GROUP_BY_SUBPOS = { ST: "FW", WG: "FW", AM: "MF", CM: "MF", DM: "MF", FB: "DF", CB: "DF", GK: "GK" };
     const DIM_LABELS = { scoring: "scoring", creation: "creation", progression: "progression", defense: "defense", discipline: "discipline" };
@@ -57,7 +57,7 @@ function initWallOfFameShame(data) {
         '<div class="wall-head">' +
             '<span class="wall-kicker">\u00a7 02 \u00b7 REPUTATION LEDGER</span>' +
             '<h3 class="wall-title">Two Walls, Twenty Names.</h3>' +
-            '<p class="wall-sub">Minimum 900 minutes played. Click any entry for the full dossier.</p>' +
+            '<p class="wall-sub">Minimum 600 minutes played. Click any entry for the full dossier.</p>' +
         '</div>' +
         '<div class="wall-filter-row">' +
             '<div class="wall-filter-label">FILTER BY ROLE</div>' +
