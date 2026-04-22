@@ -2071,7 +2071,7 @@ a {
    ========================================================== */
 
 /* ==========================================================
-   ACT 2 — TYPOGRAPHY
+   ACT 2 — TYPOGRAPHY + CHROME
    Display serif (Fraunces, optical-size-aware) paired with a
    monospaced numeral (JetBrains Mono). Scoped to #act2 so
    Acts 1/3 keep the system stack.
@@ -2114,37 +2114,94 @@ a {
     font-feature-settings: "zero", "cv02", "cv10";
 }
 
+/* Section head — hairline rule becomes a gradient, tiny gold accent
+   dot sits against the kicker. Keeps the editorial-ledger feel. */
 #act2 .chapter-head {
     max-width: 1080px;
-    margin: 2.5rem auto 1.25rem;
-    padding: 1.4rem 1rem 0.1rem;
+    margin: 3rem auto 1.4rem;
+    padding: 1.7rem 1rem 0.1rem;
     text-align: left;
-    border-top: 1px solid var(--border);
+    position: relative;
+    border-top: 1px solid transparent;
+    background-image: linear-gradient(90deg,
+        rgba(212, 175, 55, 0.5) 0,
+        rgba(212, 175, 55, 0.08) 28%,
+        transparent 64%);
+    background-size: 100% 1px;
+    background-position: 0 0;
+    background-repeat: no-repeat;
 }
 #act2 .chapter-kicker {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.22em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
     color: var(--gold);
     text-transform: uppercase;
-    margin-bottom: 0.55rem;
-    padding: 0.2rem 0;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    margin-bottom: 0.7rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+}
+#act2 .chapter-kicker::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.55);
 }
 #act2 .chapter-title {
-    font-weight: 700;
-    font-size: clamp(1.5rem, 2.8vw, 2.1rem);
-    line-height: 1.15;
-    letter-spacing: -0.01em;
+    font-size: clamp(1.7rem, 3.1vw, 2.35rem);
+    line-height: 1.08;
     color: var(--text);
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.5rem;
+}
+#act2 .chapter-title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--gold);
 }
 #act2 .chapter-sub {
-    font-size: 0.92rem;
-    line-height: 1.6;
-    color: var(--text-dim);
     max-width: 54em;
+}
+
+/* Map-section reuses the same gradient-rule + dot-accent kicker */
+#act2 .map-head {
+    border-top: 1px solid transparent;
+    background-image: linear-gradient(90deg,
+        rgba(212, 175, 55, 0.5) 0,
+        rgba(212, 175, 55, 0.08) 28%,
+        transparent 64%);
+    background-size: 100% 1px;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    padding-top: 1.7rem;
+}
+#act2 .map-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+}
+#act2 .map-kicker::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.55);
+}
+#act2 .map-title {
+    font-size: clamp(1.7rem, 3.1vw, 2.35rem);
+    line-height: 1.08;
+}
+#act2 .map-title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--gold);
 }
 
 /* ==========================================================
