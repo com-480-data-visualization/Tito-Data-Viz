@@ -3293,3 +3293,738 @@ a {
     .league-row .lr-pct { display: none; }
     .league-row .lr-name { font-size: 0.72rem; }
 }
+
+/* ==========================================================
+   ACT 2 — §.04 THE CONTINENT (league map)
+   Europe-scale view: countries painted by average gap,
+   click-through to club ranking. Scoped to #map-section.
+   ========================================================== */
+
+#map-section {
+    --map-ink:        var(--text);
+    --map-dim:        var(--text-dim);
+    --map-muted:      var(--text-muted);
+    --map-panel:      var(--bg-panel);
+    --map-rule:       var(--border);
+    --map-rule-soft:  rgba(224, 224, 224, 0.1);
+    --map-gold:       var(--gold);
+    --map-green:      var(--green);
+    --map-red:        var(--red);
+    --map-blue:       var(--blue);
+
+    max-width: 1280px;
+    margin: 5rem auto 1rem;
+    padding: 3rem 1rem 1rem;
+    color: var(--map-ink);
+    position: relative;
+}
+
+/* Header */
+.map-head {
+    max-width: 1080px;
+    margin: 0 auto 1.75rem;
+    padding: 1.4rem 0 0.1rem;
+    border-top: 1px solid var(--map-rule);
+}
+.map-kicker {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--map-gold);
+    text-transform: uppercase;
+    margin-bottom: 0.55rem;
+    padding: 0.2rem 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+.map-title {
+    font-weight: 700;
+    font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--map-ink);
+    margin-bottom: 0.35rem;
+}
+.map-sub {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--map-dim);
+    max-width: 54em;
+}
+
+/* Layout: map on the left, aside on the right */
+.map-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 1.75rem;
+    align-items: start;
+    margin-top: 1rem;
+}
+.map-stage {
+    position: relative;
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0) 40%);
+    border: 1px solid var(--map-rule);
+    border-radius: 4px;
+    min-height: 460px;
+    padding: 0.75rem;
+    overflow: hidden;
+}
+.map-loading,
+.map-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 420px;
+    color: var(--map-dim);
+    font-size: 0.88rem;
+    letter-spacing: 0.02em;
+}
+.map-error { color: var(--map-red); }
+
+.map-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+.map-svg:active { cursor: grabbing; }
+
+/* Non-scaling strokes so paths don't thin/thicken with zoom */
+.map-country,
+.map-chev-shape,
+.map-chev-glow,
+.map-chev-plate {
+    vector-effect: non-scaling-stroke;
+}
+
+/* Countries — sit under everything, dim ones lighter than bg so borders read */
+.map-country {
+    transition: filter 0.2s ease, stroke 0.2s ease, stroke-width 0.2s ease;
+}
+.map-country-dim {
+    fill: url(#map-country-fill);
+    stroke: rgba(255, 255, 255, 0.13);
+    stroke-width: 0.6;
+    pointer-events: none;
+}
+.map-country-live {
+    cursor: pointer;
+    fill: url(#map-country-fill-live);
+    stroke: rgba(255, 255, 255, 0.42);
+    stroke-width: 1;
+}
+.map-country-live.is-selected {
+    stroke: var(--map-gold);
+    stroke-width: 1.6;
+}
+/* Hover glow — colour keyed to league polarity */
+.map-country-live.is-up.is-hover,
+.map-country-live.is-up:hover {
+    stroke: var(--map-green);
+    stroke-width: 2.3;
+    filter: url(#glow-green);
+}
+.map-country-live.is-down.is-hover,
+.map-country-live.is-down:hover {
+    stroke: var(--map-red);
+    stroke-width: 2.3;
+    filter: url(#glow-red);
+}
+
+/* Breadcrumb */
+.map-breadcrumb {
+    max-width: 1280px;
+    margin: 0.25rem 0 0.9rem;
+    padding: 0.35rem 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--map-dim);
+    min-height: 1.8rem;
+}
+.map-crumb {
+    background: transparent;
+    border: none;
+    color: var(--map-dim);
+    padding: 0.18rem 0.5rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: inherit;
+    font-weight: 600;
+    letter-spacing: inherit;
+    transition: color 0.15s ease, background 0.15s ease;
+    font-family: inherit;
+}
+.map-crumb:hover:not([aria-current="page"]) {
+    color: var(--map-gold);
+    background: rgba(212, 175, 55, 0.06);
+}
+.map-crumb.is-current {
+    color: var(--map-ink);
+    cursor: default;
+}
+.map-crumb-sep {
+    color: var(--map-muted);
+    font-size: 0.9em;
+    pointer-events: none;
+}
+
+/* Zoom controls */
+.map-zoom-ctrls {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    z-index: 3;
+}
+.map-zoom-btn {
+    width: 34px;
+    height: 34px;
+    background: rgba(10, 10, 20, 0.78);
+    color: var(--map-ink);
+    border: 1px solid var(--map-rule);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.map-zoom-btn:hover {
+    border-color: var(--map-gold);
+    color: var(--map-gold);
+    background: rgba(10, 10, 20, 0.92);
+}
+.map-zoom-reset {
+    font-size: 0.85rem;
+    margin-top: 0.15rem;
+}
+
+/* Level pill — 4-dot indicator with label */
+.map-level-pill {
+    position: absolute;
+    top: 0.9rem;
+    left: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(10, 10, 20, 0.78);
+    border: 1px solid var(--map-rule);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem 0.35rem 0.7rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--map-dim);
+    backdrop-filter: blur(8px);
+    z-index: 3;
+    pointer-events: none;
+}
+.map-level-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--map-rule);
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+.map-level-pill.is-l1 .map-level-dot.l1,
+.map-level-pill.is-l2 .map-level-dot.l2,
+.map-level-pill.is-l3 .map-level-dot.l3,
+.map-level-pill.is-l4 .map-level-dot.l4 {
+    background: var(--map-gold);
+    transform: scale(1.4);
+}
+.map-level-pill.is-l2 .map-level-dot.l1,
+.map-level-pill.is-l3 .map-level-dot.l1,
+.map-level-pill.is-l3 .map-level-dot.l2,
+.map-level-pill.is-l4 .map-level-dot.l1,
+.map-level-pill.is-l4 .map-level-dot.l2,
+.map-level-pill.is-l4 .map-level-dot.l3 {
+    background: rgba(212, 175, 55, 0.35);
+}
+.map-level-label {
+    color: var(--map-ink);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    margin-left: 0.25rem;
+}
+
+/* FIFA-style chevron marker — floating triangle + gap plate hovering over
+   the target entity. Outer <g> positions in projected space; .map-chev-counter
+   carries scale(1/k) (set via JS) so the glyph stays a fixed screen size
+   regardless of zoom; .map-chev-bob carries the CSS bob animation. */
+.map-chev {
+    cursor: pointer;
+}
+.map-chev-bob {
+    animation: map-chev-bob 1.9s ease-in-out infinite;
+    transition: filter 0.18s ease;
+    will-change: transform;
+}
+@keyframes map-chev-bob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
+}
+
+/* Soft colored halo behind the arrow — hidden until hover / is-hover */
+.map-chev-glow {
+    stroke: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    filter: blur(4px);
+}
+.map-chev.is-up    .map-chev-glow { fill: var(--map-green); }
+.map-chev.is-down  .map-chev-glow { fill: var(--map-red); }
+.map-chev:hover    .map-chev-glow,
+.map-chev.is-hover .map-chev-glow { opacity: 0.75; }
+
+/* The arrow itself — polarity-colored */
+.map-chev-shape {
+    stroke: rgba(0, 0, 0, 0.55);
+    stroke-width: 0.9;
+    stroke-linejoin: round;
+    transition: filter 0.18s ease;
+}
+.map-chev.is-up    .map-chev-shape { fill: var(--map-green); }
+.map-chev.is-down  .map-chev-shape { fill: var(--map-red); }
+.map-chev:hover    .map-chev-bob,
+.map-chev.is-hover .map-chev-bob { filter: brightness(1.18); }
+
+/* Dark rounded plate holding the gap number */
+.map-chev-plate {
+    fill: rgba(8, 10, 20, 0.94);
+    stroke: rgba(255, 255, 255, 0.18);
+    stroke-width: 0.6;
+}
+
+/* Typography on the chevron */
+.map-chev-gap {
+    font-size: 9.5px;
+    font-weight: 700;
+    font-family: ui-monospace, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+}
+.map-chev.is-up    .map-chev-gap { fill: var(--map-green); }
+.map-chev.is-down  .map-chev-gap { fill: var(--map-red); }
+
+.map-chev-label {
+    fill: var(--map-ink);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    paint-order: stroke;
+    stroke: rgba(5, 8, 16, 0.92);
+    stroke-width: 3;
+    pointer-events: none;
+}
+.map-chev-sub {
+    fill: var(--map-muted);
+    font-size: 7.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    paint-order: stroke;
+    stroke: rgba(5, 8, 16, 0.92);
+    stroke-width: 2.5;
+    pointer-events: none;
+}
+
+/* Layer visibility by zoom level. Hidden chevrons use display:none so the
+   browser skips layout + animation ticks for them — crucial perf win given
+   we have ~100 chevrons total.  Leagues at L1; clubs at L2/L3; players at L4. */
+.map-chev-league,
+.map-chev-club,
+.map-chev-player {
+    transition: opacity 0.25s ease;
+}
+.map-svg.lv-1 .map-chev-league { opacity: 1; pointer-events: auto; }
+.map-svg.lv-1 .map-chev-club,
+.map-svg.lv-1 .map-chev-player { display: none; }
+
+.map-svg.lv-2 .map-chev-league,
+.map-svg.lv-2 .map-chev-player { display: none; }
+.map-svg.lv-2 .map-chev-club   { opacity: 1; pointer-events: auto; }
+
+.map-svg.lv-3 .map-chev-league,
+.map-svg.lv-3 .map-chev-player { display: none; }
+.map-svg.lv-3 .map-chev-club   { opacity: 1; pointer-events: auto; }
+
+.map-svg.lv-4 .map-chev-league,
+.map-svg.lv-4 .map-chev-club   { display: none; }
+.map-svg.lv-4 .map-chev-player { opacity: 1; pointer-events: auto; }
+
+/* Tooltip */
+.map-tip {
+    position: fixed;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(10, 10, 20, 0.96);
+    border: 1px solid var(--map-rule);
+    border-radius: 4px;
+    padding: 0.7rem 0.85rem;
+    min-width: 190px;
+    font-size: 0.82rem;
+    color: var(--map-ink);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.8);
+    transition: opacity 0.12s ease;
+}
+.map-tip-name {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--map-rule-soft);
+}
+.map-tip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.15rem 0;
+    color: var(--map-dim);
+    font-size: 0.8rem;
+}
+.map-tip-row strong {
+    color: var(--map-ink);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+.map-tip-hint {
+    margin-top: 0.55rem;
+    padding-top: 0.45rem;
+    border-top: 1px solid var(--map-rule-soft);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--map-muted);
+}
+
+/* Aside */
+.map-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+.map-insight {
+    background: var(--map-panel);
+    border: 1px solid var(--map-rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+}
+.map-insight-kicker {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    color: var(--map-gold);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.map-insight-body {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--map-ink);
+}
+.map-list {
+    border: 1px solid var(--map-rule);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.map-list-label {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    color: var(--map-muted);
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--map-rule);
+}
+.map-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 12px 1fr auto auto;
+    gap: 0.6rem;
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--map-rule-soft);
+    padding: 0.65rem 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.12s ease;
+    color: var(--map-ink);
+}
+.map-row:last-child { border-bottom: none; }
+.map-row:hover { background: rgba(255, 255, 255, 0.03); }
+.map-row.is-selected { background: rgba(212, 175, 55, 0.08); }
+.map-row-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--map-muted);
+}
+.map-row.gap-up    .map-row-dot { background: var(--map-green); }
+.map-row.gap-down  .map-row-dot { background: var(--map-red); }
+.map-row-name {
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+.map-row-count {
+    font-size: 0.72rem;
+    color: var(--map-muted);
+    letter-spacing: 0.06em;
+}
+.map-row-gap {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    min-width: 54px;
+    text-align: right;
+}
+.map-row.gap-up    .map-row-gap { color: var(--map-green); }
+.map-row.gap-down  .map-row-gap { color: var(--map-red); }
+
+/* Drawer (clubs breakdown) */
+.map-drawer {
+    margin: 2rem auto 0;
+    max-width: 1080px;
+    background: var(--map-panel);
+    border: 1px solid var(--map-rule);
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+.map-drawer.is-open { opacity: 1; }
+.map-drawer-empty {
+    text-align: center;
+    color: var(--map-muted);
+    font-size: 0.9rem;
+    padding: 2rem 0;
+    letter-spacing: 0.04em;
+}
+.map-drawer-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--map-rule);
+    margin-bottom: 1rem;
+}
+.map-drawer-kicker {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.24em;
+    color: var(--map-gold);
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+.map-drawer-h {
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: var(--map-ink);
+    letter-spacing: -0.01em;
+}
+.map-drawer-stats {
+    display: flex;
+    gap: 1.5rem;
+    font-family: ui-monospace, Menlo, monospace;
+}
+.map-drawer-stats > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.map-drawer-stat-val {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--map-ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+.map-drawer-stat-val.gap-up   { color: var(--map-green); }
+.map-drawer-stat-val.gap-down { color: var(--map-red); }
+.map-drawer-stat-lbl {
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: var(--map-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+/* Clubs table */
+.map-club-head {
+    display: grid;
+    grid-template-columns: 36px 1fr 40px 1fr 60px;
+    gap: 0.75rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: var(--map-muted);
+    font-weight: 600;
+    padding: 0.35rem 0.25rem 0.6rem;
+    border-bottom: 1px solid var(--map-rule-soft);
+}
+.map-club-head > span:last-child { text-align: right; }
+.map-club-head > span:nth-child(3),
+.map-club-head > span:nth-child(5) { text-align: right; }
+
+.map-club-list {
+    display: flex;
+    flex-direction: column;
+}
+.map-club-row {
+    display: grid;
+    grid-template-columns: 36px 1fr 40px 1fr 60px;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.55rem 0.25rem;
+    border-bottom: 1px solid var(--map-rule-soft);
+}
+.map-club-row:last-child { border-bottom: none; }
+.map-club-rank {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.78rem;
+    color: var(--map-muted);
+    letter-spacing: 0.04em;
+}
+.map-club-name {
+    font-size: 0.93rem;
+    font-weight: 600;
+    color: var(--map-ink);
+}
+.map-club-count {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.82rem;
+    color: var(--map-dim);
+    text-align: right;
+}
+.map-club-bar {
+    position: relative;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.map-club-bar-fill {
+    position: absolute;
+    top: 0; bottom: 0;
+    border-radius: 2px;
+    transition: width 0.25s ease;
+}
+.map-club-bar-right { left: 50%; }
+.map-club-bar-left  { right: 50%; }
+.map-club-bar-fill.gap-up   { background: var(--map-green); }
+.map-club-bar-fill.gap-down { background: var(--map-red); }
+.map-club-gap {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.88rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+.map-club-gap.gap-up   { color: var(--map-green); }
+.map-club-gap.gap-down { color: var(--map-red); }
+
+/* Color helpers */
+#map-section .gap-up   { color: var(--map-green); }
+#map-section .gap-down { color: var(--map-red); }
+
+/* Player card (L4 drawer body) */
+.map-player-card {
+    display: flex;
+    gap: 1.2rem;
+    padding: 0.5rem 0;
+    align-items: center;
+}
+.map-player-photo {
+    width: 104px;
+    height: 104px;
+    border-radius: 4px;
+    object-fit: cover;
+    object-position: top center;
+    background: linear-gradient(180deg, #1a2235, #0e1424);
+    border: 1px solid var(--map-rule);
+    flex-shrink: 0;
+}
+.map-player-photo-blank {
+    display: block;
+}
+.map-player-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+}
+.map-player-name {
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: -0.01em;
+    color: var(--map-ink);
+}
+.map-player-meta {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--map-dim);
+}
+.map-player-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.65rem;
+    margin-top: 0.35rem;
+}
+.map-player-grid > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.map-player-stat-val {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--map-ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.05;
+}
+.map-player-stat-val.gap-up   { color: var(--map-green); }
+.map-player-stat-val.gap-down { color: var(--map-red); }
+.map-player-stat-lbl {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--map-muted);
+    text-transform: uppercase;
+    margin-top: 0.15rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .map-layout {
+        grid-template-columns: 1fr;
+    }
+    .map-drawer-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .map-drawer-stats { width: 100%; justify-content: space-between; gap: 0.75rem; }
+    .map-club-head,
+    .map-club-row {
+        grid-template-columns: 28px 1fr 32px 70px;
+    }
+    .map-club-bar { display: none; }
+    .map-club-head > span:nth-child(4) { display: none; }
+    .map-club-row > .map-club-bar + .map-club-gap { grid-column: 4; }
+    .map-player-card { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    .map-player-photo { width: 88px; height: 88px; }
+    .map-player-grid { grid-template-columns: repeat(2, 1fr); }
+}

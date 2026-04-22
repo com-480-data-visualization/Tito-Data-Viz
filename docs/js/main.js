@@ -17,6 +17,7 @@ function boot() {
     initScatter(DATA);
     initWallOfFameShame(DATA);
     initOverlay(DATA);
+    initLeagueMap(DATA);
 }
 
 function initDatasetIntro(data) {
