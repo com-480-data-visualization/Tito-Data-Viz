@@ -81,14 +81,14 @@ function initAct1(data) {
 
         eaCardsEl.innerHTML = "";
         eaTop.forEach((p, i) => {
-            const card = buildEACard(p, i, !statsNames.has(p.name), group, pos, statsTopRank[p.name]);
+            const card = buildEACard(p, i, !statsNames.has(p.name), group, pos);
             card.addEventListener("click", () => onCardClick(p));
             eaCardsEl.appendChild(card);
         });
 
         statsCardsEl.innerHTML = "";
         statsTop.forEach((p, i) => {
-            const card = buildStatsCard(p, i, !eaNames.has(p.name), pos, eaTopRank[p.name], statScales);
+            const card = buildStatsCard(p, i, !eaNames.has(p.name), pos, eaRankMap[p.name], statScales);
             card.addEventListener("click", () => onCardClick(p));
             statsCardsEl.appendChild(card);
         });

@@ -23,10 +23,10 @@ const CARD_SHORT = {
 
 function deltaChipHTML(thisRank, otherRank) {
     if (otherRank == null) return "";
-    const diff = thisRank - otherRank; // positive = better on other side
-    let cls = "dc-neutral", arrow = "=", label = "Same rank";
-    if (diff > 0) { cls = "dc-up"; arrow = "▲"; label = "Up " + diff + " on the other side"; }
-    else if (diff < 0) { cls = "dc-down"; arrow = "▼"; label = "Down " + (-diff) + " on the other side"; }
+    const diff = thisRank - otherRank; // positive = better on EA side
+    let cls = "dc-neutral", arrow = "=", label = "Same rank on EA (#" + otherRank + ")";
+    if (diff > 0) { cls = "dc-up"; arrow = "▲"; label = "EA ranks him " + diff + " higher (#" + otherRank + ")"; }
+    else if (diff < 0) { cls = "dc-down"; arrow = "▼"; label = "EA ranks him " + (-diff) + " lower (#" + otherRank + ")"; }
     const mag = diff === 0 ? "" : Math.abs(diff);
     return '<span class="delta-chip ' + cls + '" data-tip="' + escapeAttr(label) + '">' +
         '<span class="dc-arrow">' + arrow + '</span>' +
@@ -36,7 +36,7 @@ function deltaChipHTML(thisRank, otherRank) {
 
 // --- EA card: FUT-inspired ---
 
-function buildEACard(p, index, absent, pos, subPos, otherRank) {
+function buildEACard(p, index, absent, pos, subPos) {
     const card = document.createElement("div");
     card.className = "fut-card ea-card fut-flavor" + (absent ? " absent" : "");
     card.setAttribute("data-player", p.name);
@@ -66,8 +66,7 @@ function buildEACard(p, index, absent, pos, subPos, otherRank) {
             '<div class="card-name">' + p.name + '</div>' +
             '<div class="card-club">' + p.club + '</div>' +
         '</div>' +
-        '<div class="fut-stats">' + miniHtml + '</div>' +
-        deltaChipHTML(index + 1, otherRank);
+        '<div class="fut-stats">' + miniHtml + '</div>';
 
     return card;
 }
