@@ -11,11 +11,62 @@ function boot() {
     initInfoTooltips();
     initBall();
     initScrollama();
+    initDatasetIntro(DATA);
     initAct1(DATA);
     initGuessTheGap(DATA);
     initScatter(DATA);
     initWallOfFameShame(DATA);
     initOverlay(DATA);
+}
+
+function initDatasetIntro(data) {
+    const finalEl = document.getElementById("di-final-count");
+    const leaguesEl = document.getElementById("di-leagues");
+    const avgEl = document.getElementById("di-averages");
+    if (!finalEl || !leaguesEl || !avgEl || !data || !data.length) return;
+
+    finalEl.textContent = data.length.toLocaleString();
+
+    const leagueClass = { "PL": "l-pl", "La Liga": "l-laliga", "Serie A": "l-seriea", "Bundesliga": "l-bundes", "Ligue 1": "l-ligue1" };
+    const leagueName  = { "PL": "Premier League" };
+    const counts = {};
+    data.forEach(p => { counts[p.league] = (counts[p.league] || 0) + 1; });
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const total = data.length;
+    const maxN = sorted.length ? sorted[0][1] : 1;
+    leaguesEl.innerHTML = sorted.map(([name, n]) => {
+        const pct = (n / total) * 100;
+        const widthPct = (n / maxN) * 100;
+        const cls = leagueClass[name] || "l-default";
+        const display = leagueName[name] || name;
+        const tip = display + ": " + n + " players (" + pct.toFixed(1) + "%)";
+        return '<div class="league-row" data-tip="' + tip + '">' +
+               '<span class="lr-name">' + display + '</span>' +
+               '<span class="lr-track">' +
+                   '<span class="lr-fill ' + cls + '" style="width:' + widthPct.toFixed(2) + '%"></span>' +
+               '</span>' +
+               '<span class="lr-count">' + n + '</span>' +
+               '<span class="lr-pct">' + pct.toFixed(1) + '%</span>' +
+               '</div>';
+    }).join("");
+
+    const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const ages = data.filter(p => p.age != null).map(p => p.age);
+    const mins = data.filter(p => p.minutes != null).map(p => p.minutes);
+    const ovrs = data.filter(p => p.ea && p.ea.ovr != null).map(p => p.ea.ovr);
+
+    const tiles = [
+        { val: avg(ages).toFixed(1), label: "Avg age", unit: "years old" },
+        { val: Math.round(avg(mins)).toLocaleString(), label: "Avg minutes", unit: "played in 24-25" },
+        { val: avg(ovrs).toFixed(1), label: "Avg EA OVR", unit: "out of 99" }
+    ];
+    avgEl.innerHTML = tiles.map(t =>
+        '<div class="avg-tile">' +
+            '<div class="avg-val">' + t.val + '</div>' +
+            '<div class="avg-label">' + t.label + '</div>' +
+            '<div class="avg-unit">' + t.unit + '</div>' +
+        '</div>'
+    ).join("");
 }
 
 // --- Ball + Sommaire ---

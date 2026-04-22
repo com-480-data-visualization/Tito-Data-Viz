@@ -3097,3 +3097,199 @@ a {
     #overlay-section .overlay-td { font-size: 0.85rem; padding: 0.55rem 0.7rem; }
     #overlay-section .overlay-th { padding: 0.6rem 0.7rem; font-size: 0.62rem; }
 }
+
+/* --- Act 1 dataset intro --- */
+
+.dataset-intro {
+    max-width: 1000px;
+    margin: 0 auto 3.5rem;
+    padding: 1.75rem 1.75rem 2rem;
+    background: linear-gradient(180deg, rgba(22, 33, 62, 0.55), rgba(12, 18, 34, 0.75));
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: 12px;
+}
+.dataset-intro .di-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    color: var(--gold);
+    margin-bottom: 0.35rem;
+}
+.dataset-intro .di-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #f5e7b8;
+    margin: 0 0 0.55rem;
+    letter-spacing: 0.01em;
+}
+.dataset-intro .di-lead {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+    margin: 0 0 1.5rem;
+    max-width: 720px;
+}
+.dataset-intro .di-subtitle {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 1.4rem 0 0.6rem;
+    font-weight: 700;
+}
+
+/* Funnel */
+.funnel-steps {
+    display: flex;
+    align-items: stretch;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+.funnel-step {
+    flex: 1 1 150px;
+    min-width: 140px;
+    padding: 0.85rem 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    text-align: center;
+}
+.funnel-step.final {
+    background: linear-gradient(180deg, rgba(212, 175, 55, 0.12), rgba(212, 175, 55, 0.04));
+    border-color: rgba(212, 175, 55, 0.45);
+}
+.funnel-step .fs-num {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #e8e8e8;
+    letter-spacing: 0.01em;
+    line-height: 1;
+}
+.funnel-step.final .fs-num {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.funnel-step .fs-src {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.4rem;
+}
+.funnel-step .fs-note {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    margin-top: 0.2rem;
+    font-style: italic;
+}
+.funnel-arrow {
+    align-self: center;
+    font-size: 1.2rem;
+    color: rgba(212, 175, 55, 0.55);
+    font-weight: 700;
+    padding: 0 0.1rem;
+}
+
+/* League bar (horizontal graph) */
+.league-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    width: 100%;
+}
+.league-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 52px 56px;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: help;
+    transition: transform 0.15s ease;
+}
+.league-row:hover { transform: translateX(2px); }
+.league-row .lr-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.82);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.league-row .lr-track {
+    position: relative;
+    display: block;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 7px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.league-row .lr-fill {
+    display: block;
+    height: 100%;
+    border-radius: 7px;
+    transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.league-row .lr-count {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #f0f0f0;
+    text-align: right;
+    letter-spacing: 0.01em;
+}
+.league-row .lr-pct {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-align: right;
+}
+.lr-fill.l-pl       { background: linear-gradient(90deg, #3d195b, #7a3dab); }
+.lr-fill.l-laliga   { background: linear-gradient(90deg, #b03a2e, #e8715f); }
+.lr-fill.l-seriea   { background: linear-gradient(90deg, #1b6cb0, #4ea8e0); }
+.lr-fill.l-bundes   { background: linear-gradient(90deg, #c0392b, #f1a69c); }
+.lr-fill.l-ligue1   { background: linear-gradient(90deg, #1e3a8a, #5078d8); }
+.lr-fill.l-default  { background: linear-gradient(90deg, #4a4a4a, #808080); }
+
+/* Averages */
+.di-averages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+}
+.avg-tile {
+    padding: 0.75rem 0.9rem;
+    background: rgba(77, 166, 255, 0.06);
+    border: 1px solid rgba(77, 166, 255, 0.2);
+    border-radius: 8px;
+}
+.avg-tile .avg-val {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #bfe0ff;
+    line-height: 1.1;
+}
+.avg-tile .avg-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(170, 200, 230, 0.8);
+    margin-top: 0.25rem;
+}
+.avg-tile .avg-unit {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    margin-top: 0.1rem;
+    font-style: italic;
+}
+
+@media (max-width: 720px) {
+    .funnel-arrow { transform: rotate(90deg); width: 100%; padding: 0.1rem 0; }
+    .funnel-step { flex: 1 1 100%; }
+    .league-row { grid-template-columns: 90px 1fr 44px; gap: 0.5rem; }
+    .league-row .lr-pct { display: none; }
+    .league-row .lr-name { font-size: 0.72rem; }
+}

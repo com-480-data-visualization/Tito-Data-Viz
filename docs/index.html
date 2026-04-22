@@ -1,191 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Reputation Gap</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-<!-- Landing Section -->
-<section id="landing" class="landing">
-    <!-- Subtle pitch markings background -->
-    <div class="pitch-marks">
-        <div class="pitch-center-circle"></div>
-        <div class="pitch-center-line"></div>
-    </div>
-
-    <p class="landing-label">COM-480 &middot; Data Visualization</p>
-    <h1 class="landing-title">The Reputation Gap</h1>
-    <p class="landing-subtitle">Do EA FC 25 ratings truly reflect real-world performance?</p>
-
-    <div class="scroll-indicator">
-        <span class="scroll-text">Scroll to begin</span>
-        <div class="scroll-chevrons">
-            <svg class="scroll-chevron" width="24" height="14" viewBox="0 0 24 14" fill="none">
-                <path d="M2 2l10 10L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <svg class="scroll-chevron" width="24" height="14" viewBox="0 0 24 14" fill="none">
-                <path d="M2 2l10 10L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+    <!-- Landing Section -->
+    <section id="landing" class="landing">
+        <!-- Subtle pitch markings background -->
+        <div class="pitch-marks">
+            <div class="pitch-center-circle"></div>
+            <div class="pitch-center-line"></div>
         </div>
-    </div>
-</section>
 
-<!-- The Ball: clickable floating ball -->
-<div id="the-ball" class="the-ball" aria-label="Menu">
-    <svg class="ball-svg" viewBox="0 0 100 100">
-        <defs>
-            <radialGradient id="ball-body" cx="32%" cy="28%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="45%" stop-color="#ececec"/>
-                <stop offset="85%" stop-color="#9e9e9e"/>
-                <stop offset="100%" stop-color="#6e6e6e"/>
-            </radialGradient>
-            <radialGradient id="ball-gloss" cx="28%" cy="22%" r="32%">
-                <stop offset="0%" stop-color="rgba(255,255,255,0.92)"/>
-                <stop offset="55%" stop-color="rgba(255,255,255,0.2)"/>
-                <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-            </radialGradient>
-            <radialGradient id="ball-shade" cx="72%" cy="80%" r="55%">
-                <stop offset="0%" stop-color="rgba(0,0,0,0)"/>
-                <stop offset="100%" stop-color="rgba(0,0,0,0.32)"/>
-            </radialGradient>
-            <clipPath id="ball-clip"><circle cx="50" cy="50" r="49"/></clipPath>
-        </defs>
-        <circle cx="50" cy="50" r="49" fill="url(#ball-body)"/>
-        <g class="ball-pattern" clip-path="url(#ball-clip)">
-            <polygon points="50,33 64.3,43.4 58.8,60.4 41.2,60.4 35.7,43.4" fill="#181818"/>
-            <g stroke="#181818" stroke-width="1.8" stroke-linecap="round" fill="none">
-                <line x1="50" y1="33" x2="50" y2="9"/>
-                <line x1="64.3" y1="43.4" x2="86" y2="34"/>
-                <line x1="58.8" y1="60.4" x2="73" y2="82"/>
-                <line x1="41.2" y1="60.4" x2="27" y2="82"/>
-                <line x1="35.7" y1="43.4" x2="14" y2="34"/>
+        <p class="landing-label">COM-480 &middot; Data Visualization</p>
+        <h1 class="landing-title">The Reputation Gap</h1>
+        <p class="landing-subtitle">Do EA FC 25 ratings truly reflect real-world performance?</p>
+
+        <div class="scroll-indicator">
+            <span class="scroll-text">Scroll to begin</span>
+            <div class="scroll-chevrons">
+                <svg class="scroll-chevron" width="24" height="14" viewBox="0 0 24 14" fill="none">
+                    <path d="M2 2l10 10L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <svg class="scroll-chevron" width="24" height="14" viewBox="0 0 24 14" fill="none">
+                    <path d="M2 2l10 10L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Ball: clickable floating ball -->
+    <div id="the-ball" class="the-ball" aria-label="Menu">
+        <svg class="ball-svg" viewBox="0 0 100 100">
+            <defs>
+                <radialGradient id="ball-body" cx="32%" cy="28%">
+                    <stop offset="0%" stop-color="#ffffff" />
+                    <stop offset="45%" stop-color="#ececec" />
+                    <stop offset="85%" stop-color="#9e9e9e" />
+                    <stop offset="100%" stop-color="#6e6e6e" />
+                </radialGradient>
+                <radialGradient id="ball-gloss" cx="28%" cy="22%" r="32%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.92)" />
+                    <stop offset="55%" stop-color="rgba(255,255,255,0.2)" />
+                    <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+                </radialGradient>
+                <radialGradient id="ball-shade" cx="72%" cy="80%" r="55%">
+                    <stop offset="0%" stop-color="rgba(0,0,0,0)" />
+                    <stop offset="100%" stop-color="rgba(0,0,0,0.32)" />
+                </radialGradient>
+                <clipPath id="ball-clip">
+                    <circle cx="50" cy="50" r="49" />
+                </clipPath>
+            </defs>
+            <circle cx="50" cy="50" r="49" fill="url(#ball-body)" />
+            <g class="ball-pattern" clip-path="url(#ball-clip)">
+                <polygon points="50,33 64.3,43.4 58.8,60.4 41.2,60.4 35.7,43.4" fill="#181818" />
+                <g stroke="#181818" stroke-width="1.8" stroke-linecap="round" fill="none">
+                    <line x1="50" y1="33" x2="50" y2="9" />
+                    <line x1="64.3" y1="43.4" x2="86" y2="34" />
+                    <line x1="58.8" y1="60.4" x2="73" y2="82" />
+                    <line x1="41.2" y1="60.4" x2="27" y2="82" />
+                    <line x1="35.7" y1="43.4" x2="14" y2="34" />
+                </g>
+                <g fill="#181818">
+                    <polygon points="50,9 58,3 51,-5 43,3" />
+                    <polygon points="86,34 93,27 88,16 79,22" />
+                    <polygon points="73,82 83,87 80,99 69,93" />
+                    <polygon points="27,82 17,87 20,99 31,93" />
+                    <polygon points="14,34 7,27 12,16 21,22" />
+                </g>
             </g>
-            <g fill="#181818">
-                <polygon points="50,9 58,3 51,-5 43,3"/>
-                <polygon points="86,34 93,27 88,16 79,22"/>
-                <polygon points="73,82 83,87 80,99 69,93"/>
-                <polygon points="27,82 17,87 20,99 31,93"/>
-                <polygon points="14,34 7,27 12,16 21,22"/>
-            </g>
-        </g>
-        <ellipse cx="32" cy="26" rx="16" ry="8" fill="url(#ball-gloss)" transform="rotate(-25 32 26)" clip-path="url(#ball-clip)"/>
-        <circle cx="50" cy="50" r="49" fill="url(#ball-shade)"/>
-        <circle cx="50" cy="50" r="49" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="0.8"/>
-    </svg>
-</div>
-
-<!-- Sommaire panel: full size, revealed via clip-path from ball position -->
-<div id="sommaire" class="sommaire-panel">
-    <div class="sp-header">
-        <span class="sp-title">Contents</span>
-    </div>
-    <div class="sp-items">
-        <a href="#act1" class="sp-item" data-act="act1">
-            <span class="sp-num n1">1</span>
-            <div class="sp-text">
-                <span class="sp-name">Two Worlds, Two Truths</span>
-                <span class="sp-desc">EA rankings vs real statistical performance</span>
-            </div>
-            <span class="sp-arrow">&rsaquo;</span>
-        </a>
-        <a href="#act2" class="sp-item" data-act="act2">
-            <span class="sp-num n2">2</span>
-            <div class="sp-text">
-                <span class="sp-name">The Reputation Gap</span>
-                <span class="sp-desc">Who is overrated? Who is underrated?</span>
-            </div>
-            <span class="sp-arrow">&rsaquo;</span>
-        </a>
-        <a href="#act3" class="sp-item" data-act="act3">
-            <span class="sp-num n3">3</span>
-            <div class="sp-text">
-                <span class="sp-name">What If We Rebuilt the Ratings?</span>
-                <span class="sp-desc">Play with the rating criteria yourself</span>
-            </div>
-            <span class="sp-arrow">&rsaquo;</span>
-        </a>
-    </div>
-    <p class="sp-hint">The ball follows you throughout. Click it anytime to navigate.</p>
-</div>
-
-<!-- Act 1 -->
-<section id="act1" class="act-section">
-    <div class="act-header">
-        <span class="act-label">Act 1</span>
-        <h2 class="act-title">Two Worlds, Two Truths
-            <span class="info-i" data-info="Left: EA FC 25 in-game ratings. Right: real 2024-25 performance data from FBref (top-5 European leagues, 600+ minutes played). The composite score percentile-ranks each stat within the same sub-position, then combines them as a weighted average rescaled to match the EA OVR distribution.">i</span>
-        </h2>
+            <ellipse cx="32" cy="26" rx="16" ry="8" fill="url(#ball-gloss)" transform="rotate(-25 32 26)"
+                clip-path="url(#ball-clip)" />
+            <circle cx="50" cy="50" r="49" fill="url(#ball-shade)" />
+            <circle cx="50" cy="50" r="49" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="0.8" />
+        </svg>
     </div>
 
-    <p class="narrative-intro">
-        On one side, EA Sports assigns ratings based on reputation, marketability, and scouting.
-        On the other, real match data tells a different story.
-        Compare the top players according to each source.
-    </p>
-
-    <div class="position-toggle" id="act1-pos-toggle">
-        <button class="pos-btn active" data-pos="ST" data-label="Strikers">ST</button>
-        <button class="pos-btn" data-pos="WG" data-label="Wingers">WG</button>
-        <button class="pos-btn" data-pos="AM" data-label="Attacking Midfielders">AM</button>
-        <button class="pos-btn" data-pos="CM" data-label="Central Midfielders">CM</button>
-        <button class="pos-btn" data-pos="DM" data-label="Defensive Midfielders">DM</button>
-        <button class="pos-btn" data-pos="FB" data-label="Full-backs">FB</button>
-        <button class="pos-btn" data-pos="CB" data-label="Centre-backs">CB</button>
-        <button class="pos-btn" data-pos="GK" data-label="Goalkeepers">GK</button>
-    </div>
-
-    <div class="split-container">
-        <div class="panel panel-ea">
-            <div class="panel-header">
-                <span class="panel-badge ea-badge">EA FC 25</span>
-                <h3 class="panel-title">Game Rankings</h3>
-                <p class="panel-subtitle">Overall Rating (OVR)</p>
-            </div>
-            <div id="ea-cards" class="card-list"></div>
+    <!-- Sommaire panel: full size, revealed via clip-path from ball position -->
+    <div id="sommaire" class="sommaire-panel">
+        <div class="sp-header">
+            <span class="sp-title">Contents</span>
         </div>
-        <div class="panel panel-stats">
-            <div class="panel-header">
-                <span class="panel-badge stats-badge">Real Stats</span>
-                <h3 class="panel-title">On-Pitch Rankings</h3>
-                <p class="panel-subtitle">2024-25 Performance (FBref)</p>
-            </div>
-            <div id="stats-cards" class="card-list"></div>
+        <div class="sp-items">
+            <a href="#act1" class="sp-item" data-act="act1">
+                <span class="sp-num n1">1</span>
+                <div class="sp-text">
+                    <span class="sp-name">Two Worlds, Two Truths</span>
+                    <span class="sp-desc">EA rankings vs real statistical performance</span>
+                </div>
+                <span class="sp-arrow">&rsaquo;</span>
+            </a>
+            <a href="#act2" class="sp-item" data-act="act2">
+                <span class="sp-num n2">2</span>
+                <div class="sp-text">
+                    <span class="sp-name">The Reputation Gap</span>
+                    <span class="sp-desc">Who is overrated? Who is underrated?</span>
+                </div>
+                <span class="sp-arrow">&rsaquo;</span>
+            </a>
+            <a href="#act3" class="sp-item" data-act="act3">
+                <span class="sp-num n3">3</span>
+                <div class="sp-text">
+                    <span class="sp-name">What If We Rebuilt the Ratings?</span>
+                    <span class="sp-desc">Play with the rating criteria yourself</span>
+                </div>
+                <span class="sp-arrow">&rsaquo;</span>
+            </a>
         </div>
+        <p class="sp-hint">The ball follows you throughout. Click it anytime to navigate.</p>
     </div>
 
-    <div class="narrative-bridge">
-        <p>Some names appear on one side but not the other. Why?</p>
-        <span class="scroll-arrow">&darr;</span>
-    </div>
-</section>
+    <!-- Act 1 -->
+    <section id="act1" class="act-section">
+        <div class="dataset-intro">
+            <div class="di-label">The Dataset</div>
+            <h3 class="di-title">From 20,000 rows to 1,708 players</h3>
+            <p class="di-lead">
+                This piece is built on one merged dataset: EA FC 25 in-game ratings joined to
+                FBref 2024-25 match statistics from Europe's top 5 leagues. Here is how it came together.
+            </p>
 
-<!-- Act 2 -->
-<section id="act2" class="act-section">
-    <div class="act-header">
-        <span class="act-label">Act 2</span>
-        <h2 class="act-title">
-            The Reputation Gap
-            <span class="info-i" data-info="For each sub-position, we fit a regression line: what composite score should a player have given their OVR? The gap is the distance from that line. A player far below the line is overrated (EA rates them too high), a player far above is underrated (they perform better than their OVR suggests).">i</span>
-        </h2>
-    </div>
+            <div class="funnel-steps">
+                <div class="funnel-step">
+                    <div class="fs-num">17,737</div>
+                    <div class="fs-src">EA FC 25</div>
+                    <div class="fs-note">every rated player</div>
+                </div>
+                <div class="funnel-arrow">→</div>
+                <div class="funnel-step">
+                    <div class="fs-num">2,854</div>
+                    <div class="fs-src">FBref 2024-25</div>
+                    <div class="fs-note">top-5 European leagues</div>
+                </div>
+                <div class="funnel-arrow">→</div>
+                <div class="funnel-step">
+                    <div class="fs-num">2,023</div>
+                    <div class="fs-src">Merged</div>
+                    <div class="fs-note">fuzzy name match</div>
+                </div>
+                <div class="funnel-arrow">→</div>
+                <div class="funnel-step final">
+                    <div class="fs-num" id="di-final-count">1,708</div>
+                    <div class="fs-src">Final set</div>
+                    <div class="fs-note">≥ 600 minutes played</div>
+                </div>
+            </div>
 
-    <!-- Guess the Gap -->
-    <div id="guess-the-gap" class="guess-section"></div>
+            <div class="di-subtitle">League distribution</div>
+            <div class="league-bar" id="di-leagues"></div>
 
-    <!-- §.01 — Section label for the Scatter -->
-    <div class="chapter-head">
-        <span class="chapter-kicker">§ 01 &middot; THE SIGNAL</span>
-        <h3 class="chapter-title">Rating, plotted against reality.</h3>
-        <p class="chapter-sub">Every player, regressed within their sub-position. The vertical gap &mdash; above the line or below it &mdash; is the story.</p>
-    </div>
+            <div class="di-subtitle">Some interesting statistics</div>
+            <div class="di-averages" id="di-averages"></div>
+        </div>
 
-    <!-- Scatter Toolbar -->
-    <div class="scatter-toolbar">
-        <div class="position-toggle" id="act2-pos-toggle">
+        <div class="act-header">
+            <span class="act-label">Act 1</span>
+            <h2 class="act-title">Two Worlds, Two Truths
+                <span class="info-i"
+                    data-info="Left: EA FC 25 in-game ratings. Right: real 2024-25 performance data from FBref (top-5 European leagues, 600+ minutes played). The composite score percentile-ranks each stat within the same sub-position, then combines them as a weighted average rescaled to match the EA OVR distribution.">i</span>
+            </h2>
+        </div>
+
+        <p class="narrative-intro">
+            On one side, EA Sports assigns ratings based on reputation, marketability, and scouting.
+            On the other, real match data tells a different story.
+            Compare the top players according to each source.
+        </p>
+
+        <div class="position-toggle" id="act1-pos-toggle">
             <button class="pos-btn active" data-pos="ST" data-label="Strikers">ST</button>
             <button class="pos-btn" data-pos="WG" data-label="Wingers">WG</button>
             <button class="pos-btn" data-pos="AM" data-label="Attacking Midfielders">AM</button>
@@ -196,56 +187,117 @@
             <button class="pos-btn" data-pos="GK" data-label="Goalkeepers">GK</button>
         </div>
 
-        <div class="toolbar-right">
-            <div class="dropdown-wrapper">
-                <label for="league-select">League</label>
-                <select id="league-select" class="dropdown">
-                    <option value="all">All Leagues</option>
-                </select>
+        <div class="split-container">
+            <div class="panel panel-ea">
+                <div class="panel-header">
+                    <span class="panel-badge ea-badge">EA FC 25</span>
+                    <h3 class="panel-title">Game Rankings</h3>
+                    <p class="panel-subtitle">Overall Rating (OVR)</p>
+                </div>
+                <div id="ea-cards" class="card-list"></div>
+            </div>
+            <div class="panel panel-stats">
+                <div class="panel-header">
+                    <span class="panel-badge stats-badge">Real Stats</span>
+                    <h3 class="panel-title">On-Pitch Rankings</h3>
+                    <p class="panel-subtitle">2024-25 Performance (FBref)</p>
+                </div>
+                <div id="stats-cards" class="card-list"></div>
             </div>
         </div>
-    </div>
 
-    <!-- Scatter Layout -->
-    <div class="scatter-layout">
-        <div class="scatter-plot-area" id="scatter-plot-area"></div>
-        <div class="sidebar" id="scatter-sidebar"></div>
-    </div>
-    <div class="scatter-legend-bar" id="scatter-legend-bar"></div>
+        <div class="narrative-bridge">
+            <p>Some names appear on one side but not the other. Why?</p>
+            <span class="scroll-arrow">&darr;</span>
+        </div>
+    </section>
 
-    <!-- Wall of Fame / Wall of Shame -->
-    <div id="wall-fame-shame" class="wall-section"></div>
+    <!-- Act 2 -->
+    <section id="act2" class="act-section">
+        <div class="act-header">
+            <span class="act-label">Act 2</span>
+            <h2 class="act-title">
+                The Reputation Gap
+                <span class="info-i"
+                    data-info="For each sub-position, we fit a regression line: what composite score should a player have given their OVR? The gap is the distance from that line. A player far below the line is overrated (EA rates them too high), a player far above is underrated (they perform better than their OVR suggests).">i</span>
+            </h2>
+        </div>
 
-    <!-- §.03 — Multi-player Radar Overlay -->
-    <div id="overlay-section" class="overlay-section"></div>
-</section>
+        <!-- Guess the Gap -->
+        <div id="guess-the-gap" class="guess-section"></div>
 
-<!-- Act 3 -->
-<section id="act3" class="act-section">
-    <div class="act-header">
-        <span class="act-label">Act 3</span>
-        <h2 class="act-title">What If We Rebuilt the Ratings?</h2>
-    </div>
+        <!-- §.01 — Section label for the Scatter -->
+        <div class="chapter-head">
+            <span class="chapter-kicker">§ 01 &middot; THE SIGNAL</span>
+            <h3 class="chapter-title">Rating, plotted against reality.</h3>
+            <p class="chapter-sub">Every player, regressed within their sub-position. The vertical gap &mdash; above the
+                line or below it &mdash; is the story.</p>
+        </div>
 
-    <div class="placeholder-box">
-        <p>Coming soon</p>
-    </div>
-</section>
+        <!-- Scatter Toolbar -->
+        <div class="scatter-toolbar">
+            <div class="position-toggle" id="act2-pos-toggle">
+                <button class="pos-btn active" data-pos="ST" data-label="Strikers">ST</button>
+                <button class="pos-btn" data-pos="WG" data-label="Wingers">WG</button>
+                <button class="pos-btn" data-pos="AM" data-label="Attacking Midfielders">AM</button>
+                <button class="pos-btn" data-pos="CM" data-label="Central Midfielders">CM</button>
+                <button class="pos-btn" data-pos="DM" data-label="Defensive Midfielders">DM</button>
+                <button class="pos-btn" data-pos="FB" data-label="Full-backs">FB</button>
+                <button class="pos-btn" data-pos="CB" data-label="Centre-backs">CB</button>
+                <button class="pos-btn" data-pos="GK" data-label="Goalkeepers">GK</button>
+            </div>
 
-<!-- Scripts -->
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/main.js"></script>
-<script src="js/act1-cards.js"></script>
-<script src="js/act1-lines.js"></script>
-<script src="js/act1-modal.js"></script>
-<script src="js/act1-splitscreen.js"></script>
-<script src="js/act2-guess.js"></script>
-<script src="js/act2-scatter.js"></script>
-<script src="js/act2-wall.js"></script>
-<script src="js/act2-overlay.js"></script>
+            <div class="toolbar-right">
+                <div class="dropdown-wrapper">
+                    <label for="league-select">League</label>
+                    <select id="league-select" class="dropdown">
+                        <option value="all">All Leagues</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scatter Layout -->
+        <div class="scatter-layout">
+            <div class="scatter-plot-area" id="scatter-plot-area"></div>
+            <div class="sidebar" id="scatter-sidebar"></div>
+        </div>
+        <div class="scatter-legend-bar" id="scatter-legend-bar"></div>
+
+        <!-- Wall of Fame / Wall of Shame -->
+        <div id="wall-fame-shame" class="wall-section"></div>
+
+        <!-- §.03 — Multi-player Radar Overlay -->
+        <div id="overlay-section" class="overlay-section"></div>
+    </section>
+
+    <!-- Act 3 -->
+    <section id="act3" class="act-section">
+        <div class="act-header">
+            <span class="act-label">Act 3</span>
+            <h2 class="act-title">What If We Rebuilt the Ratings?</h2>
+        </div>
+
+        <div class="placeholder-box">
+            <p>Coming soon</p>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/act1-cards.js"></script>
+    <script src="js/act1-lines.js"></script>
+    <script src="js/act1-modal.js"></script>
+    <script src="js/act1-splitscreen.js"></script>
+    <script src="js/act2-guess.js"></script>
+    <script src="js/act2-scatter.js"></script>
+    <script src="js/act2-wall.js"></script>
+    <script src="js/act2-overlay.js"></script>
 
 </body>
+
 </html>
