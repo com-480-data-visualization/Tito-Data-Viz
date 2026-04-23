@@ -3838,16 +3838,24 @@ a {
 .map-list {
     border: 1px solid var(--map-rule);
     border-radius: 4px;
-    overflow: hidden;
+    overflow-y: auto;
+    max-height: calc(9 * 44px + 10px);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
 }
+.map-list::-webkit-scrollbar { width: 5px; }
+.map-list::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.22); border-radius: 2px; }
 .map-list-label {
     padding: 0.6rem 0.9rem;
     font-size: 0.68rem;
     letter-spacing: 0.22em;
     color: var(--map-muted);
     font-weight: 600;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--map-panel, #f6f2e9);
     border-bottom: 1px solid var(--map-rule);
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 .map-row {
     width: 100%;
@@ -3982,7 +3990,13 @@ a {
 .map-club-list {
     display: flex;
     flex-direction: column;
+    max-height: 260px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
 }
+.map-club-list::-webkit-scrollbar { width: 5px; }
+.map-club-list::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.22); border-radius: 2px; }
 .map-club-row {
     display: grid;
     grid-template-columns: 36px 1fr 40px 1fr 60px;
