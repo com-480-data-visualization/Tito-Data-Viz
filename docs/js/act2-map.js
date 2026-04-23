@@ -215,6 +215,7 @@ function initLeagueMap(data) {
     // view: { level: "europe"|"country"|"club"|"player", leagueKey?, clubName?, playerIdx? }
     let view = { level: "europe" };
     let currentLevel = 0;   // derived numeric level (1..4); 0 forces first apply
+    let lastPulsedClub = null; // suppress redundant CTA entrance when drawer re-renders at same club
 
     function setView(next, opts) {
         view = next;
@@ -388,32 +389,18 @@ function initLeagueMap(data) {
         }
         if (view.level === "club" || view.level === "player") {
             const L = leagueStats[view.leagueKey];
-            const C = L.clubByName[view.clubName];
+            const C = L?.clubByName[view.clubName];
             if (!L || !C) return;
             const players = C.players.slice().sort((a, b) => b.gap - a.gap);
             const P = view.level === "player" ? players[view.playerIdx] : null;
 
-            let body = "";
-            if (P) {
-                const sign = P.gap >= 0 ? "+" : "";
-                const cls  = P.gap >= 0 ? "gap-up" : "gap-down";
-                body =
-                    '<div class="map-player-card">' +
-                        (P.photo ? '<img class="map-player-photo" src="' + escapeAttr(P.photo) + '" alt="' + escapeAttr(P.name) + '"/>' : '<div class="map-player-photo map-player-photo-blank"></div>') +
-                        '<div class="map-player-body">' +
-                            '<div class="map-player-name">' + escapeAttr(P.name) + '</div>' +
-                            '<div class="map-player-meta">' + escapeAttr(P.subPos || P.pos || "") + ' \u00b7 ' + escapeAttr(C.name) + '</div>' +
-                            '<div class="map-player-grid">' +
-                                '<div><span class="map-player-stat-val">' + (P.ea ?? "-") + '</span><span class="map-player-stat-lbl">EA OVR</span></div>' +
-                                '<div><span class="map-player-stat-val">' + (P.real?.toFixed ? P.real.toFixed(1) : "-") + '</span><span class="map-player-stat-lbl">Composite</span></div>' +
-                                '<div><span class="map-player-stat-val ' + cls + '">' + sign + P.gap.toFixed(2) + '</span><span class="map-player-stat-lbl">Gap</span></div>' +
-                                '<div><span class="map-player-stat-val">' + Math.round(P.minutes || 0) + '</span><span class="map-player-stat-lbl">Minutes</span></div>' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>';
-            } else {
-                body = '<div class="map-drawer-empty">Pick a player to see their card.</div>';
-            }
+            // The player-level detail lives inside the stadium now — the map
+            // drawer stays at club granularity and just announces who is armed
+            // for the stadium when a squad row is picked.
+            const ctaKicker = P ? "§ 05 &middot; STEP INSIDE &middot; " + escapeAttr(P.name.toUpperCase())
+                                : "§ 05 &middot; STEP INSIDE";
+            const ctaText   = P ? "Walk onto the pitch &mdash; land on " + escapeAttr(P.name) + "."
+                                : "Walk onto the pitch &mdash; see the squad where they stand.";
 
             drawer.innerHTML =
                 '<div class="map-drawer-head">' +
@@ -426,8 +413,38 @@ function initLeagueMap(data) {
                         '<div><span class="map-drawer-stat-val ' + (C.avgGap >= 0 ? "gap-up" : "gap-down") + '">' + (C.avgGap >= 0 ? "+" : "") + C.avgGap.toFixed(2) + '</span><span class="map-drawer-stat-lbl">avg gap</span></div>' +
                     '</div>' +
                 '</div>' +
-                body;
+                '<button class="map-stad-cta' + (P ? ' is-armed' : '') + '" type="button" data-club="' + escapeAttr(C.name) + '"' + (P ? ' data-player="' + escapeAttr(P.name) + '"' : '') + '>' +
+                    '<span class="map-stad-cta-label">' +
+                        '<span class="map-stad-cta-kicker">' + ctaKicker + '</span>' +
+                        '<span class="map-stad-cta-text">' + ctaText + '</span>' +
+                    '</span>' +
+                    '<span class="map-stad-cta-arrow">&rsaquo;</span>' +
+                '</button>';
             drawer.classList.add("is-open");
+
+            const cta = drawer.querySelector(".map-stad-cta");
+            if (cta) {
+                cta.addEventListener("click", () => {
+                    if (typeof window.openAct2Stadium === "function") {
+                        const opts = P ? { preselectPlayer: P.name } : undefined;
+                        window.openAct2Stadium(C, opts);
+                    }
+                });
+                // Draw the eye to the doorway only on a fresh club — cycling
+                // through players inside the same club shouldn't re-pulse.
+                if (lastPulsedClub !== C.name) {
+                    lastPulsedClub = C.name;
+                    try { cta.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
+                    setTimeout(() => {
+                        cta.classList.remove("is-pulsing");
+                        void cta.offsetWidth;
+                        cta.classList.add("is-pulsing");
+                        setTimeout(() => cta.classList.remove("is-pulsing"), 2100);
+                    }, 420);
+                }
+            }
+        } else {
+            lastPulsedClub = null;
         }
     }
 

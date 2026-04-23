@@ -4054,71 +4054,147 @@ a {
 #map-section .gap-up   { color: var(--map-green); }
 #map-section .gap-down { color: var(--map-red); }
 
-/* Player card (L4 drawer body) */
-.map-player-card {
+/* Stadium CTA — the doorway into §.05 */
+#map-section .map-stad-cta {
     display: flex;
-    gap: 1.2rem;
-    padding: 0.5rem 0;
     align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin: 0.75rem 0 1rem;
+    padding: 0.75rem 0.95rem;
+    background: linear-gradient(90deg,
+        rgba(212, 175, 55, 0.1),
+        rgba(212, 175, 55, 0.02) 80%);
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 2px;
+    color: #f1e8cf;
+    cursor: pointer;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    appearance: none;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
 }
-.map-player-photo {
-    width: 104px;
-    height: 104px;
-    border-radius: 4px;
-    object-fit: cover;
-    object-position: top center;
-    background: linear-gradient(180deg, #1a2235, #0e1424);
-    border: 1px solid var(--map-rule);
-    flex-shrink: 0;
+#map-section .map-stad-cta:hover {
+    border-color: #d4af37;
+    background: linear-gradient(90deg,
+        rgba(212, 175, 55, 0.18),
+        rgba(212, 175, 55, 0.04) 80%);
+    transform: translateX(2px);
 }
-.map-player-photo-blank {
-    display: block;
-}
-.map-player-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+#map-section .map-stad-cta-label {
     flex: 1;
-}
-.map-player-name {
-    font-weight: 700;
-    font-size: 1.2rem;
-    letter-spacing: -0.01em;
-    color: var(--map-ink);
-}
-.map-player-meta {
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--map-dim);
-}
-.map-player-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.65rem;
-    margin-top: 0.35rem;
-}
-.map-player-grid > div {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    gap: 0.1rem;
 }
-.map-player-stat-val {
-    font-family: ui-monospace, Menlo, monospace;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--map-ink);
-    font-variant-numeric: tabular-nums;
-    line-height: 1.05;
+#map-section .map-stad-cta-kicker {
+    color: #d4af37;
+    font-size: 0.6rem;
+    letter-spacing: 0.24em;
 }
-.map-player-stat-val.gap-up   { color: var(--map-green); }
-.map-player-stat-val.gap-down { color: var(--map-red); }
-.map-player-stat-lbl {
-    font-size: 0.62rem;
-    letter-spacing: 0.2em;
-    color: var(--map-muted);
-    text-transform: uppercase;
-    margin-top: 0.15rem;
+#map-section .map-stad-cta-arrow {
+    font-family: "Fraunces", serif;
+    font-size: 1.4rem;
+    color: #d4af37;
+    transition: transform 0.25s ease;
+}
+#map-section .map-stad-cta:hover .map-stad-cta-arrow {
+    transform: translateX(4px);
+}
+#map-section .map-stad-cta.is-armed {
+    border-color: #d4af37;
+    background: linear-gradient(90deg,
+        rgba(212, 175, 55, 0.2),
+        rgba(212, 175, 55, 0.04) 80%);
+}
+#map-section .map-stad-cta.is-armed .map-stad-cta-kicker { color: #ffd972; }
+#map-section .map-stad-cta::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    left: -35%;
+    width: 30%;
+    background: linear-gradient(100deg,
+        rgba(255, 240, 190, 0) 0%,
+        rgba(255, 240, 190, 0.55) 50%,
+        rgba(255, 240, 190, 0) 100%);
+    transform: skewX(-18deg);
+    opacity: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+#map-section .map-stad-cta.is-pulsing {
+    animation: map-stad-cta-pulse 2.0s cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+#map-section .map-stad-cta.is-pulsing::after {
+    animation: map-stad-cta-shimmer 1.8s ease-out 1 0.1s;
+}
+#map-section .map-stad-cta.is-pulsing .map-stad-cta-kicker {
+    animation: map-stad-cta-kicker 1.8s ease-out 1;
+}
+#map-section .map-stad-cta.is-pulsing .map-stad-cta-arrow {
+    animation: map-stad-cta-arrow-nudge 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1;
+}
+@keyframes map-stad-cta-pulse {
+    0% {
+        transform: scale(0.98);
+        box-shadow:
+            0 0 0 0 rgba(212, 175, 55, 0.55),
+            0 0 0 0 rgba(212, 175, 55, 0.35),
+            inset 0 0 0 rgba(212, 175, 55, 0);
+        border-color: rgba(212, 175, 55, 0.28);
+        background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.02) 80%);
+    }
+    18% {
+        transform: scale(1.025);
+        box-shadow:
+            0 0 0 6px rgba(212, 175, 55, 0.32),
+            0 0 22px 2px rgba(212, 175, 55, 0.35),
+            inset 0 0 28px rgba(212, 175, 55, 0.22);
+        border-color: #e5c15a;
+        background: linear-gradient(90deg, rgba(212, 175, 55, 0.32), rgba(212, 175, 55, 0.08) 80%);
+    }
+    45% {
+        transform: scale(1.01);
+        box-shadow:
+            0 0 0 14px rgba(212, 175, 55, 0.0),
+            0 0 10px 0 rgba(212, 175, 55, 0.12),
+            inset 0 0 12px rgba(212, 175, 55, 0.1);
+        border-color: #d4af37;
+    }
+    100% {
+        transform: scale(1);
+        box-shadow:
+            0 0 0 18px rgba(212, 175, 55, 0.0),
+            0 0 0 0 rgba(212, 175, 55, 0.0),
+            inset 0 0 0 rgba(212, 175, 55, 0);
+        border-color: rgba(212, 175, 55, 0.28);
+        background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.02) 80%);
+    }
+}
+@keyframes map-stad-cta-shimmer {
+    0%   { left: -35%; opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { left: 135%;  opacity: 0; }
+}
+@keyframes map-stad-cta-kicker {
+    0%, 100% { letter-spacing: 0.24em; color: #d4af37; }
+    20%      { letter-spacing: 0.36em; color: #ffd972; text-shadow: 0 0 12px rgba(255, 217, 114, 0.6); }
+    60%      { letter-spacing: 0.26em; color: #e5c15a; text-shadow: 0 0 4px rgba(255, 217, 114, 0.2); }
+}
+@keyframes map-stad-cta-arrow-nudge {
+    0%   { transform: translateX(0) scale(1); }
+    18%  { transform: translateX(10px) scale(1.25); }
+    45%  { transform: translateX(-2px) scale(1); }
+    65%  { transform: translateX(5px) scale(1.1); }
+    100% { transform: translateX(0) scale(1); }
 }
 
 /* Responsive */
@@ -4139,7 +4215,4 @@ a {
     .map-club-bar { display: none; }
     .map-club-head > span:nth-child(4) { display: none; }
     .map-club-row > .map-club-bar + .map-club-gap { grid-column: 4; }
-    .map-player-card { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
-    .map-player-photo { width: 88px; height: 88px; }
-    .map-player-grid { grid-template-columns: repeat(2, 1fr); }
 }
