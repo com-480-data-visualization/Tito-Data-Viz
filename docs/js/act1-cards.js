@@ -23,18 +23,20 @@ const CARD_SHORT = {
 
 function deltaChipHTML(thisRank, otherRank) {
     if (otherRank == null) return "";
-    const diff = thisRank - otherRank; // positive = better on EA side
-    let cls = "dc-neutral", arrow = "=", label = "Same rank on EA (#" + otherRank + ")";
-    if (diff > 0) { cls = "dc-up"; arrow = "▲"; label = "EA ranks him " + diff + " higher (#" + otherRank + ")"; }
-    else if (diff < 0) { cls = "dc-down"; arrow = "▼"; label = "EA ranks him " + (-diff) + " lower (#" + otherRank + ")"; }
-    const mag = diff === 0 ? "" : Math.abs(diff);
+    const diff = otherRank - thisRank; // positive = player gained places vs EA
+    let cls = "dc-neutral", arrow = "=", mag = "", label = "Matches EA rank (#" + otherRank + ")";
+    if (diff > 0) {
+        cls = "dc-up"; arrow = "↑"; mag = diff;
+        label = "Gained " + diff + " vs EA rank (#" + otherRank + ")";
+    } else if (diff < 0) {
+        cls = "dc-down"; arrow = "↓"; mag = -diff;
+        label = "Lost " + (-diff) + " vs EA rank (#" + otherRank + ")";
+    }
     return '<span class="delta-chip ' + cls + '" data-tip="' + escapeAttr(label) + '">' +
         '<span class="dc-arrow">' + arrow + '</span>' +
         (mag !== "" ? '<span class="dc-mag">' + mag + '</span>' : "") +
         '</span>';
 }
-
-// --- EA card: FUT-inspired ---
 
 function buildEACard(p, index, absent, pos, subPos) {
     const card = document.createElement("div");
@@ -59,7 +61,7 @@ function buildEACard(p, index, absent, pos, subPos) {
         '<div class="card-rank">#' + (index + 1) + '</div>' +
         '<div class="fut-corner" data-tip="' + escapeAttr(STAT_INFO.ovr) + '">' +
             '<span class="fut-ovr">' + p.ea.ovr + '</span>' +
-            '<span class="fut-pos">' + (subPos || pos || "") + '</span>' +
+            '<span class="fut-pos">' + escapeAttr(subPos || pos || "") + '</span>' +
         '</div>' +
         avatarHTMLString(p.photo, p.name, "card-photo ea-avatar", "card-avatar ea-avatar") +
         '<div class="card-info">' +
@@ -70,8 +72,6 @@ function buildEACard(p, index, absent, pos, subPos) {
 
     return card;
 }
-
-// --- Stats card: analyst dashboard ---
 
 function buildStatsCard(p, index, absent, pos, otherRank, statScales) {
     const card = document.createElement("div");

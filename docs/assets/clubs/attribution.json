@@ -1,0 +1,866 @@
+{
+  "bayern_munich": {
+    "club": "Bayern Munich",
+    "source": "TheSportsDB",
+    "tsdb_team": "Bayern Munich",
+    "tsdb_id": "133664",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/01ogkh1716960412.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 126065
+  },
+  "bochum": {
+    "club": "Bochum",
+    "source": "TheSportsDB",
+    "tsdb_team": "Bochum",
+    "tsdb_id": "133839",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kag3jy1599821108.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 74575
+  },
+  "dortmund": {
+    "club": "Dortmund",
+    "source": "TheSportsDB",
+    "tsdb_team": "Borussia Dortmund",
+    "tsdb_id": "133650",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tqo8ge1716960353.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 51888
+  },
+  "gladbach": {
+    "club": "Gladbach",
+    "source": "TheSportsDB",
+    "tsdb_team": "Borussia Mönchengladbach",
+    "tsdb_id": "134779",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/sysurw1473453380.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 49420
+  },
+  "heidenheim": {
+    "club": "Heidenheim",
+    "source": "TheSportsDB",
+    "tsdb_team": "FC Heidenheim",
+    "tsdb_id": "134696",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/lbj7g01608236988.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 86359
+  },
+  "hoffenheim": {
+    "club": "Hoffenheim",
+    "source": "TheSportsDB",
+    "tsdb_team": "Hoffenheim",
+    "tsdb_id": "133657",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/9hwvb21621593919.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 74809
+  },
+  "stuttgart": {
+    "club": "Stuttgart",
+    "source": "TheSportsDB",
+    "tsdb_team": "Stuttgart",
+    "tsdb_id": "133660",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yppyux1473454085.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 107673
+  },
+  "werder_bremen": {
+    "club": "Werder Bremen",
+    "source": "TheSportsDB",
+    "tsdb_team": "Werder Bremen",
+    "tsdb_id": "133662",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tkvqan1716960454.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 63165
+  },
+  "arsenal": {
+    "club": "Arsenal",
+    "source": "TheSportsDB",
+    "tsdb_team": "Arsenal",
+    "tsdb_id": "133604",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/uyhbfe1612467038.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 127571
+  },
+  "bournemouth": {
+    "club": "Bournemouth",
+    "source": "TheSportsDB",
+    "tsdb_team": "Bournemouth",
+    "tsdb_id": "134301",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/y08nak1534071116.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 122548
+  },
+  "brentford": {
+    "club": "Brentford",
+    "source": "TheSportsDB",
+    "tsdb_team": "Brentford",
+    "tsdb_id": "134355",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/grv1aw1546453779.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 138317
+  },
+  "brighton": {
+    "club": "Brighton",
+    "source": "TheSportsDB",
+    "tsdb_team": "Brighton and Hove Albion",
+    "tsdb_id": "133619",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ywypts1448810904.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 102855
+  },
+  "fulham": {
+    "club": "Fulham",
+    "source": "TheSportsDB",
+    "tsdb_team": "Fulham",
+    "tsdb_id": "133600",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xwwvyt1448811086.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 33221
+  },
+  "southampton": {
+    "club": "Southampton",
+    "source": "TheSportsDB",
+    "tsdb_team": "Southampton",
+    "tsdb_id": "134778",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ggqtd01621593274.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 74765
+  },
+  "wolves": {
+    "club": "Wolves",
+    "source": "TheSportsDB",
+    "tsdb_team": "Wolverhampton Wanderers",
+    "tsdb_id": "133599",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/u9qr031621593327.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 41663
+  },
+  "alaves": {
+    "club": "Alavés",
+    "source": "TheSportsDB",
+    "tsdb_team": "Deportivo Alavés",
+    "tsdb_id": "134221",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/mfn99h1734673842.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 130013
+  },
+  "mallorca": {
+    "club": "Mallorca",
+    "source": "TheSportsDB",
+    "tsdb_team": "Mallorca",
+    "tsdb_id": "133733",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ssptsx1473503730.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 146762
+  },
+  "osasuna": {
+    "club": "Osasuna",
+    "source": "TheSportsDB",
+    "tsdb_team": "Osasuna",
+    "tsdb_id": "133730",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rvspvt1473502960.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 82668
+  },
+  "valladolid": {
+    "club": "Valladolid",
+    "source": "TheSportsDB",
+    "tsdb_team": "Real Valladolid",
+    "tsdb_id": "133841",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bnhu8b1719983736.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 164927
+  },
+  "union_berlin": {
+    "club": "Union Berlin",
+    "source": "TheSportsDB",
+    "tsdb_team": "Union Berlin",
+    "tsdb_id": "134690",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/q0o5001599679795.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 56104
+  },
+  "inter": {
+    "club": "Inter",
+    "source": "TheSportsDB",
+    "tsdb_team": "Inter Milan",
+    "tsdb_id": "133681",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ryhu6d1617113103.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 43438
+  },
+  "juventus": {
+    "club": "Juventus",
+    "source": "TheSportsDB",
+    "tsdb_team": "Juventus",
+    "tsdb_id": "133676",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/uxf0gr1742983727.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 20669
+  },
+  "monaco": {
+    "club": "Monaco",
+    "source": "TheSportsDB",
+    "tsdb_team": "Monaco",
+    "tsdb_id": "133823",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/exjf5l1678808044.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 60593
+  },
+  "paris_s_g": {
+    "club": "Paris S-G",
+    "source": "TheSportsDB",
+    "tsdb_team": "Paris SG",
+    "tsdb_id": "133714",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rwqrrq1473504808.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 119328
+  },
+  "aston_villa": {
+    "club": "Aston Villa",
+    "source": "TheSportsDB",
+    "tsdb_team": "Aston Villa",
+    "tsdb_id": "133601",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jykrpv1717309891.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 98273
+  },
+  "chelsea": {
+    "club": "Chelsea",
+    "source": "TheSportsDB",
+    "tsdb_team": "Chelsea",
+    "tsdb_id": "133610",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yvwvtu1448813215.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 144402
+  },
+  "crystal_palace": {
+    "club": "Crystal Palace",
+    "source": "TheSportsDB",
+    "tsdb_team": "Crystal Palace",
+    "tsdb_id": "133632",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ia6i3m1656014992.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 129692
+  },
+  "everton": {
+    "club": "Everton",
+    "source": "TheSportsDB",
+    "tsdb_team": "Everton",
+    "tsdb_id": "133615",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/eqayrf1523184794.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 175069
+  },
+  "liverpool": {
+    "club": "Liverpool",
+    "source": "TheSportsDB",
+    "tsdb_team": "Liverpool",
+    "tsdb_id": "133602",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kfaher1737969724.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 30969
+  },
+  "manchester_city": {
+    "club": "Manchester City",
+    "source": "TheSportsDB",
+    "tsdb_team": "Manchester City",
+    "tsdb_id": "133613",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vwpvry1467462651.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 334545
+  },
+  "manchester_utd": {
+    "club": "Manchester Utd",
+    "source": "TheSportsDB",
+    "tsdb_team": "Manchester United",
+    "tsdb_id": "133612",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xzqdr11517660252.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 155795
+  },
+  "newcastle_utd": {
+    "club": "Newcastle Utd",
+    "source": "TheSportsDB",
+    "tsdb_team": "Newcastle United",
+    "tsdb_id": "134777",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/lhwuiz1621593302.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 216809
+  },
+  "nott_ham_forest": {
+    "club": "Nott'ham Forest",
+    "source": "TheSportsDB",
+    "tsdb_team": "Nottingham Forest",
+    "tsdb_id": "133720",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bk4qjs1546440351.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 84009
+  },
+  "tottenham": {
+    "club": "Tottenham",
+    "source": "TheSportsDB",
+    "tsdb_team": "Tottenham Hotspur",
+    "tsdb_id": "133616",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/dfyfhl1604094109.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 61017
+  },
+  "west_ham": {
+    "club": "West Ham",
+    "source": "TheSportsDB",
+    "tsdb_team": "West Ham United",
+    "tsdb_id": "133636",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yutyxs1467459956.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 101269
+  },
+  "athletic_club": {
+    "club": "Athletic Club",
+    "source": "TheSportsDB",
+    "tsdb_team": "Athletic Bilbao",
+    "tsdb_id": "133727",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/68w7fe1639408210.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 95693
+  },
+  "atletico_madrid": {
+    "club": "Atlético Madrid",
+    "source": "TheSportsDB",
+    "tsdb_team": "Atlético Madrid",
+    "tsdb_id": "133729",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0ulh3q1719984315.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 41875
+  },
+  "barcelona": {
+    "club": "Barcelona",
+    "source": "TheSportsDB",
+    "tsdb_team": "Barcelona",
+    "tsdb_id": "133739",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wq9sir1639406443.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 80725
+  },
+  "betis": {
+    "club": "Betis",
+    "source": "TheSportsDB",
+    "tsdb_team": "Real Betis",
+    "tsdb_id": "133722",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/2oqulv1663245386.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 64841
+  },
+  "celta_vigo": {
+    "club": "Celta Vigo",
+    "source": "TheSportsDB",
+    "tsdb_team": "Celta Vigo",
+    "tsdb_id": "133937",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xfjtku1690436219.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 52517
+  },
+  "espanyol": {
+    "club": "Espanyol",
+    "source": "TheSportsDB",
+    "tsdb_team": "Espanyol",
+    "tsdb_id": "133734",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/867nzz1681703222.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 92703
+  },
+  "getafe": {
+    "club": "Getafe",
+    "source": "TheSportsDB",
+    "tsdb_team": "Getafe",
+    "tsdb_id": "133731",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/eyh2891655594452.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 154323
+  },
+  "girona": {
+    "club": "Girona",
+    "source": "TheSportsDB",
+    "tsdb_team": "Girona",
+    "tsdb_id": "134700",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kfu7zu1659897499.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 332240
+  },
+  "rayo_vallecano": {
+    "club": "Rayo Vallecano",
+    "source": "TheSportsDB",
+    "tsdb_team": "Rayo Vallecano",
+    "tsdb_id": "133728",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/nzhu941655595465.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 72641
+  },
+  "real_madrid": {
+    "club": "Real Madrid",
+    "source": "TheSportsDB",
+    "tsdb_team": "Real Madrid",
+    "tsdb_id": "133738",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vwvwrw1473502969.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 164620
+  },
+  "real_sociedad": {
+    "club": "Real Sociedad",
+    "source": "TheSportsDB",
+    "tsdb_team": "Real Sociedad",
+    "tsdb_id": "133724",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vptvpr1473502986.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 167971
+  },
+  "sevilla": {
+    "club": "Sevilla",
+    "source": "TheSportsDB",
+    "tsdb_team": "Sevilla",
+    "tsdb_id": "133735",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vpsqqx1473502977.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 134313
+  },
+  "valencia": {
+    "club": "Valencia",
+    "source": "TheSportsDB",
+    "tsdb_team": "Valencia",
+    "tsdb_id": "133725",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/dm8l6o1655594864.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 57537
+  },
+  "villarreal": {
+    "club": "Villarreal",
+    "source": "TheSportsDB",
+    "tsdb_team": "Villarreal",
+    "tsdb_id": "133740",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vrypqy1473503073.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 90657
+  },
+  "augsburg": {
+    "club": "Augsburg",
+    "source": "TheSportsDB",
+    "tsdb_team": "FC Augsburg",
+    "tsdb_id": "133652",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xqyyvq1473453233.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 91708
+  },
+  "eint_frankfurt": {
+    "club": "Eint Frankfurt",
+    "source": "TheSportsDB",
+    "tsdb_team": "Eintracht Frankfurt",
+    "tsdb_id": "133814",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rurwpy1473453269.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 111533
+  },
+  "freiburg": {
+    "club": "Freiburg",
+    "source": "TheSportsDB",
+    "tsdb_team": "Freiburg",
+    "tsdb_id": "133653",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/urwtup1473453288.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 63892
+  },
+  "leverkusen": {
+    "club": "Leverkusen",
+    "source": "TheSportsDB",
+    "tsdb_team": "Bayer Leverkusen",
+    "tsdb_id": "133666",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/3x9k851726760113.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 136544
+  },
+  "mainz_05": {
+    "club": "Mainz 05",
+    "source": "TheSportsDB",
+    "tsdb_team": "Mainz",
+    "tsdb_id": "133665",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/fhm9v51552134916.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 74730
+  },
+  "rb_leipzig": {
+    "club": "RB Leipzig",
+    "source": "TheSportsDB",
+    "tsdb_team": "RB Leipzig",
+    "tsdb_id": "134695",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/zjgapo1594244951.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 67052
+  },
+  "st_pauli": {
+    "club": "St. Pauli",
+    "source": "TheSportsDB",
+    "tsdb_team": "St Pauli",
+    "tsdb_id": "133813",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/5qupxa1608237013.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 121915
+  },
+  "wolfsburg": {
+    "club": "Wolfsburg",
+    "source": "TheSportsDB",
+    "tsdb_team": "Wolfsburg",
+    "tsdb_id": "133655",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/07kp421599680274.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 42673
+  },
+  "atalanta": {
+    "club": "Atalanta",
+    "source": "TheSportsDB",
+    "tsdb_team": "Atalanta",
+    "tsdb_id": "134782",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/lrvxg71534873930.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 68163
+  },
+  "bologna": {
+    "club": "Bologna",
+    "source": "TheSportsDB",
+    "tsdb_team": "Bologna",
+    "tsdb_id": "134781",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/2qi1u31655592366.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 46162
+  },
+  "cagliari": {
+    "club": "Cagliari",
+    "source": "TheSportsDB",
+    "tsdb_team": "Cagliari",
+    "tsdb_id": "134783",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wvsvxt1447534471.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 11476
+  },
+  "como": {
+    "club": "Como",
+    "source": "TheSportsDB",
+    "tsdb_team": "Como",
+    "tsdb_id": "134243",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/02x81t1627405841.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 60874
+  },
+  "fiorentina": {
+    "club": "Fiorentina",
+    "source": "TheSportsDB",
+    "tsdb_team": "Fiorentina",
+    "tsdb_id": "133674",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hc8nhu1656098030.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 44397
+  },
+  "genoa": {
+    "club": "Genoa",
+    "source": "TheSportsDB",
+    "tsdb_team": "Genoa",
+    "tsdb_id": "133675",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/52s8dn1655553600.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 40608
+  },
+  "hellas_verona": {
+    "club": "Hellas Verona",
+    "source": "TheSportsDB",
+    "tsdb_team": "Hellas Verona",
+    "tsdb_id": "134784",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/p6camf1593457737.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 36826
+  },
+  "lazio": {
+    "club": "Lazio",
+    "source": "TheSportsDB",
+    "tsdb_team": "Lazio",
+    "tsdb_id": "133668",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rwqyvs1448806608.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 65139
+  },
+  "lecce": {
+    "club": "Lecce",
+    "source": "TheSportsDB",
+    "tsdb_team": "Lecce",
+    "tsdb_id": "133678",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/j4vznr1567365249.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 116138
+  },
+  "milan": {
+    "club": "Milan",
+    "source": "TheSportsDB",
+    "tsdb_team": "AC Milan",
+    "tsdb_id": "133667",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wvspur1448806617.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 46852
+  },
+  "napoli": {
+    "club": "Napoli",
+    "source": "TheSportsDB",
+    "tsdb_team": "Napoli",
+    "tsdb_id": "133670",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/l8qyxv1742982541.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 74142
+  },
+  "parma": {
+    "club": "Parma",
+    "source": "TheSportsDB",
+    "tsdb_team": "Parma",
+    "tsdb_id": "135728",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/6yiaxs1627406063.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 93966
+  },
+  "roma": {
+    "club": "Roma",
+    "source": "TheSportsDB",
+    "tsdb_team": "Roma",
+    "tsdb_id": "133682",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jwro2s1760820674.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 40414
+  },
+  "torino": {
+    "club": "Torino",
+    "source": "TheSportsDB",
+    "tsdb_team": "Torino",
+    "tsdb_id": "133687",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xxprty1448806802.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 73675
+  },
+  "udinese": {
+    "club": "Udinese",
+    "source": "TheSportsDB",
+    "tsdb_team": "Udinese",
+    "tsdb_id": "133679",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vwvstr1448806811.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 111930
+  },
+  "angers": {
+    "club": "Angers",
+    "source": "TheSportsDB",
+    "tsdb_team": "Angers",
+    "tsdb_id": "134709",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ix6q4w1678808069.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 89075
+  },
+  "auxerre": {
+    "club": "Auxerre",
+    "source": "TheSportsDB",
+    "tsdb_team": "Auxerre",
+    "tsdb_id": "134788",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/lzdtbf1658753355.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 44913
+  },
+  "brest": {
+    "club": "Brest",
+    "source": "TheSportsDB",
+    "tsdb_team": "Brest",
+    "tsdb_id": "133704",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/z69be41598797026.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 107018
+  },
+  "le_havre": {
+    "club": "Le Havre",
+    "source": "TheSportsDB",
+    "tsdb_team": "Le Havre",
+    "tsdb_id": "133862",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/aikowk1546475003.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 108518
+  },
+  "lens": {
+    "club": "Lens",
+    "source": "TheSportsDB",
+    "tsdb_team": "Lens",
+    "tsdb_id": "133822",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/3pxoum1598797195.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 76490
+  },
+  "lille": {
+    "club": "Lille",
+    "source": "TheSportsDB",
+    "tsdb_team": "Lille",
+    "tsdb_id": "133711",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/2giize1534005340.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 101300
+  },
+  "lyon": {
+    "club": "Lyon",
+    "source": "TheSportsDB",
+    "tsdb_team": "Lyon",
+    "tsdb_id": "133713",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/blk9771656932845.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 65906
+  },
+  "marseille": {
+    "club": "Marseille",
+    "source": "TheSportsDB",
+    "tsdb_team": "Marseille",
+    "tsdb_id": "133707",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/uutsyt1473504764.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 46334
+  },
+  "nantes": {
+    "club": "Nantes",
+    "source": "TheSportsDB",
+    "tsdb_team": "Nantes",
+    "tsdb_id": "133861",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/mla9x61678808018.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 37717
+  },
+  "nice": {
+    "club": "Nice",
+    "source": "TheSportsDB",
+    "tsdb_team": "Nice",
+    "tsdb_id": "133712",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/msy7ly1621593859.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 121136
+  },
+  "rennes": {
+    "club": "Rennes",
+    "source": "TheSportsDB",
+    "tsdb_team": "Rennes",
+    "tsdb_id": "133719",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ypturx1473504818.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 83622
+  },
+  "strasbourg": {
+    "club": "Strasbourg",
+    "source": "TheSportsDB",
+    "tsdb_team": "Strasbourg",
+    "tsdb_id": "133882",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/b8k77w1766625501.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 117777
+  },
+  "toulouse": {
+    "club": "Toulouse",
+    "source": "TheSportsDB",
+    "tsdb_team": "Toulouse",
+    "tsdb_id": "133703",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/17eqox1688449282.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 150286
+  },
+  "ipswich_town": {
+    "club": "Ipswich Town",
+    "source": "TheSportsDB",
+    "tsdb_team": "Ipswich Town",
+    "tsdb_id": "133622",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/mdj1ey1634670785.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 85434
+  },
+  "leicester_city": {
+    "club": "Leicester City",
+    "source": "TheSportsDB",
+    "tsdb_team": "Leicester City",
+    "tsdb_id": "133626",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xtxwtu1448813356.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 193810
+  },
+  "las_palmas": {
+    "club": "Las Palmas",
+    "source": "TheSportsDB",
+    "tsdb_team": "Las Palmas",
+    "tsdb_id": "134259",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/mmhyb11616443601.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 185967
+  },
+  "leganes": {
+    "club": "Leganés",
+    "source": "TheSportsDB",
+    "tsdb_team": "Leganés",
+    "tsdb_id": "134701",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tm0adr1616443898.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 185770
+  },
+  "holstein_kiel": {
+    "club": "Holstein Kiel",
+    "source": "TheSportsDB",
+    "tsdb_team": "Holstein Kiel",
+    "tsdb_id": "136027",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/1fpmgs1514394524.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 139918
+  },
+  "empoli": {
+    "club": "Empoli",
+    "source": "TheSportsDB",
+    "tsdb_team": "Empoli",
+    "tsdb_id": "133695",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/c1ie6b1622561483.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 181706
+  },
+  "monza": {
+    "club": "Monza",
+    "source": "TheSportsDB",
+    "tsdb_team": "Monza",
+    "tsdb_id": "134270",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bxearg1603170113.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 83290
+  },
+  "venezia": {
+    "club": "Venezia",
+    "source": "TheSportsDB",
+    "tsdb_team": "Venezia",
+    "tsdb_id": "134234",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/95fg4n1656696080.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 15116
+  },
+  "montpellier": {
+    "club": "Montpellier",
+    "source": "TheSportsDB",
+    "tsdb_team": "Montpellier",
+    "tsdb_id": "133709",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8wn9x31750879448.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 150422
+  },
+  "reims": {
+    "club": "Reims",
+    "source": "TheSportsDB",
+    "tsdb_team": "Stade de Reims",
+    "tsdb_id": "133934",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xcrw1b1592925946.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 27506
+  },
+  "saint_etienne": {
+    "club": "Saint-Étienne",
+    "source": "TheSportsDB",
+    "tsdb_team": "St Etienne",
+    "tsdb_id": "133717",
+    "badge_url": "https://r2.thesportsdb.com/images/media/team/badge/m4ej831656423694.png",
+    "license": "TheSportsDB Free API",
+    "bytes": 94482
+  }
+}

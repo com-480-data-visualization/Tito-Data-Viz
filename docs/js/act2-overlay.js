@@ -1,5 +1,3 @@
-// Act 2 — The Overlay: 2-3 player radar comparison on 5 sub-score dimensions.
-
 function initOverlay(data) {
     const ROOT = document.getElementById("overlay-section");
     if (!ROOT || !data || !data.length) return;
@@ -19,28 +17,115 @@ function initOverlay(data) {
         { key: "discipline",  label: "Discipline" }
     ];
 
+    const fInt = v => v.toFixed(0);
+    const fDec = v => v.toFixed(2);
+    const fPct = v => v.toFixed(0) + "%";
+    const REAL_SIGNALS_BY_POS = {
+        ST: [
+            { key: "gls",       label: "Goals",       fmt: fInt },
+            { key: "npxg90",    label: "npxG/90",     fmt: fDec },
+            { key: "sh90",      label: "Shots/90",    fmt: fDec },
+            { key: "aerialwon", label: "Aerials %",   fmt: fPct }
+        ],
+        WG: [
+            { key: "gls",       label: "Goals",       fmt: fInt },
+            { key: "ast",       label: "Assists",     fmt: fInt },
+            { key: "xag90",     label: "xAG/90",      fmt: fDec },
+            { key: "to90",      label: "Take-ons/90", fmt: fDec }
+        ],
+        AM: [
+            { key: "ast",       label: "Assists",     fmt: fInt },
+            { key: "kp90",      label: "KP/90",       fmt: fDec },
+            { key: "sca90",     label: "SCA/90",      fmt: fDec },
+            { key: "xag90",     label: "xAG/90",      fmt: fDec }
+        ],
+        CM: [
+            { key: "cmppct",    label: "Pass %",      fmt: fPct },
+            { key: "kp90",      label: "KP/90",       fmt: fDec },
+            { key: "prgp90",    label: "PrgP/90",     fmt: fDec },
+            { key: "tklint90",  label: "Tkl+Int/90",  fmt: fDec }
+        ],
+        DM: [
+            { key: "tklint90",  label: "Tkl+Int/90",  fmt: fDec },
+            { key: "recov90",   label: "Recoveries/90", fmt: fDec },
+            { key: "cmppct",    label: "Pass %",      fmt: fPct },
+            { key: "aerialwon", label: "Aerials %",   fmt: fPct }
+        ],
+        FB: [
+            { key: "tklint90",  label: "Tkl+Int/90",  fmt: fDec },
+            { key: "crspa90",   label: "CrsPA/90",    fmt: fDec },
+            { key: "prgc90",    label: "PrgC/90",     fmt: fDec },
+            { key: "cmppct",    label: "Pass %",      fmt: fPct }
+        ],
+        CB: [
+            { key: "tklint90",  label: "Tkl+Int/90",  fmt: fDec },
+            { key: "aerialwon", label: "Aerials %",   fmt: fPct },
+            { key: "clr90",     label: "Clearances/90", fmt: fDec },
+            { key: "cmppct",    label: "Pass %",      fmt: fPct }
+        ],
+        GK: [
+            { key: "savepct",   label: "Save %",      fmt: v => v.toFixed(1) + "%" },
+            { key: "cs",        label: "Clean sheets", fmt: fInt },
+            { key: "cspct",     label: "Clean sheet %", fmt: fPct },
+            { key: "ga90",      label: "GA/90",       fmt: fDec, inv: true }
+        ]
+    };
+
     const POOL = data.filter(p => p.subScores && typeof p.minutes === "number" && p.minutes > 600);
     if (POOL.length < 2) return;
 
-    // Default pick: contrast one standout underrated vs one standout overrated starter (min 1500 min so the names are recognizable).
-    const starters = POOL.filter(p => p.subPos !== "GK" && typeof p.gap === "number" && p.minutes >= 1500);
-    const starterPool = starters.length >= 2 ? starters : POOL.filter(p => p.subPos !== "GK" && typeof p.gap === "number");
-    const byGap = [...starterPool].sort((a, b) => b.gap - a.gap);
-    const selection = [];
-    if (byGap.length) selection.push(byGap[0]);
-    if (byGap.length > 1) selection.push(byGap[byGap.length - 1]);
+    const SUBPOS_ORDER = ["ST", "WG", "AM", "CM", "DM", "FB", "CB", "GK"];
+    const SUBPOS_LABEL = {
+        ST: "Strikers", WG: "Wingers", AM: "Attacking mids",
+        CM: "Central mids", DM: "Defensive mids",
+        FB: "Full-backs", CB: "Centre-backs", GK: "Goalkeepers"
+    };
 
-    // --- Render skeleton ---
+    function poolForSubPos(subPos) {
+        return POOL.filter(p => p.subPos === subPos && typeof p.gap === "number");
+    }
+
+    function defaultSubPos() {
+        for (const sp of SUBPOS_ORDER) {
+            if (poolForSubPos(sp).length >= 2) return sp;
+        }
+        return POOL[0].subPos;
+    }
+
+    let activeSubPos = defaultSubPos();
+    let selection = pickContrastingPair(activeSubPos);
+
+    function pickContrastingPair(subPos) {
+        const pool = poolForSubPos(subPos);
+        if (!pool.length) return [];
+        const starters = pool.filter(p => p.minutes >= 1500);
+        const sorted = (starters.length >= 2 ? starters : pool).slice().sort((a, b) => b.gap - a.gap);
+        const out = [];
+        if (sorted.length) out.push(sorted[0]);
+        if (sorted.length > 1) out.push(sorted[sorted.length - 1]);
+        return out;
+    }
+
+    const posTabs = SUBPOS_ORDER
+        .filter(sp => poolForSubPos(sp).length >= 2)
+        .map(sp =>
+            '<button class="overlay-pos-tab" type="button" data-pos="' + sp + '">' +
+                '<span class="overlay-pos-tab-code">' + sp + '</span>' +
+                '<span class="overlay-pos-tab-name">' + SUBPOS_LABEL[sp] + '</span>' +
+            '</button>'
+        ).join("");
+
     ROOT.innerHTML =
         '<div class="chapter-head">' +
-            '<span class="chapter-kicker">&sect; 03 &middot; THE OVERLAY</span>' +
-            '<h3 class="chapter-title">Two profiles, one pentagon.</h3>' +
-            '<p class="chapter-sub">Add up to three players. See where their DNA matches &mdash; and where it breaks.</p>' +
+            '<span class="chapter-kicker">&sect; 04 &middot; THE OVERLAY</span>' +
+            '<h3 class="chapter-title">Same role, different DNA.</h3>' +
+            '<p class="chapter-sub">Pick a position, then stack up to three players from that role and see where their fingerprints diverge.</p>' +
         '</div>' +
+        '<div class="overlay-pos-tabs" id="overlay-pos-tabs">' + posTabs + '</div>' +
         '<div class="overlay-picker">' +
             '<div class="overlay-chips" id="overlay-chips"></div>' +
             '<div class="overlay-search-wrap">' +
-                '<input type="text" id="overlay-input" class="overlay-input" placeholder="Search a player by name or club..." autocomplete="off" spellcheck="false">' +
+                '<input type="text" id="overlay-input" class="overlay-input" placeholder="Search within the active role..." autocomplete="off" spellcheck="false">' +
                 '<div class="overlay-suggestions" id="overlay-suggestions" role="listbox"></div>' +
             '</div>' +
         '</div>' +
@@ -54,6 +139,22 @@ function initOverlay(data) {
             '<table class="overlay-table" id="overlay-table"></table>' +
         '</div>';
 
+    const tabsEl = ROOT.querySelector("#overlay-pos-tabs");
+    function renderPosTabs() {
+        tabsEl.querySelectorAll(".overlay-pos-tab").forEach(btn => {
+            btn.classList.toggle("is-active", btn.dataset.pos === activeSubPos);
+        });
+    }
+    tabsEl.querySelectorAll(".overlay-pos-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const sp = btn.dataset.pos;
+            if (sp === activeSubPos) return;
+            activeSubPos = sp;
+            selection = pickContrastingPair(activeSubPos);
+            renderAll();
+        });
+    });
+
     const chipsEl  = ROOT.querySelector("#overlay-chips");
     const inputEl  = ROOT.querySelector("#overlay-input");
     const sugEl    = ROOT.querySelector("#overlay-suggestions");
@@ -61,7 +162,6 @@ function initOverlay(data) {
     const tableEl  = ROOT.querySelector("#overlay-table");
     const svgEl    = ROOT.querySelector("#overlay-radar");
 
-    // --- Chips ---
     function renderChips() {
         const parts = selection.map(function (p, i) {
             const slot = SLOTS[i];
@@ -73,7 +173,7 @@ function initOverlay(data) {
         }).join("");
         const pill = selection.length < MAX_PLAYERS
             ? '<span class="overlay-chip-slot">Add ' + (selection.length === 0 ? "a" : "another") + ' player</span>'
-            : '<span class="overlay-chip-slot overlay-chip-slot-full">Slots full &mdash; remove one to swap</span>';
+            : '<span class="overlay-chip-slot overlay-chip-slot-full">Slots full. Remove one to swap.</span>';
         chipsEl.innerHTML = parts + pill;
 
         chipsEl.querySelectorAll("[data-remove]").forEach(function (btn) {
@@ -87,7 +187,6 @@ function initOverlay(data) {
         });
     }
 
-    // --- Suggestions ---
     let activeSugIdx = -1;
 
     function openSuggestions(matches) {
@@ -139,15 +238,20 @@ function initOverlay(data) {
     }
 
     function searchPlayers(q) {
-        if (!q) return [];
+        const subPool = poolForSubPos(activeSubPos);
+        if (!q) {
+            return subPool
+                .slice()
+                .sort((a, b) => (b.minutes || 0) - (a.minutes || 0))
+                .slice(0, 8);
+        }
         const qn = q.toLowerCase();
         const scored = [];
-        for (let i = 0; i < POOL.length; i++) {
-            const p = POOL[i];
+        for (let i = 0; i < subPool.length; i++) {
+            const p = subPool[i];
             const name = (p.name || "").toLowerCase();
             const club = (p.club || "").toLowerCase();
             if (name.indexOf(qn) === -1 && club.indexOf(qn) === -1) continue;
-            // Prioritize name prefix → name contains → club
             let score = 10;
             if (name.startsWith(qn)) score = 0;
             else if (name.indexOf(qn) !== -1) score = 1;
@@ -165,7 +269,8 @@ function initOverlay(data) {
         openSuggestions(matches);
     });
     inputEl.addEventListener("focus", function () {
-        if (inputEl.value.trim()) openSuggestions(searchPlayers(inputEl.value.trim()));
+        const q = inputEl.value.trim();
+        openSuggestions(searchPlayers(q));
     });
     inputEl.addEventListener("keydown", function (e) {
         const items = sugEl.querySelectorAll(".overlay-sug-item:not(.is-disabled)");
@@ -196,7 +301,6 @@ function initOverlay(data) {
         else if (!sugEl.contains(e.target) && e.target !== inputEl) closeSuggestions();
     });
 
-    // --- Radar ---
     const R = {
         cx: 260, cy: 260, radius: 178,
         rings: [0.2, 0.4, 0.6, 0.8, 1.0],
@@ -218,26 +322,22 @@ function initOverlay(data) {
     function renderRadar() {
         let svg = '';
 
-        // Concentric rings (pentagons)
         R.rings.forEach(function (ratio, rIdx) {
             const pts = AXES.map((_, i) => gridPoint(i, ratio).join(",")).join(" ");
             const isOuter = rIdx === R.rings.length - 1;
             svg += '<polygon points="' + pts + '" class="overlay-radar-ring' + (isOuter ? " is-outer" : "") + '"/>';
         });
 
-        // Spokes
         AXES.forEach(function (_, i) {
             const [x, y] = gridPoint(i, 1.0);
             svg += '<line x1="' + R.cx + '" y1="' + R.cy + '" x2="' + x + '" y2="' + y + '" class="overlay-radar-spoke"/>';
         });
 
-        // Ring labels (on the top spoke only, at ratio 0.2/0.4/.../1.0)
         R.rings.forEach(function (ratio) {
             const y = R.cy - R.radius * ratio;
             svg += '<text x="' + (R.cx + 3) + '" y="' + (y - 2) + '" class="overlay-radar-ringlabel">' + Math.round(ratio * 100) + '</text>';
         });
 
-        // Axis labels
         AXES.forEach(function (ax, i) {
             const angle = -Math.PI / 2 + i * (2 * Math.PI / AXES.length);
             const lx = R.cx + (R.radius + R.labelOffset) * Math.cos(angle);
@@ -249,7 +349,6 @@ function initOverlay(data) {
                    '" dominant-baseline="middle" class="overlay-radar-axislabel">' + ax.label + '</text>';
         });
 
-        // Player polygons
         selection.forEach(function (p, pi) {
             const slot = SLOTS[pi];
             const pts = AXES.map(function (ax, i) {
@@ -260,7 +359,6 @@ function initOverlay(data) {
                    'style="fill:' + slot.tint + ';stroke:' + slot.color + '"/>';
         });
 
-        // Vertex dots + value labels (drawn last so they sit on top)
         selection.forEach(function (p, pi) {
             const slot = SLOTS[pi];
             AXES.forEach(function (ax, i) {
@@ -275,13 +373,13 @@ function initOverlay(data) {
         svgEl.innerHTML = svg;
     }
 
-    // --- Legend / cards ---
     function renderLegend() {
         legendEl.innerHTML = selection.map(function (p, i) {
             const slot = SLOTS[i];
             const avatar = avatarHTMLString(p.photo, p.name, "overlay-card-avatar-img", "overlay-card-avatar-fallback");
             const gapCls = p.gap > 1 ? "is-under" : (p.gap < -1 ? "is-over" : "is-fair");
-            return '<div class="overlay-card" style="--slot-color:' + slot.color + ';--slot-tint:' + slot.tint + '">' +
+            return '<button type="button" class="overlay-card" data-name="' + escapeAttr(p.name) + '" ' +
+                       'style="--slot-color:' + slot.color + ';--slot-tint:' + slot.tint + '">' +
                        '<div class="overlay-card-swatch"></div>' +
                        '<div class="overlay-card-avatar">' + avatar + '</div>' +
                        '<div class="overlay-card-text">' +
@@ -299,13 +397,122 @@ function initOverlay(data) {
                                    '<span class="overlay-card-num-v">' + (p.gap != null ? formatGap(p.gap) : "-") + '</span></span>' +
                            '</div>' +
                        '</div>' +
-                   '</div>';
+                       '<span class="overlay-card-open">Open dossier &rsaquo;</span>' +
+                   '</button>';
         }).join("");
+
+        legendEl.querySelectorAll(".overlay-card").forEach(card => {
+            card.addEventListener("mouseenter", (ev) => showOverlayTip(card, ev));
+            card.addEventListener("mousemove", (ev) => moveOverlayTip(ev));
+            card.addEventListener("mouseleave", () => hideOverlayTip());
+            card.addEventListener("click", () => {
+                const name = card.dataset.name;
+                const p = selection.find(x => x.name === name) || data.find(x => x.name === name);
+                if (!p) return;
+                hideOverlayTip();
+                openOverlayPlayerModal(p);
+            });
+        });
     }
 
-    // --- Comparison table ---
+    const GROUP_BY_SUBPOS = { ST: "FW", WG: "FW", AM: "MF", CM: "MF", DM: "MF", FB: "DF", CB: "DF", GK: "GK" };
+    let overlayModal = null;
+    function ensureOverlayModal() {
+        if (overlayModal) return overlayModal;
+        if (typeof createModalManager !== "function") return null;
+        const tipEl = document.createElement("div");
+        tipEl.className = "stat-tip";
+        document.body.appendChild(tipEl);
+        overlayModal = createModalManager(tipEl);
+        overlayModal.init(data);
+        return overlayModal;
+    }
+    function openOverlayPlayerModal(p) {
+        const mgr = ensureOverlayModal();
+        if (!mgr) return;
+        const group = GROUP_BY_SUBPOS[p.subPos] || "FW";
+        const posPlayers = data.filter(x => x.subPos === p.subPos);
+        const byOvr = posPlayers.slice().sort((a, b) => (b.ea?.ovr || 0) - (a.ea?.ovr || 0));
+        const byComp = posPlayers.slice().sort((a, b) => (b.composite || 0) - (a.composite || 0));
+        const eaRankMap = {}, compRankMap = {};
+        byOvr.forEach((x, i) => eaRankMap[x.name] = i + 1);
+        byComp.forEach((x, i) => compRankMap[x.name] = i + 1);
+        mgr.openModal(p, group, eaRankMap, compRankMap, posPlayers, null);
+    }
+
+    let overlayTipEl = null;
+    function ensureOverlayTip() {
+        if (overlayTipEl) return overlayTipEl;
+        overlayTipEl = document.createElement("div");
+        overlayTipEl.className = "wall-card-tip";
+        document.body.appendChild(overlayTipEl);
+        return overlayTipEl;
+    }
+    function showOverlayTip(card, ev) {
+        const name = card.dataset.name;
+        const p = selection.find(x => x.name === name) || data.find(x => x.name === name);
+        if (!p || !p.subScores) return;
+        const tip = ensureOverlayTip();
+        const ovr = p.ea?.ovr ?? null;
+        const comp = p.composite != null ? p.composite.toFixed(1) : "-";
+        const gap = p.gap != null ? p.gap : 0;
+        const gapStr = (gap >= 0 ? "+" : "") + gap.toFixed(1);
+        const gapColor = gap > 1 ? "var(--win,#4ade80)" : gap < -1 ? "var(--red,#ef4444)" : "var(--text-muted)";
+        const dims = ["scoring", "creation", "progression", "defense", "discipline"];
+        const subLabel = SUBPOS_LABEL[p.subPos] || p.subPos || "";
+        let bars = "";
+        for (const d of dims) {
+            const v = p.subScores[d];
+            if (v == null) continue;
+            const w = Math.max(2, Math.min(100, v));
+            bars +=
+                '<div class="wct-row">' +
+                    '<span class="wct-l">' + d + '</span>' +
+                    '<span class="wct-bar"><span class="wct-fill" style="width:' + w.toFixed(0) + '%"></span></span>' +
+                    '<span class="wct-v">' + v.toFixed(0) + '</span>' +
+                '</div>';
+        }
+        const verdict = gap > 5
+            ? "Outperforms his OVR by " + Math.abs(gap).toFixed(1) + " points."
+            : gap < -5
+                ? "Underperforms his OVR by " + Math.abs(gap).toFixed(1) + " points."
+                : "Composite is within " + Math.abs(gap).toFixed(1) + " of his OVR.";
+        tip.innerHTML =
+            '<div class="wct-head">' +
+                '<strong class="wct-name">' + p.name + '</strong>' +
+                '<span class="wct-meta">' + (p.club || "") + ' · ' + subLabel + '</span>' +
+            '</div>' +
+            '<div class="wct-stats">' +
+                '<span><b>OVR</b> ' + (ovr != null ? ovr : "-") + '</span>' +
+                '<span><b>CMP</b> ' + comp + '</span>' +
+                '<span style="color:' + gapColor + '"><b>Gap</b> ' + gapStr + '</span>' +
+            '</div>' +
+            '<div class="wct-bars">' + bars + '</div>' +
+            '<p class="wct-verdict">' + verdict + '</p>' +
+            '<div class="wct-foot">Click for the full dossier</div>';
+        tip.classList.add("show");
+        moveOverlayTip(ev);
+    }
+    function moveOverlayTip(ev) {
+        if (!overlayTipEl || !overlayTipEl.classList.contains("show")) return;
+        const margin = 14;
+        const w = overlayTipEl.offsetWidth || 280;
+        const h = overlayTipEl.offsetHeight || 220;
+        let left = ev.clientX + margin;
+        let top = ev.clientY + margin;
+        if (left + w > window.innerWidth - 8) left = ev.clientX - w - margin;
+        if (top + h > window.innerHeight - 8) top = ev.clientY - h - margin;
+        if (left < 8) left = 8;
+        if (top < 8) top = 8;
+        overlayTipEl.style.left = left + "px";
+        overlayTipEl.style.top = top + "px";
+    }
+    function hideOverlayTip() {
+        if (!overlayTipEl) return;
+        overlayTipEl.classList.remove("show");
+    }
+
     function renderTable() {
-        // Columns: metric | player slots
         const headCells = selection.map(function (p, i) {
             return '<th class="overlay-th" style="--slot-color:' + SLOTS[i].color + '">' +
                        '<span class="overlay-th-dot"></span>' +
@@ -313,7 +520,6 @@ function initOverlay(data) {
                    '</th>';
         }).join("");
 
-        // Rows: 5 axes + OVR + Composite + Gap
         const rows = [];
         AXES.forEach(function (ax) {
             const values = selection.map(p => (p.subScores && p.subScores[ax.key]) != null ? p.subScores[ax.key] : null);
@@ -331,7 +537,33 @@ function initOverlay(data) {
             rows.push('<tr><th class="overlay-rowhead">' + ax.label + '</th>' + cells + '</tr>');
         });
 
-        // OVR, Composite, Gap — separator row then these summary stats
+        const signals = (REAL_SIGNALS_BY_POS[activeSubPos] || [])
+            .filter(s => selection.some(p => p.real && p.real[s.key] != null));
+        if (signals.length) {
+            rows.push('<tr class="overlay-sep"><td colspan="' + (selection.length + 1) + '"></td></tr>');
+            rows.push('<tr class="overlay-subhead"><th class="overlay-rowhead overlay-rowhead-sub" colspan="' + (selection.length + 1) + '">Real signals</th></tr>');
+            signals.forEach(function (sig) {
+                const values = selection.map(p => (p.real && p.real[sig.key] != null) ? p.real[sig.key] : null);
+                const present = values.filter(v => v != null);
+                if (!present.length) return;
+                const best = sig.inv
+                    ? Math.min.apply(null, present)
+                    : Math.max.apply(null, present);
+                const max = Math.max.apply(null, present.map(Math.abs));
+                const cells = values.map(function (v, i) {
+                    if (v == null) return '<td class="overlay-td">-</td>';
+                    const ratio = max > 0 ? Math.max(0, Math.min(1, Math.abs(v) / max)) : 0;
+                    const isBest = v === best;
+                    return '<td class="overlay-td' + (isBest ? " is-best" : "") + '" ' +
+                           'style="--cell-ratio:' + ratio.toFixed(3) + ';--slot-color:' + SLOTS[i].color + '">' +
+                           '<span class="overlay-td-bar"></span>' +
+                           '<span class="overlay-td-val">' + sig.fmt(v) + '</span>' +
+                           '</td>';
+                }).join("");
+                rows.push('<tr><th class="overlay-rowhead">' + sig.label + '</th>' + cells + '</tr>');
+            });
+        }
+
         function summaryCells(valueFn, fmtFn, highBestFn, tintFn) {
             const values = selection.map(valueFn);
             const best = highBestFn(values);
@@ -368,10 +600,12 @@ function initOverlay(data) {
     }
 
     function renderAll() {
+        renderPosTabs();
         renderChips();
         renderRadar();
         renderLegend();
         renderTable();
+        if (inputEl) inputEl.placeholder = "Search a " + (SUBPOS_LABEL[activeSubPos] || "player").toLowerCase().replace(/s$/, "") + "...";
     }
 
     renderAll();

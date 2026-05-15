@@ -1,15 +1,7 @@
-"""
-build_data.py
-Reads the two original datasets (fc25_players.csv + players_data-2024_2025.csv),
-fuzzy-matches players across them, then writes website/data/players.json
-with enriched composite performance scores and reputation gap pre-computed.
-
-Gap = composite_real - regression_predicted.
-  Negative gap = overrated  (EA rates higher than real performance justifies)
-  Positive gap = underrated (player performs better than OVR suggests)
-"""
+# builds docs/data/players.json from the fc25, fbref and transfermarkt csvs
 
 import json
+import os
 import pathlib
 import re
 import unicodedata
@@ -21,13 +13,79 @@ from rapidfuzz import fuzz, process as rfprocess
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 FBREF_PATH = ROOT / "datasets" / "players_data-2024_2025.csv"
 FC25_PATH = ROOT / "datasets" / "fc25_players.csv"
-OUT_PATH = ROOT / "website" / "data" / "players.json"
+OUT_PATH = ROOT / "docs" / "data" / "players.json"
 
 # Transfermarkt paths
 TM_DIR = ROOT / "datasets" / "transfermarkt"
 TM_PROFILES = TM_DIR / "player_profiles.csv"
 TM_MARKET_HIST = TM_DIR / "player_market_value.csv"
 TM_INJURIES = TM_DIR / "player_injuries.csv"
+
+# Club meta (logos + formations + colors)
+CLUBS_PATH = ROOT / "datasets" / "team_clubs.csv"
+CLUBS_ASSET_DIR = ROOT / "docs" / "assets" / "clubs"
+
+
+def slugify_club(name):
+    txt = unicodedata.normalize("NFKD", name)
+    txt = "".join(c for c in txt if not unicodedata.combining(c))
+    txt = txt.lower().strip()
+    txt = re.sub(r"[^a-z0-9]+", "_", txt)
+    return txt.strip("_")
+
+
+def load_clubs():
+    if not CLUBS_PATH.exists():
+        print(f"WARNING: {CLUBS_PATH} not found, skipping club meta")
+        return {}, {}
+    df = pd.read_csv(CLUBS_PATH)
+    canonical_to_meta = {}
+    alias_to_canonical = {}
+    for _, row in df.iterrows():
+        canonical = row["club_canonical"]
+        slug = slugify_club(canonical)
+        logo_path = None
+        for ext in (".svg", ".png", ".jpg", ".jpeg", ".webp"):
+            candidate = CLUBS_ASSET_DIR / (slug + ext)
+            if candidate.exists():
+                logo_path = "assets/clubs/" + candidate.name
+                break
+        formation = row.get("formation_2024_25")
+        if pd.isna(formation):
+            formation = None
+        else:
+            digits = [int(d) for d in str(formation).split("-") if d.isdigit()]
+            if sum(digits) != 10:
+                print(f"  formation invalid for {canonical}: {formation} (sum={sum(digits)})")
+                formation = None
+        color = row.get("primary_color_hex")
+        if pd.isna(color):
+            color = None
+        meta = {
+            "logo": logo_path,
+            "formation": formation,
+            "color": color,
+        }
+        canonical_to_meta[canonical] = meta
+        alias_to_canonical[canonical.lower()] = canonical
+        aliases = row.get("club_aliases")
+        if isinstance(aliases, str):
+            for a in aliases.split("|"):
+                key = a.strip().lower()
+                if key:
+                    alias_to_canonical.setdefault(key, canonical)
+    return canonical_to_meta, alias_to_canonical
+
+
+def resolve_club_meta(club_name, canonical_to_meta, alias_to_canonical):
+    if not isinstance(club_name, str) or not club_name:
+        return None
+    if club_name in canonical_to_meta:
+        return canonical_to_meta[club_name]
+    canonical = alias_to_canonical.get(club_name.lower())
+    if canonical:
+        return canonical_to_meta.get(canonical)
+    return None
 
 
 # Manual overrides for names that fuzzy matching cannot resolve
@@ -54,8 +112,7 @@ MANUAL_MERGE = {
 
 MERGE_SCORE_CUTOFF = 75
 
-# FC25 uses full country names ("France"), FBref uses FIFA codes ("FRA").
-# This mapping normalizes FC25 nation names to codes.
+# FC25 nation names -> FIFA codes (FBref uses the codes)
 FC25_NATION_TO_CODE = {
     "England": "ENG", "France": "FRA", "Spain": "ESP", "Germany": "GER",
     "Italy": "ITA", "Portugal": "POR", "Brazil": "BRA", "Argentina": "ARG",
@@ -105,7 +162,6 @@ def _normalize_name(name):
 
 
 def _fbref_nation_code(nation_str):
-    """Extract 3-letter code from FBref nation string like 'fr FRA'."""
     if pd.isna(nation_str):
         return ""
     m = re.search(r"\b([A-Z]{2,3})\b", str(nation_str))
@@ -113,10 +169,6 @@ def _fbref_nation_code(nation_str):
 
 
 def merge_fbref_fc25(fbref: pd.DataFrame, fc25: pd.DataFrame) -> pd.DataFrame:
-    """
-    Fuzzy-match FBref players to FC25 entries and return a merged dataframe
-    with FC25 columns prefixed by 'ea_'.
-    """
     # Normalize names for matching
     fc25["name_norm"] = fc25["Name"].apply(_normalize_name)
     fc25["squad_norm"] = fc25["Team"].apply(_normalize_name)
@@ -134,7 +186,6 @@ def merge_fbref_fc25(fbref: pd.DataFrame, fc25: pd.DataFrame) -> pd.DataFrame:
     ea_names = fc25["name_norm"].tolist()
 
     def find_match(row):
-        """Return (fc25_index, name_score, club_score) or (None, 0, 0)."""
         player = row["Player"]
         name = row["name_norm"]
         nation = row["nation_code"]
@@ -279,7 +330,6 @@ SUBPOS_TO_GROUP_MAP = {
 
 
 def map_pos_group(row) -> str:
-    """Map to FW/MF/DF/GK. Priority: manual subPos override > _pos_override > EA > FBref."""
     name = row.get("ea_Name") if pd.notna(row.get("ea_Name")) else row.get("Player", "")
     for oname, osp in MANUAL_SUBPOS.items():
         if isinstance(name, str) and oname.lower() in name.lower():
@@ -318,7 +368,6 @@ MANUAL_SUBPOS = {
 
 
 def map_sub_pos(row) -> str:
-    """Map to granular sub-position (ST/WG/AM/CM/DM/FB/CB/GK)."""
     name = row.get("ea_Name") if pd.notna(row.get("ea_Name")) else row.get("Player", "")
     for oname, osp in MANUAL_SUBPOS.items():
         if isinstance(name, str) and oname.lower() in name.lower():
@@ -382,7 +431,9 @@ SUBPOS_STATS = {
         ("xA_90", "creation", False),
         ("PrgP_90", "progression", False),
         ("PrgC_90", "progression", False),
+        ("PrgPass_pct", "progression", False),  # progressive pass accuracy
         ("TO_90", "progression", False),
+        ("Succ_pct", "progression", False),
         ("Final3rd_90", "progression", False),
         ("npxG_90", "scoring", False),
         ("SoT_90", "scoring", False),           # shot quality
@@ -397,6 +448,7 @@ SUBPOS_STATS = {
         ("TB_90", "creation", False),
         ("PrgP_90", "progression", False),
         ("PrgC_90", "progression", False),
+        ("PrgPass_pct", "progression", False),  # progressive pass accuracy
         ("Final3rd_90", "progression", False),
         ("Cmp_pct", "progression", False),
         ("npxG_90", "scoring", False),
@@ -423,6 +475,7 @@ SUBPOS_STATS = {
         ("PassBlk_90", "defense", False),       # passes blocked (defensive)/90
         ("PrgP_90", "progression", False),
         ("PrgC_90", "progression", False),
+        ("PrgPass_pct", "progression", False),  # progressive pass accuracy
         ("Cmp_pct", "progression", False),
         ("Final3rd_90", "progression", False),
         ("Fls_90", "discipline", True),
@@ -495,14 +548,16 @@ SUBPOS_WEIGHTS = {
         "Fld_misc_90": 0.04, "Mis_90": 0.03,
     },
     "AM": {
-        "xAG_90": 0.0635, "SCA_90": 0.0761, "GCA_90": 0.0761, "KP_90": 0.0635,
-        "TB_90": 0.0508, "PPA_90": 0.0635, "xA_90": 0.0635, "PrgP_90": 0.1015,
-        "PrgC_90": 0.1015, "TO_90": 0.0761, "Final3rd_90": 0.0635, "npxG_90": 0.0761,
-        "SoT_90": 0.0508, "Cmp_pct": 0.0228, "Fld_misc_90": 0.0254, "Mis_90": 0.0254,
+        "xAG_90": 0.06, "SCA_90": 0.075, "GCA_90": 0.075, "KP_90": 0.06,
+        "TB_90": 0.05, "PPA_90": 0.06, "xA_90": 0.06, "PrgP_90": 0.09,
+        "PrgC_90": 0.09, "PrgPass_pct": 0.04, "TO_90": 0.07, "Succ_pct": 0.03,
+        "Final3rd_90": 0.05, "npxG_90": 0.07, "SoT_90": 0.05, "Cmp_pct": 0.02,
+        "Fld_misc_90": 0.025, "Mis_90": 0.025,
     },
     "CM": {
         "xAG_90": 0.069, "SCA_90": 0.0862, "KP_90": 0.0862, "TB_90": 0.069,
-        "PrgP_90": 0.0862, "PrgC_90": 0.069, "Final3rd_90": 0.069, "Cmp_pct": 0.0552,
+        "PrgP_90": 0.0762, "PrgC_90": 0.069, "PrgPass_pct": 0.04,
+        "Final3rd_90": 0.069, "Cmp_pct": 0.0452,
         "npxG_90": 0.0655, "TklInt_90": 0.069, "Int_90": 0.0552, "Recov_90": 0.0552,
         "Blocks_90": 0.0414, "AerialWon_pct": 0.0276, "DrblAtt_90": 0.0276,
         "Fls_90": 0.0345, "Mis_90": 0.0345,
@@ -511,8 +566,8 @@ SUBPOS_WEIGHTS = {
         "TklInt_90": 0.1, "Int_90": 0.0667, "Tkl_90": 0.08, "Tkl_pct": 0.0267,
         "Recov_90": 0.0467, "Blocks_90": 0.0467, "Clr_90": 0.0667, "ShDef_90": 0.04,
         "AerialWon_pct": 0.06, "DrblAtt_90": 0.06, "PassBlk_90": 0.0667,
-        "PrgP_90": 0.1033, "PrgC_90": 0.1033, "Cmp_pct": 0.0333,
-        "Final3rd_90": 0.0467, "Fls_90": 0.0533,
+        "PrgP_90": 0.0833, "PrgC_90": 0.0833, "PrgPass_pct": 0.04,
+        "Cmp_pct": 0.0333, "Final3rd_90": 0.0467, "Fls_90": 0.0533,
     },
     "FB": {
         "PrgC_90": 0.0865, "PrgP_90": 0.0865, "TO_90": 0.0432, "Succ_pct": 0.0144,
@@ -522,10 +577,10 @@ SUBPOS_WEIGHTS = {
         "CPA_90": 0.0576, "Fls_90": 0.0288,
     },
     "CB": {
-        # defense (~50%): favor quality (tklpct, aerial%) over volume (clr, blocks)
-        "TklInt_90": 0.04, "AerialWon_pct": 0.08, "Clr_90": 0.03,
-        "Blocks_90": 0.03, "ShDef_90": 0.03, "Recov_90": 0.03,
-        "Int_90": 0.03, "Tkl_90": 0.04, "Tkl_pct": 0.07, "DrblAtt_90": 0.04,
+        # defense (~50%): aerial dominance + tackle quality lead
+        "TklInt_90": 0.04, "AerialWon_pct": 0.13, "Clr_90": 0.02,
+        "Blocks_90": 0.02, "ShDef_90": 0.02, "Recov_90": 0.02,
+        "Int_90": 0.03, "Tkl_90": 0.03, "Tkl_pct": 0.07, "DrblAtt_90": 0.03,
         "PassBlk_90": 0.03,
         # progression (~35%): ball-playing CB value
         "PrgP_90": 0.10, "PrgC_90": 0.10, "Cmp_pct": 0.08,
@@ -595,6 +650,7 @@ COL_TO_KEY = {
     "PassBlk_90": "passBlk90",
     "GKThr_90": "gkThr90",
     "CPA_90": "cpa90",
+    "PrgPass_pct": "prgPassPct",
 }
 
 # EA sub-attribute mapping: CSV column -> JSON key
@@ -637,14 +693,12 @@ EA_SUB_MAP = {
 
 
 def clean_tm_name(name: str) -> str:
-    """Strip trailing '(12345)' suffix from Transfermarkt player_name."""
     if not isinstance(name, str):
         return ""
     return re.sub(r"\s*\(\d+\)\s*$", "", name).strip()
 
 
 def parse_height(h) -> int | None:
-    """Parse height like '1.78' (meters) or '178' to integer cm."""
     if pd.isna(h):
         return None
     try:
@@ -659,7 +713,6 @@ def parse_height(h) -> int | None:
 
 
 def parse_market_value(v) -> int | None:
-    """Convert market value to integer, None if zero or missing."""
     if pd.isna(v):
         return None
     try:
@@ -670,7 +723,6 @@ def parse_market_value(v) -> int | None:
 
 
 def strip_accents(s: str) -> str:
-    """Remove diacritics/accents from a string for fuzzy comparison."""
     nfkd = unicodedata.normalize("NFKD", s)
     return "".join(c for c in nfkd if not unicodedata.combining(c))
 
@@ -723,11 +775,6 @@ MANUAL_TM = {
 
 
 def merge_transfermarkt(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Fuzzy-match players in df against Transfermarkt profiles and enrich
-    with photo, nationality, height, foot, detailed position, contract,
-    market value, and injury aggregates.
-    """
     # Load profiles
     profiles = pd.read_csv(TM_PROFILES, low_memory=False)
     profiles["clean_name"] = profiles["player_name"].apply(clean_tm_name)
@@ -767,7 +814,6 @@ def merge_transfermarkt(df: pd.DataFrame) -> pd.DataFrame:
         df[col] = None
 
     def _assign_tm_row(df, idx, tm_row):
-        """Write TM fields from a profile row into df at idx."""
         df.at[idx, "tm_player_id"] = int(tm_row["player_id"])
         df.at[idx, "tm_photo"] = tm_row.get("player_image_url")
         df.at[idx, "tm_nationality"] = tm_row.get("citizenship")
@@ -874,7 +920,7 @@ def merge_transfermarkt(df: pd.DataFrame) -> pd.DataFrame:
 
     print(f"Transfermarkt: matched {matched} / {len(df)} players")
 
-    # Join market values -- start-of-season and latest
+    # Join market values (start-of-season and latest)
     # Load the full historical market value CSV once, grouped by player_id
     hist_mv = pd.read_csv(TM_MARKET_HIST, low_memory=False)
     hist_mv["date"] = pd.to_datetime(hist_mv["date_unix"], errors="coerce")
@@ -986,7 +1032,6 @@ def safe_float(row, col, decimals=2):
 
 
 def _fix_ea_columns(df: pd.DataFrame, row_mask, fc25_row: pd.Series) -> None:
-    """Overwrite all ea_* columns in df for rows matching row_mask."""
     for col in fc25_row.index:
         merged_col = f"ea_{col}"
         if merged_col in df.columns:
@@ -994,7 +1039,6 @@ def _fix_ea_columns(df: pd.DataFrame, row_mask, fc25_row: pd.Series) -> None:
 
 
 def _postprocess_ea_matches(df: pd.DataFrame) -> pd.DataFrame:
-    """Fix position mismatches, duplicate EA matches, and reclassify positions."""
     fc25 = pd.read_csv(FC25_PATH)
 
     # Fix position-mismatched EA entries (outfield matched to GK or vice versa)
@@ -1032,7 +1076,7 @@ def _postprocess_ea_matches(df: pd.DataFrame) -> pd.DataFrame:
                 break
         if not fixed:
             drop_indices.append(idx)
-            print(f"POST-FIX: Dropping {row['Player']} ({row['Squad']}) -- position mismatch, no fix found")
+            print(f"POST-FIX: Dropping {row['Player']} ({row['Squad']}): position mismatch, no fix found")
 
     if drop_indices:
         df = df.drop(index=drop_indices).reset_index(drop=True)
@@ -1048,7 +1092,7 @@ def _postprocess_ea_matches(df: pd.DataFrame) -> pd.DataFrame:
             if idx != best_idx:
                 drop_dup.append(idx)
                 print(f"POST-FIX: Dropping duplicate {grp.loc[idx, 'Player']} ({grp.loc[idx, 'Squad']}, "
-                      f"Min={grp.loc[idx, 'Min']}) -- keeping {df.loc[best_idx, 'Player']} "
+                      f"Min={grp.loc[idx, 'Min']}), keeping {df.loc[best_idx, 'Player']} "
                       f"({df.loc[best_idx, 'Squad']}, Min={df.loc[best_idx, 'Min']})")
     if drop_dup:
         df = df.drop(index=drop_dup).reset_index(drop=True)
@@ -1067,9 +1111,8 @@ def _postprocess_ea_matches(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def compute_pca_composite(df: pd.DataFrame) -> pd.DataFrame:
-    """Compute composite scores per sub-position: percentile rank each stat,
-    weighted average using manual weights, rescaled to OVR-like distribution."""
     df["composite"] = np.nan
+    df["composite_pct"] = np.nan
     for dim in ("scoring", "creation", "progression", "defense", "discipline"):
         df["sub_score_" + dim] = np.nan
         df["dim_weight_" + dim] = np.nan
@@ -1129,11 +1172,13 @@ def compute_pca_composite(df: pd.DataFrame) -> pd.DataFrame:
                 df.loc[mask, "sub_score_" + dim] = 50.0
                 df.loc[mask, "dim_weight_" + dim] = 0.0
 
-        # Weighted composite from dimension scores
+        # Weighted composite from dimension scores (raw 0-100 scale)
         composite = pd.Series(0.0, index=sub.index)
         for dim in ("scoring", "creation", "progression", "defense", "discipline"):
             if dim in dim_scores and dim in dim_weights:
                 composite += dim_scores[dim] * dim_weights[dim]
+
+        df.loc[mask, "composite_pct"] = composite.round(1)
 
         # Rescale to match EA OVR distribution (mean=75.5, std=5.2)
         c_mu, c_sig = composite.mean(), composite.std()
@@ -1173,7 +1218,7 @@ def build():
         ("SCA_90", "SCA"), ("GCA_90", "GCA"), ("Sh_90", "Sh"), ("SoT_90", "SoT"),
         ("PrgP_90", "PrgP"), ("PrgC_90", "PrgC"), ("KP_90", "KP"),
         ("TklInt_90", "Tkl+Int"), ("Blocks_90", "Blocks"), ("Clr_90", "Clr"),
-        ("TO_90", "TO"), ("Recov_90", "Recov"), ("TB_90", "TB"),
+        ("TO_90", "Att_stats_possession"), ("Recov_90", "Recov"), ("TB_90", "TB"),
         ("ShDef_90", "Sh_stats_defense"), ("Final3rd_90", "1/3_stats_possession"),
         ("Tkl_90", "Tkl"), ("Int_90", "Int"), ("Fls_90", "Fls"),
         ("Fld_misc_90", "Fld_stats_misc"), ("Off_misc_90", "Off_stats_misc"),
@@ -1191,6 +1236,7 @@ def build():
     df["Succ_pct"] = df["Succ%"]
     df["SoT_pct"] = df["SoT%"]
     df["Tkl_pct"] = df["Tkl%"]
+    df["PrgPass_pct"] = df["PrgP"] / df["Att"].replace(0, np.nan) * 100
 
     # GK metrics
     df["PSxG_pm"] = df["PSxG+/-"]
@@ -1306,6 +1352,7 @@ def build():
             "pkwon": safe_int(row, "PKwon"),
             "pkcon": safe_int(row, "PKcon"),
             "cmppct": safe_float(row, "Cmp_pct", 1),
+            "prgPassPct": safe_float(row, "PrgPass_pct", 1),
             "gxg": safe_float(row, "G-xG", 2),
             "axag": safe_float(row, "A-xAG", 2),
             "npgxg": safe_float(row, "np:G-xG", 2),
@@ -1457,6 +1504,7 @@ def build():
             "minutes": int(row["Min"]) if pd.notna(row.get("Min")) else None,
             "nineties": round(float(row["nineties"]), 1) if pd.notna(row.get("nineties")) else None,
             "composite": round(float(row["composite"]), 1) if pd.notna(row.get("composite")) else None,
+            "compositePct": round(float(row["composite_pct"]), 1) if pd.notna(row.get("composite_pct")) else None,
             "gap": round(float(row["gap"]), 1) if pd.notna(row.get("gap")) else None,
             "compositeMetrics": composite_metrics,
             "compositeWeights": composite_weights,
@@ -1479,11 +1527,27 @@ def build():
         }
         records.append(rec)
 
+    canonical_to_meta, alias_to_canonical = load_clubs()
+    matched_clubs = set()
+    missing_clubs = set()
+    for r in records:
+        meta = resolve_club_meta(r.get("club"), canonical_to_meta, alias_to_canonical)
+        if meta is None:
+            r["clubLogo"] = None
+            r["clubFormation"] = None
+            r["clubColor"] = None
+            if r.get("club"):
+                missing_clubs.add(r["club"])
+        else:
+            r["clubLogo"] = meta.get("logo")
+            r["clubFormation"] = meta.get("formation")
+            r["clubColor"] = meta.get("color")
+            matched_clubs.add(r["club"])
+
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(OUT_PATH, "w", encoding="utf-8") as f:
         json.dump(records, f, ensure_ascii=False, indent=2)
 
-    import os
     size_kb = os.path.getsize(OUT_PATH) / 1024
     pos_counts = {}
     for r in records:
@@ -1496,6 +1560,11 @@ def build():
     print(f"  Positions: {pos_counts}")
     print(f"  Gap: mean={np.mean(gaps):.2f}, std={np.std(gaps):.2f}, range=[{min(gaps):.1f}, {max(gaps):.1f}]")
     print(f"  TM matched: {tm_count}/{len(records)}, null composites: {null_comp}")
+    total_clubs = len(matched_clubs) + len(missing_clubs)
+    if total_clubs:
+        print(f"  Clubs covered: {len(matched_clubs)}/{total_clubs}")
+    if missing_clubs:
+        print(f"  Missing club meta: {sorted(missing_clubs)}")
 
 
 if __name__ == "__main__":

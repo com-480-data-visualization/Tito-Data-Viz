@@ -1,141 +1,12 @@
-// --- Act 2: League Map ---
-// Flat Europe, semantically zoomable through 4 levels:
-//   L1 Leagues  -> L2 Country  -> L3 Clubs  -> L4 Players
-// Pan + wheel-zoom via d3.zoom; click-to-drill animates the transform.
-
 function initLeagueMap(data) {
     const root = document.getElementById("map-section");
     if (!root || !data?.length) return;
+    window.__playersData = data;
 
-    // ---------------------------------------------------------------
-    // Static tables: league meta + club city coords (top-5 leagues)
-    // ---------------------------------------------------------------
-    // `anchor` is [lon, lat] — explicit label point per country. Bbox
-    // centroids misfire for features with overseas territories
-    // (France -> Guyane/Réunion pull the centroid south), so we pick a
-    // reliable on-land point per country instead.
-    const LEAGUES = {
-        "PL":         { country: "England", countryId: "826", label: "Premier League", anchor: [-1.50, 52.80] },
-        "La Liga":    { country: "Spain",   countryId: "724", label: "La Liga",         anchor: [-3.70, 40.10] },
-        "Bundesliga": { country: "Germany", countryId: "276", label: "Bundesliga",      anchor: [10.30, 51.10] },
-        "Serie A":    { country: "Italy",   countryId: "380", label: "Serie A",         anchor: [12.50, 43.50] },
-        "Ligue 1":    { country: "France",  countryId: "250", label: "Ligue 1",         anchor: [ 2.35, 46.70] }
-    };
+    const LEAGUES = MAP_LEAGUES;
+    const CLUB_COORDS = MAP_CLUB_COORDS;
     const HIGHLIGHT_IDS = new Set(Object.values(LEAGUES).map(l => l.countryId));
 
-    // [lon, lat] per club. Canary/island clubs land at real coords and
-    // sit outside the default Europe viewport — that's intentional.
-    const CLUB_COORDS = {
-        // Premier League
-        "Arsenal":         [-0.108, 51.555],
-        "Aston Villa":     [-1.884, 52.509],
-        "Bournemouth":     [-1.838, 50.735],
-        "Brentford":       [-0.289, 51.490],
-        "Brighton":        [-0.083, 50.862],
-        "Chelsea":         [-0.192, 51.481],
-        "Crystal Palace":  [-0.085, 51.398],
-        "Everton":         [-2.966, 53.439],
-        "Fulham":          [-0.222, 51.475],
-        "Ipswich Town":    [ 1.145, 52.055],
-        "Leicester City":  [-1.142, 52.620],
-        "Liverpool":       [-2.960, 53.431],
-        "Manchester City": [-2.200, 53.483],
-        "Manchester Utd":  [-2.291, 53.463],
-        "Newcastle Utd":   [-1.618, 54.976],
-        "Nott'ham Forest": [-1.133, 52.940],
-        "Southampton":     [-1.391, 50.906],
-        "Tottenham":       [-0.066, 51.604],
-        "West Ham":        [-0.016, 51.539],
-        "Wolves":          [-2.130, 52.590],
-
-        // La Liga
-        "Alavés":          [-2.672, 42.846],
-        "Athletic Club":   [-2.949, 43.264],
-        "Atlético Madrid": [-3.599, 40.436],
-        "Barcelona":       [ 2.120, 41.380],
-        "Betis":           [-5.981, 37.356],
-        "Celta Vigo":      [-8.739, 42.212],
-        "Espanyol":        [ 2.074, 41.347],
-        "Getafe":          [-3.714, 40.325],
-        "Girona":          [ 2.828, 41.961],
-        "Las Palmas":      [-15.456, 28.100],
-        "Leganés":         [-3.760, 40.340],
-        "Mallorca":        [ 2.632, 39.589],
-        "Osasuna":         [-1.637, 42.796],
-        "Rayo Vallecano":  [-3.658, 40.391],
-        "Real Madrid":     [-3.688, 40.453],
-        "Real Sociedad":   [-1.973, 43.301],
-        "Sevilla":         [-5.970, 37.384],
-        "Valencia":        [-0.358, 39.474],
-        "Valladolid":      [-4.761, 41.644],
-        "Villarreal":      [-0.103, 39.944],
-
-        // Bundesliga
-        "Augsburg":        [10.884, 48.324],
-        "Bayern Munich":   [11.625, 48.218],
-        "Bochum":          [ 7.236, 51.490],
-        "Dortmund":        [ 7.452, 51.492],
-        "Eint Frankfurt":  [ 8.645, 50.069],
-        "Freiburg":        [ 7.830, 48.021],
-        "Gladbach":        [ 6.386, 51.175],
-        "Heidenheim":      [10.144, 48.676],
-        "Hoffenheim":      [ 8.888, 49.239],
-        "Holstein Kiel":   [10.122, 54.349],
-        "Leverkusen":      [ 7.002, 51.038],
-        "Mainz 05":        [ 8.224, 49.983],
-        "RB Leipzig":      [12.348, 51.346],
-        "St. Pauli":       [ 9.968, 53.554],
-        "Stuttgart":       [ 9.232, 48.792],
-        "Union Berlin":    [13.568, 52.457],
-        "Werder Bremen":   [ 8.838, 53.066],
-        "Wolfsburg":       [10.803, 52.432],
-
-        // Serie A
-        "Atalanta":        [ 9.680, 45.709],
-        "Bologna":         [11.310, 44.492],
-        "Cagliari":        [ 9.137, 39.200],
-        "Como":            [ 9.085, 45.817],
-        "Empoli":          [10.955, 43.726],
-        "Fiorentina":      [11.283, 43.780],
-        "Genoa":           [ 8.952, 44.417],
-        "Hellas Verona":   [10.969, 45.435],
-        "Inter":           [ 9.124, 45.478],
-        "Juventus":        [ 7.642, 45.109],
-        "Lazio":           [12.455, 41.934],
-        "Lecce":           [18.209, 40.365],
-        "Milan":           [ 9.124, 45.478],
-        "Monza":           [ 9.268, 45.583],
-        "Napoli":          [14.193, 40.828],
-        "Parma":           [10.338, 44.795],
-        "Roma":            [12.455, 41.934],
-        "Torino":          [ 7.650, 45.042],
-        "Udinese":         [13.200, 46.081],
-        "Venezia":         [12.365, 45.419],
-
-        // Ligue 1
-        "Angers":          [-0.532, 47.460],
-        "Auxerre":         [ 3.592, 47.786],
-        "Brest":           [-4.462, 48.402],
-        "Le Havre":        [ 0.108, 49.498],
-        "Lens":            [ 2.815, 50.433],
-        "Lille":           [ 3.130, 50.612],
-        "Lyon":            [ 4.982, 45.765],
-        "Marseille":       [ 5.395, 43.270],
-        "Monaco":          [ 7.416, 43.728],
-        "Montpellier":     [ 3.812, 43.622],
-        "Nantes":          [-1.525, 47.256],
-        "Nice":            [ 7.193, 43.705],
-        "Paris S-G":       [ 2.253, 48.841],
-        "Reims":           [ 4.024, 49.247],
-        "Rennes":          [-1.713, 48.108],
-        "Saint-Étienne":   [ 4.390, 45.461],
-        "Strasbourg":      [ 7.755, 48.561],
-        "Toulouse":        [ 1.434, 43.583]
-    };
-
-    // ---------------------------------------------------------------
-    // Aggregate league / club stats from the player pool
-    // ---------------------------------------------------------------
     const leagueStats = {};
     for (const key of Object.keys(LEAGUES)) {
         const pool = data.filter(p => p.league === key && typeof p.gap === "number");
@@ -152,6 +23,10 @@ function initLeagueMap(data) {
             const cgaps = players.map(p => p.gap);
             const cMean = cgaps.reduce((a, b) => a + b, 0) / cgaps.length;
             const sortedByGap = players.slice().sort((a, b) => b.gap - a.gap);
+            const meta = players.find(p => p.clubLogo || p.clubFormation || p.clubColor) || players[0] || {};
+            const inferred = (typeof window.inferBestFormation === "function")
+                ? window.inferBestFormation(players)
+                : null;
             return {
                 name,
                 players,
@@ -159,7 +34,10 @@ function initLeagueMap(data) {
                 count: players.length,
                 best: sortedByGap[0],
                 worst: sortedByGap[sortedByGap.length - 1],
-                coords: CLUB_COORDS[name] || null
+                coords: CLUB_COORDS[name] || null,
+                logo: meta.clubLogo || null,
+                formation: inferred || meta.clubFormation || null,
+                color: meta.clubColor || null
             };
         });
         clubs.sort((a, b) => b.avgGap - a.avgGap);
@@ -178,16 +56,13 @@ function initLeagueMap(data) {
     const mostUnder = leaguesByGap[0];
     const mostOver  = leaguesByGap[leaguesByGap.length - 1];
 
-    // ---------------------------------------------------------------
-    // Skeleton
-    // ---------------------------------------------------------------
     root.innerHTML =
         '<div class="map-head">' +
-            '<span class="map-kicker">\u00a7 04 \u00b7 THE CONTINENT</span>' +
+            '<span class="map-kicker">\u00a7 03 \u00b7 THE CONTINENT</span>' +
             '<h3 class="map-title">The gap, zoomed.</h3>' +
             '<p class="map-sub">' +
-                'Europe\u2019s big five, peelable from <em>leagues</em> down to a single <em>player</em>. ' +
-                'Scroll to zoom, drag to pan, click anything to dive.' +
+                'Europe\u2019s big five, peelable from <em>leagues</em> down to a single <em>club</em>. ' +
+                'Click a league, drill into a country, then open the XI from the club view.' +
             '</p>' +
         '</div>' +
         '<nav class="map-breadcrumb" id="map-breadcrumb" aria-label="Map navigation"></nav>' +
@@ -196,39 +71,44 @@ function initLeagueMap(data) {
                 '<div class="map-loading">Loading Europe\u2026</div>' +
             '</div>' +
             '<aside class="map-aside" id="map-aside"></aside>' +
-        '</div>' +
-        '<div class="map-drawer" id="map-drawer"></div>';
+        '</div>';
 
     const stage  = root.querySelector("#map-stage");
     const aside  = root.querySelector("#map-aside");
-    const drawer = root.querySelector("#map-drawer");
     const crumb  = root.querySelector("#map-breadcrumb");
 
-    // Shared floating tooltip
     const tip = document.createElement("div");
     tip.className = "map-tip";
     document.body.appendChild(tip);
 
-    // ---------------------------------------------------------------
-    // State machine
-    // ---------------------------------------------------------------
-    // view: { level: "europe"|"country"|"club"|"player", leagueKey?, clubName?, playerIdx? }
     let view = { level: "europe" };
-    let currentLevel = 0;   // derived numeric level (1..4); 0 forces first apply
-    let lastPulsedClub = null; // suppress redundant CTA entrance when drawer re-renders at same club
+    let currentLevel = 0;
+
+    const LEVEL_DEPTH = { europe: 1, country: 2, cluster: 2, club: 3, player: 4 };
+    let collapseTimer = null;
 
     function setView(next, opts) {
+        const prevDepth = LEVEL_DEPTH[view.level] || 1;
+        const nextDepth = LEVEL_DEPTH[next.level] || 1;
+        const goingShallower = nextDepth < prevDepth;
         view = next;
         renderAside();
-        renderDrawer();
         renderBreadcrumb();
+        if (goingShallower && svg) {
+            svg.classList.add("is-dezooming");
+            if (collapseTimer) clearTimeout(collapseTimer);
+            collapseTimer = setTimeout(() => {
+                svg.classList.remove("is-dezooming");
+                collapseTimer = null;
+                syncEntityVisibility();
+            }, 760);
+        }
+        syncEntityVisibility();
+        updateXiButton();
         if (opts?.animate !== false) animateToView();
         else applyViewInstant();
     }
 
-    // ---------------------------------------------------------------
-    // Colour ramp: diverging around 0, clamped to ~|2.5|
-    // ---------------------------------------------------------------
     function colorForGap(gap) {
         const t = Math.max(-1, Math.min(1, gap / 2.5));
         if (t >= 0) return interpolateHex("#2a3344", "#2ecc71", t);
@@ -246,20 +126,8 @@ function initLeagueMap(data) {
         return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
     }
 
-    // ---------------------------------------------------------------
-    // Side panel: header insight + ranked list scoped by level
-    // ---------------------------------------------------------------
     function renderAside() {
-        const headline =
-            '<div class="map-insight">' +
-                '<span class="map-insight-kicker">HEADLINE</span>' +
-                '<p class="map-insight-body">' +
-                    '<strong>' + escapeAttr(mostUnder.label) + '</strong> runs the biggest ' +
-                    'reputation surplus (<span class="gap-up">+' + mostUnder.avgGap.toFixed(2) + '</span>).' +
-                    ' <strong>' + escapeAttr(mostOver.label) + '</strong> carries the heaviest ' +
-                    'tax (<span class="gap-down">' + mostOver.avgGap.toFixed(2) + '</span>).' +
-                '</p>' +
-            '</div>';
+        const headline = buildHeadline();
 
         if (view.level === "europe") {
             const rows = Object.values(leagueStats)
@@ -295,8 +163,9 @@ function initLeagueMap(data) {
                 const sign = c.avgGap >= 0 ? "+" : "";
                 const cls  = c.avgGap >= 0 ? "gap-up" : "gap-down";
                 return '<button class="map-row ' + cls + '" data-club="' + escapeAttr(c.name) + '">' +
-                    '<span class="map-row-dot"></span>' +
+                    clubLogoHTML(c, "map-row-logo") +
                     '<span class="map-row-name">' + escapeAttr(c.name) + '</span>' +
+                    (c.formation ? '<span class="map-row-formation">' + escapeAttr(c.formation) + '</span>' : '') +
                     '<span class="map-row-count">' + c.count + ' players</span>' +
                     '<span class="map-row-gap">' + sign + c.avgGap.toFixed(2) + '</span>' +
                 '</button>';
@@ -312,145 +181,209 @@ function initLeagueMap(data) {
             return;
         }
 
-        if (view.level === "club" || view.level === "player") {
+        if (view.level === "cluster") {
             const L = leagueStats[view.leagueKey];
-            const C = L?.clubByName[view.clubName];
-            if (!L || !C) return;
-            const players = C.players.slice().sort((a, b) => b.gap - a.gap);
-            const rows = players.map((p, i) => {
-                const sign = p.gap >= 0 ? "+" : "";
-                const cls  = p.gap >= 0 ? "gap-up" : "gap-down";
-                const sel  = (view.level === "player" && players[view.playerIdx]?.name === p.name) ? " is-selected" : "";
-                return '<button class="map-row ' + cls + sel + '" data-player="' + i + '">' +
-                    '<span class="map-row-dot"></span>' +
-                    '<span class="map-row-name">' + escapeAttr(p.name) + '</span>' +
-                    '<span class="map-row-count">OVR ' + (p.ea ?? "-") + '</span>' +
-                    '<span class="map-row-gap">' + sign + p.gap.toFixed(2) + '</span>' +
+            if (!L || !view.clusterMembers) return;
+            const members = view.clusterMembers
+                .map(name => L.clubByName[name])
+                .filter(Boolean)
+                .sort((a, b) => b.avgGap - a.avgGap);
+            const rows = members.map(c => {
+                const sign = c.avgGap >= 0 ? "+" : "";
+                const cls  = c.avgGap >= 0 ? "gap-up" : "gap-down";
+                return '<button class="map-row ' + cls + '" data-club="' + escapeAttr(c.name) + '">' +
+                    clubLogoHTML(c, "map-row-logo") +
+                    '<span class="map-row-name">' + escapeAttr(c.name) + '</span>' +
+                    (c.formation ? '<span class="map-row-formation">' + escapeAttr(c.formation) + '</span>' : '') +
+                    '<span class="map-row-count">' + c.count + ' players</span>' +
+                    '<span class="map-row-gap">' + sign + c.avgGap.toFixed(2) + '</span>' +
                 '</button>';
             }).join("");
             aside.innerHTML = headline +
                 '<div class="map-list">' +
-                    '<div class="map-list-label">SQUAD &middot; ' + escapeAttr(C.name.toUpperCase()) + '</div>' +
+                    '<div class="map-list-label map-list-label-cluster">' +
+                        '<button class="map-cluster-back" type="button">&lsaquo; Back to ' + escapeAttr(L.label) + '</button>' +
+                        '<span class="map-list-label-text">SHARED SITE &middot; ' + members.length + ' CLUBS</span>' +
+                    '</div>' +
                     rows +
                 '</div>';
+            aside.querySelector(".map-cluster-back")?.addEventListener("click", () => {
+                setView({ level: "country", leagueKey: view.leagueKey });
+            });
             aside.querySelectorAll(".map-row").forEach(btn => {
-                btn.addEventListener("click", () => focusPlayer(view.leagueKey, C.name, +btn.dataset.player));
-            });
-        }
-    }
-
-    // ---------------------------------------------------------------
-    // Drawer: the clubs table (kept for L2) / player card (L4)
-    // ---------------------------------------------------------------
-    function renderDrawer() {
-        if (view.level === "europe") {
-            drawer.innerHTML = '<div class="map-drawer-empty">Pick a league above to drill into its clubs.</div>';
-            drawer.classList.remove("is-open");
-            return;
-        }
-        if (view.level === "country") {
-            const L = leagueStats[view.leagueKey];
-            const max = Math.max(...L.clubs.map(c => Math.abs(c.avgGap)), 1);
-            const rows = L.clubs.map((c, i) => {
-                const sign = c.avgGap >= 0 ? "+" : "";
-                const cls  = c.avgGap >= 0 ? "gap-up" : "gap-down";
-                const side = c.avgGap >= 0 ? "right" : "left";
-                const pct  = (Math.abs(c.avgGap) / max) * 100;
-                return '<div class="map-club-row" data-club="' + escapeAttr(c.name) + '">' +
-                    '<span class="map-club-rank">' + (i + 1).toString().padStart(2, "0") + '</span>' +
-                    '<span class="map-club-name">' + escapeAttr(c.name) + '</span>' +
-                    '<span class="map-club-count">' + c.count + '</span>' +
-                    '<div class="map-club-bar"><div class="map-club-bar-fill map-club-bar-' + side + ' ' + cls + '" style="width:' + pct.toFixed(1) + '%"></div></div>' +
-                    '<span class="map-club-gap ' + cls + '">' + sign + c.avgGap.toFixed(2) + '</span>' +
-                '</div>';
-            }).join("");
-
-            drawer.innerHTML =
-                '<div class="map-drawer-head">' +
-                    '<div class="map-drawer-title">' +
-                        '<span class="map-drawer-kicker">' + escapeAttr(L.country.toUpperCase()) + '</span>' +
-                        '<h4 class="map-drawer-h">' + escapeAttr(L.label) + '</h4>' +
-                    '</div>' +
-                    '<div class="map-drawer-stats">' +
-                        '<div><span class="map-drawer-stat-val">' + L.clubCount + '</span><span class="map-drawer-stat-lbl">clubs</span></div>' +
-                        '<div><span class="map-drawer-stat-val">' + L.playerCount + '</span><span class="map-drawer-stat-lbl">players</span></div>' +
-                        '<div><span class="map-drawer-stat-val ' + (L.avgGap >= 0 ? "gap-up" : "gap-down") + '">' + (L.avgGap >= 0 ? "+" : "") + L.avgGap.toFixed(2) + '</span><span class="map-drawer-stat-lbl">avg gap</span></div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="map-club-head">' +
-                    '<span>#</span><span>CLUB</span><span>N</span><span>GAP</span><span></span>' +
-                '</div>' +
-                '<div class="map-club-list">' + rows + '</div>';
-            drawer.classList.add("is-open");
-            drawer.querySelectorAll(".map-club-row").forEach(r => {
-                r.addEventListener("click", () => focusClub(view.leagueKey, r.dataset.club));
+                btn.addEventListener("click", () => focusClub(view.leagueKey, btn.dataset.club));
             });
             return;
         }
-        if (view.level === "club" || view.level === "player") {
+
+        if (view.level === "club") {
             const L = leagueStats[view.leagueKey];
             const C = L?.clubByName[view.clubName];
             if (!L || !C) return;
             const players = C.players.slice().sort((a, b) => b.gap - a.gap);
-            const P = view.level === "player" ? players[view.playerIdx] : null;
 
-            // The player-level detail lives inside the stadium now — the map
-            // drawer stays at club granularity and just announces who is armed
-            // for the stadium when a squad row is picked.
-            const ctaKicker = P ? "§ 05 &middot; STEP INSIDE &middot; " + escapeAttr(P.name.toUpperCase())
-                                : "§ 05 &middot; STEP INSIDE";
-            const ctaText   = P ? "Walk onto the pitch &mdash; land on " + escapeAttr(P.name) + "."
-                                : "Walk onto the pitch &mdash; see the squad where they stand.";
+            const clusterPeers = findClusterPeers(view.leagueKey, view.clubName);
+            const switcher = (clusterPeers.length > 1)
+                ? '<div class="map-cluster-switcher">' +
+                    '<span class="map-cluster-switcher-lbl">Same site</span>' +
+                    clusterPeers.map(peer => {
+                        const isActive = peer.name === C.name ? " is-active" : "";
+                        return '<button class="map-cluster-chip' + isActive + '" type="button" data-club="' + escapeAttr(peer.name) + '">' +
+                            clubLogoHTML(peer, "map-cluster-chip-logo") +
+                            '<span>' + escapeAttr(peer.name) + '</span>' +
+                        '</button>';
+                    }).join("") +
+                '</div>'
+                : '';
 
-            drawer.innerHTML =
-                '<div class="map-drawer-head">' +
-                    '<div class="map-drawer-title">' +
-                        '<span class="map-drawer-kicker">' + escapeAttr(L.label.toUpperCase()) + '</span>' +
-                        '<h4 class="map-drawer-h">' + escapeAttr(C.name) + '</h4>' +
-                    '</div>' +
-                    '<div class="map-drawer-stats">' +
-                        '<div><span class="map-drawer-stat-val">' + C.count + '</span><span class="map-drawer-stat-lbl">players</span></div>' +
-                        '<div><span class="map-drawer-stat-val ' + (C.avgGap >= 0 ? "gap-up" : "gap-down") + '">' + (C.avgGap >= 0 ? "+" : "") + C.avgGap.toFixed(2) + '</span><span class="map-drawer-stat-lbl">avg gap</span></div>' +
-                    '</div>' +
-                '</div>' +
-                '<button class="map-stad-cta' + (P ? ' is-armed' : '') + '" type="button" data-club="' + escapeAttr(C.name) + '"' + (P ? ' data-player="' + escapeAttr(P.name) + '"' : '') + '>' +
-                    '<span class="map-stad-cta-label">' +
-                        '<span class="map-stad-cta-kicker">' + ctaKicker + '</span>' +
-                        '<span class="map-stad-cta-text">' + ctaText + '</span>' +
-                    '</span>' +
-                    '<span class="map-stad-cta-arrow">&rsaquo;</span>' +
+            const rows = players.map((p, i) => {
+                const sign = p.gap >= 0 ? "+" : "";
+                const cls  = p.gap >= 0 ? "gap-up" : "gap-down";
+                return '<button class="map-row map-row-player ' + cls + '" type="button" data-player-idx="' + i + '" data-player-name="' + escapeAttr(p.name) + '">' +
+                    '<span class="map-row-dot"></span>' +
+                    '<span class="map-row-name">' + escapeAttr(p.name) + '</span>' +
+                    '<span class="map-row-count">OVR ' + (p.ea?.ovr ?? "-") + '</span>' +
+                    '<span class="map-row-gap">' + sign + p.gap.toFixed(2) + '</span>' +
                 '</button>';
-            drawer.classList.add("is-open");
-
-            const cta = drawer.querySelector(".map-stad-cta");
-            if (cta) {
-                cta.addEventListener("click", () => {
-                    if (typeof window.openAct2Stadium === "function") {
-                        const opts = P ? { preselectPlayer: P.name } : undefined;
-                        window.openAct2Stadium(C, opts);
-                    }
+            }).join("");
+            const headerInner =
+                clubLogoHTML(C, "map-list-logo") +
+                '<span class="map-list-label-text">SQUAD &middot; ' + escapeAttr(C.name.toUpperCase()) + '</span>' +
+                (C.formation ? '<span class="map-list-formation">' + escapeAttr(C.formation) + '</span>' : '');
+            aside.innerHTML = headline +
+                switcher +
+                '<div class="map-list">' +
+                    '<div class="map-list-label map-list-label-club">' + headerInner + '</div>' +
+                    rows +
+                '</div>';
+            aside.querySelectorAll(".map-cluster-chip").forEach(chip => {
+                chip.addEventListener("click", () => focusClub(view.leagueKey, chip.dataset.club));
+            });
+            aside.querySelectorAll(".map-row-player").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    if (typeof window.openAct2Stadium !== "function") return;
+                    window.openAct2Stadium(C, { preselectPlayer: btn.dataset.playerName });
                 });
-                // Draw the eye to the doorway only on a fresh club — cycling
-                // through players inside the same club shouldn't re-pulse.
-                if (lastPulsedClub !== C.name) {
-                    lastPulsedClub = C.name;
-                    try { cta.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
-                    setTimeout(() => {
-                        cta.classList.remove("is-pulsing");
-                        void cta.offsetWidth;
-                        cta.classList.add("is-pulsing");
-                        setTimeout(() => cta.classList.remove("is-pulsing"), 2100);
-                    }, 420);
-                }
-            }
-        } else {
-            lastPulsedClub = null;
+            });
         }
     }
 
-    // ---------------------------------------------------------------
-    // Breadcrumb
-    // ---------------------------------------------------------------
+    function findClusterPeers(leagueKey, clubName) {
+        const L = leagueStats[leagueKey];
+        if (!L) return [];
+        for (const [, cluster] of clubClusterEls) {
+            if (cluster.league !== leagueKey) continue;
+            const names = cluster.members.map(m => m.name);
+            if (names.includes(clubName)) {
+                return names
+                    .map(n => L.clubByName[n])
+                    .filter(Boolean)
+                    .sort((a, b) => b.avgGap - a.avgGap);
+            }
+        }
+        return [];
+    }
+
+    function buildHeadline() {
+        const wrap = (kicker, body) =>
+            '<div class="map-insight">' +
+                '<span class="map-insight-kicker">' + kicker + '</span>' +
+                '<p class="map-insight-body">' + body + '</p>' +
+            '</div>';
+
+        if (view.level === "europe") {
+            const surplusClubs = Object.values(leagueStats)
+                .reduce((acc, L) => acc + L.clubs.filter(c => c.avgGap >= 0).length, 0);
+            const totalClubs = Object.values(leagueStats)
+                .reduce((acc, L) => acc + L.clubs.length, 0);
+            const body =
+                '<strong>' + escapeAttr(mostUnder.label) + '</strong> runs the biggest reputation surplus ' +
+                '(<span class="gap-up">+' + mostUnder.avgGap.toFixed(2) + '</span>). ' +
+                '<strong>' + escapeAttr(mostOver.label) + '</strong> carries the heaviest tax ' +
+                '(<span class="gap-down">' + mostOver.avgGap.toFixed(2) + '</span>). ' +
+                'Across the top five, <strong>' + surplusClubs + '/' + totalClubs + '</strong> clubs land underrated on average.';
+            return wrap("HEADLINE · EUROPE", body);
+        }
+
+        if (view.level === "country") {
+            const L = leagueStats[view.leagueKey];
+            if (!L) return "";
+            const clubs = L.clubs.slice().sort((a, b) => b.avgGap - a.avgGap);
+            const top = clubs[0];
+            const bottom = clubs[clubs.length - 1];
+            const fairest = clubs.slice().sort((a, b) => Math.abs(a.avgGap) - Math.abs(b.avgGap))[0];
+            const body =
+                '<strong>' + escapeAttr(top.name) + '</strong> tops the surplus list ' +
+                '(<span class="gap-up">+' + top.avgGap.toFixed(2) + '</span>). ' +
+                '<strong>' + escapeAttr(bottom.name) + '</strong> sits the heaviest in the red ' +
+                '(<span class="gap-down">' + bottom.avgGap.toFixed(2) + '</span>). ' +
+                'League average <strong>' + (L.avgGap >= 0 ? "+" : "") + L.avgGap.toFixed(2) + '</strong> on ' +
+                '<strong>' + L.playerCount + '</strong> players. ' +
+                'Closest to fair: <strong>' + escapeAttr(fairest.name) + '</strong>.';
+            return wrap("HEADLINE · " + escapeAttr(L.label.toUpperCase()), body);
+        }
+
+        if (view.level === "cluster") {
+            const L = leagueStats[view.leagueKey];
+            if (!L) return "";
+            const members = (view.clusterMembers || [])
+                .map(n => L.clubByName[n])
+                .filter(Boolean)
+                .sort((a, b) => b.avgGap - a.avgGap);
+            if (!members.length) return "";
+            const top = members[0];
+            const bottom = members[members.length - 1];
+            const meanGap = members.reduce((s, m) => s + m.avgGap, 0) / members.length;
+            const totalPlayers = members.reduce((s, m) => s + m.count, 0);
+            const body =
+                'Same metro, different verdicts. <strong>' + escapeAttr(top.name) + '</strong> tops ' +
+                '(<span class="gap-up">+' + top.avgGap.toFixed(2) + '</span>), ' +
+                '<strong>' + escapeAttr(bottom.name) + '</strong> at the bottom ' +
+                '(<span class="gap-down">' + bottom.avgGap.toFixed(2) + '</span>). ' +
+                'Cluster average <strong>' + (meanGap >= 0 ? "+" : "") + meanGap.toFixed(2) + '</strong> ' +
+                'on <strong>' + totalPlayers + '</strong> players.';
+            return wrap("HEADLINE · SHARED SITE · " + escapeAttr(L.label.toUpperCase()), body);
+        }
+
+        if (view.level === "club") {
+            const L = leagueStats[view.leagueKey];
+            const C = L && L.clubByName[view.clubName];
+            if (!C) return "";
+            const players = C.players.slice().sort((a, b) => b.gap - a.gap);
+            const top = players[0];
+            const bottom = players[players.length - 1];
+            const upCount = players.filter(p => p.gap > 1).length;
+            const dnCount = players.filter(p => p.gap < -1).length;
+            const body =
+                'Squad average <strong>' + (C.avgGap >= 0 ? "+" : "") + C.avgGap.toFixed(2) + '</strong> ' +
+                'on <strong>' + C.count + '</strong> players. ' +
+                'Most underrated: <strong>' + escapeAttr(top.name) + '</strong> ' +
+                '(<span class="gap-up">+' + top.gap.toFixed(2) + '</span>). ' +
+                'Heaviest tax on <strong>' + escapeAttr(bottom.name) + '</strong> ' +
+                '(<span class="gap-down">' + bottom.gap.toFixed(2) + '</span>). ' +
+                '<strong>' + upCount + '</strong> underrated · <strong>' + dnCount + '</strong> overrated.';
+            const kicker = (C.formation ? C.formation + " · " : "") + escapeAttr(C.name.toUpperCase());
+            return wrap("HEADLINE · " + kicker, body);
+        }
+
+        return "";
+    }
+
+    function clubLogoHTML(c, cls) {
+        const fb = (c.color || "#444") + "";
+        const initial = ((c.name || "?")[0] || "?").toUpperCase();
+        if (c.logo) {
+            return '<span class="' + cls + '-wrap" style="--club-color:' + escapeAttr(fb) + '">' +
+                '<img class="' + cls + '" src="' + escapeAttr(c.logo) + '" alt="" loading="lazy" ' +
+                'onerror="this.parentNode.classList.add(\'is-fallback\');this.remove();" />' +
+                '<span class="' + cls + '-fb">' + escapeAttr(initial) + '</span>' +
+            '</span>';
+        }
+        return '<span class="' + cls + '-wrap is-fallback" style="--club-color:' + escapeAttr(fb) + '">' +
+            '<span class="' + cls + '-fb">' + escapeAttr(initial) + '</span>' +
+        '</span>';
+    }
+
     function renderBreadcrumb() {
         const parts = [{ label: "Europe", onClick: () => resetView() }];
         if (view.leagueKey) {
@@ -458,12 +391,6 @@ function initLeagueMap(data) {
             parts.push({ label: L.country, onClick: () => focusLeague(view.leagueKey) });
         }
         if (view.clubName) parts.push({ label: view.clubName, onClick: () => focusClub(view.leagueKey, view.clubName) });
-        if (view.level === "player") {
-            const L = leagueStats[view.leagueKey];
-            const C = L?.clubByName[view.clubName];
-            const P = C?.players.slice().sort((a, b) => b.gap - a.gap)[view.playerIdx];
-            if (P) parts.push({ label: P.name, onClick: null });
-        }
         crumb.innerHTML = parts.map((p, i) => {
             const last = i === parts.length - 1;
             const cls = "map-crumb" + (last ? " is-current" : "");
@@ -477,36 +404,40 @@ function initLeagueMap(data) {
         });
     }
 
-    // ---------------------------------------------------------------
-    // Map (d3 + topojson)
-    // ---------------------------------------------------------------
     const TOPO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
     const W_DEFAULT = 720, H_DEFAULT = 540;
     let svg = null;
     let viewG = null;               // zoomable <g>
     let projection = null;
     let pathGen = null;
-    let countriesGeo = null;
-    let countryById = null;
     let zoom = null;
     let width = W_DEFAULT, height = H_DEFAULT;
-    let pathEls = new Map();        // country id -> <path>
-    let labelEls = new Map();       // league key -> <g>
-    let clubEls = new Map();        // club name -> <g>
-    let playerEls = new Map();      // key leagueKey|club|idx -> <g>
-    let countryBounds = new Map();  // league key -> [[x0,y0],[x1,y1]] in projected coords
+    let pathEls = new Map();
+    let labelEls = new Map();
+    let clubEls = new Map();
+    let clubClusterEls = new Map();
+    let countryBounds = new Map();
     let currentTransform = null;
+    let xiButton = null;
 
     function paintCountries() {
+        const focused = view.level !== "europe" && view.leagueKey;
         pathEls.forEach((el, id) => {
             if (!HIGHLIGHT_IDS.has(id)) return;
             const key = Object.keys(LEAGUES).find(k => LEAGUES[k].countryId === id);
             const L = leagueStats[key];
             if (!L) return;
-            el.setAttribute("fill", "url(#map-country-fill-live)");
-            el.classList.remove("is-up", "is-down");
-            el.classList.add(L.avgGap >= 0 ? "is-up" : "is-down");
-            el.classList.toggle("is-selected", key === view.leagueKey);
+            const isThis = key === view.leagueKey;
+            if (focused && !isThis) {
+                el.setAttribute("fill", "url(#map-country-fill)");
+                el.classList.remove("is-up", "is-down", "is-selected");
+                el.classList.add("is-faded");
+            } else {
+                el.setAttribute("fill", "url(#map-country-fill-live)");
+                el.classList.remove("is-up", "is-down", "is-faded");
+                el.classList.add(L.avgGap >= 0 ? "is-up" : "is-down");
+                el.classList.toggle("is-selected", isThis);
+            }
         });
     }
 
@@ -517,16 +448,136 @@ function initLeagueMap(data) {
         if (el) el.classList.toggle("is-hover", !!on);
     }
 
+    function syncEntityVisibility() {
+        if (!svg) return;
+        // cluster pins are shared, dedupe per node so focusing one member
+        // doesn't hide the pin for the rest
+        const nodeScope = new Map();
+        clubEls.forEach((el, key) => {
+            const parts = key.split("|");
+            const leagueKey = parts[0];
+            const clubName = parts.slice(1).join("|");
+            let outOfScope = false;
+            if (view.level === "country" || view.level === "cluster") {
+                outOfScope = leagueKey !== view.leagueKey;
+            } else if (view.level === "club") {
+                const zoomedBackToCountry = currentLevel <= 2;
+                outOfScope = leagueKey !== view.leagueKey || (!zoomedBackToCountry && clubName !== view.clubName);
+            }
+            const prev = nodeScope.get(el);
+            if (prev === undefined || prev === true) nodeScope.set(el, outOfScope);
+        });
+        nodeScope.forEach((outOfScope, el) => {
+            el.classList.toggle("is-out-of-scope", outOfScope);
+        });
+        morphClusterPins();
+    }
+
+    function morphClusterPins() {
+        clubClusterEls.forEach((cluster) => {
+            const node = cluster.node;
+            if (!node._originalHtml) node._originalHtml = node.innerHTML;
+            const focusName = view.level === "club" ? view.clubName : null;
+            const focusMember = focusName
+                ? cluster.members.find(m => m.name === focusName)
+                : null;
+            if (focusMember && cluster.league === view.leagueKey) {
+                const sign = focusMember.avgGap >= 0 ? "+" : "";
+                node.classList.add("is-focused-member");
+                node.classList.toggle("is-up", focusMember.avgGap >= 0);
+                node.classList.toggle("is-down", focusMember.avgGap < 0);
+                const ringStroke = focusMember.color || "rgba(255,255,255,0.22)";
+                const logoMark = focusMember.logo
+                    ? '<g class="map-chev-logo" transform="translate(0, 0)">' +
+                          '<circle cx="0" cy="0" r="11" fill="#0a0e18" stroke="' + escapeAttr(ringStroke) + '" stroke-width="1.1"></circle>' +
+                          '<image href="' + escapeAttr(focusMember.logo) + '" x="-9" y="-9" width="18" height="18" clip-path="circle(8.5px at 9px 9px)" preserveAspectRatio="xMidYMid meet"></image>' +
+                      '</g>'
+                    : '<circle cx="0" cy="0" r="11" fill="' + escapeAttr(focusMember.color || "#444") + '" stroke="rgba(0,0,0,0.45)" stroke-width="0.9"></circle>';
+                node.querySelector(".map-chev-counter").innerHTML =
+                    '<rect class="map-chev-plate" x="-22" y="-30" width="44" height="14" rx="3"></rect>' +
+                    '<text class="map-chev-gap" x="0" y="-20" text-anchor="middle">' + sign + focusMember.avgGap.toFixed(2) + '</text>' +
+                    logoMark +
+                    '<text class="map-chev-label" x="0" y="22" text-anchor="middle">' + escapeAttr(focusMember.name) + '</text>';
+            } else {
+                if (node.classList.contains("is-focused-member")) {
+                    node.classList.remove("is-focused-member");
+                    if (node._originalHtml) node.innerHTML = node._originalHtml;
+                    const meanGap = cluster.members.reduce((s, m) => s + m.avgGap, 0) / cluster.members.length;
+                    node.classList.toggle("is-up", meanGap >= 0);
+                    node.classList.toggle("is-down", meanGap < 0);
+                }
+            }
+        });
+    }
+
+    function updateXiButton() {
+        if (!xiButton) return;
+        const L = view.leagueKey ? leagueStats[view.leagueKey] : null;
+        const C = L && view.clubName ? L.clubByName[view.clubName] : null;
+
+        const wrap = xiButton.closest(".map-xi-cluster");
+        const picker = wrap ? wrap.querySelector(".map-xi-picker") : null;
+
+        const onClubLayer = view.level === "club" || view.level === "cluster";
+        if (wrap) wrap.classList.toggle("is-visible", onClubLayer);
+
+        if (picker) {
+            const peers = view.level === "cluster"
+                ? (view.clusterMembers || []).map(n => L?.clubByName[n]).filter(Boolean)
+                : findClusterPeers(view.leagueKey, view.clubName);
+            const showPicker = peers.length > 1;
+            picker.classList.toggle("is-visible", showPicker);
+            picker.classList.toggle("is-disabled", !showPicker);
+            if (!showPicker) picker.classList.remove("is-open");
+
+            const labelEl = picker.querySelector(".map-xi-picker-label");
+            const menuEl = picker.querySelector(".map-xi-picker-menu");
+            if (labelEl) {
+                labelEl.innerHTML = C
+                    ? clubLogoHTML(C, "map-xi-picker-logo") + '<span>' + escapeAttr(C.name) + '</span>'
+                    : '<span class="map-xi-picker-placeholder">Pick a club</span>';
+            }
+            if (menuEl) {
+                const sorted = peers.slice().sort((a, b) => b.avgGap - a.avgGap);
+                menuEl.innerHTML = sorted.map(p => {
+                    const isSel = C && p.name === C.name;
+                    const sign = p.avgGap >= 0 ? "+" : "";
+                    const cls = p.avgGap >= 0 ? "gap-up" : "gap-down";
+                    return '<li class="map-xi-picker-item' + (isSel ? " is-selected" : "") + '" role="option" data-club="' + escapeAttr(p.name) + '">' +
+                        clubLogoHTML(p, "map-xi-picker-logo") +
+                        '<span class="map-xi-picker-name">' + escapeAttr(p.name) + '</span>' +
+                        '<span class="map-xi-picker-gap ' + cls + '">' + sign + p.avgGap.toFixed(2) + '</span>' +
+                    '</li>';
+                }).join("");
+            }
+        }
+
+        xiButton.classList.toggle("is-visible", onClubLayer);
+        xiButton.disabled = !(onClubLayer && C);
+        if (C) {
+            xiButton.dataset.league = view.leagueKey;
+            xiButton.dataset.club = C.name;
+            xiButton.querySelector(".map-xi-club").textContent = C.name;
+        } else {
+            xiButton.removeAttribute("data-league");
+            xiButton.removeAttribute("data-club");
+            xiButton.querySelector(".map-xi-club").textContent = "";
+        }
+    }
+
+    function openClubXI() {
+        const L = view.leagueKey ? leagueStats[view.leagueKey] : null;
+        const C = L && view.clubName ? L.clubByName[view.clubName] : null;
+        if (!C || typeof window.openAct2Stadium !== "function") return;
+        window.openAct2Stadium(C);
+    }
+
     function drawMap(world) {
         const features = topojson.feature(world, world.objects.countries).features;
-        countriesGeo = features;
-        countryById = new Map(features.map(f => [String(f.id), f]));
 
         width = stage.clientWidth || W_DEFAULT;
         height = Math.max(480, Math.round(width * 0.72));
 
-        // Plain Mercator centered on continental Europe. Scale chosen so
-        // lon ~[-12, 32] fits the width with a small margin.
         const scaleFor = Math.min(width * 0.9, height * 1.25);
         projection = d3.geoMercator()
             .center([10, 52])
@@ -578,19 +629,16 @@ function initLeagueMap(data) {
             '</filter>';
         svg.appendChild(defs);
 
-        // Background (not transformed)
         const bg = document.createElementNS(SVG_NS, "rect");
         bg.setAttribute("x", 0); bg.setAttribute("y", 0);
         bg.setAttribute("width", width); bg.setAttribute("height", height);
         bg.setAttribute("fill", "url(#map-bg-grad)");
         svg.appendChild(bg);
 
-        // Zoomable group
         viewG = document.createElementNS(SVG_NS, "g");
         viewG.setAttribute("class", "map-view");
         svg.appendChild(viewG);
 
-        // Country groups (dim then live)
         const dimGroup = document.createElementNS(SVG_NS, "g");
         dimGroup.setAttribute("class", "map-dim-group");
         viewG.appendChild(dimGroup);
@@ -612,7 +660,6 @@ function initLeagueMap(data) {
                 el.setAttribute("class", "map-country map-country-live");
                 liveGroup.appendChild(el);
 
-                // Cache projected bounds for zoom-to-country
                 const b = pathGen.bounds(f);
                 countryBounds.set(leagueKey, b);
             } else {
@@ -622,25 +669,15 @@ function initLeagueMap(data) {
             pathEls.set(id, el);
         }
 
-        // Club layer
         const clubLayer = document.createElementNS(SVG_NS, "g");
         clubLayer.setAttribute("class", "map-club-layer");
         viewG.appendChild(clubLayer);
 
-        // Player layer
-        const playerLayer = document.createElementNS(SVG_NS, "g");
-        playerLayer.setAttribute("class", "map-player-layer");
-        viewG.appendChild(playerLayer);
-
-        // Chevron layer (FIFA-style floating indicator above each target)
         const chevronLayer = document.createElementNS(SVG_NS, "g");
         chevronLayer.setAttribute("class", "map-chev-layer");
         viewG.appendChild(chevronLayer);
 
-        // Build a single chevron at projected (x,y). Outer <g> translates,
-        // inner <g> counter-scales (fixed on-screen size), innermost <g.bob>
-        // carries the CSS bob animation.
-        function makeChevron({ x, y, gap, label, sub, kind, dataset }) {
+        function makeChevron({ x, y, gap, label, sub, kind, dataset, logo, color }) {
             const polarity = gap >= 0 ? "up" : "down";
             const g = document.createElementNS(SVG_NS, "g");
             g.setAttribute("class", "map-chev " + kind + " is-" + polarity);
@@ -653,23 +690,96 @@ function initLeagueMap(data) {
             counter.setAttribute("class", "map-chev-counter");
             const bob = document.createElementNS(SVG_NS, "g");
             bob.setAttribute("class", "map-chev-bob");
-            // Chevron geometry: filled triangle pointing DOWN at the entity,
-            // sitting ~22px above it. Ring lifts it off the map.
             const sign = gap >= 0 ? "+" : "";
+            const ringStroke = color || "rgba(255,255,255,0.18)";
+            const logoMark = logo
+                ? '<g class="map-chev-logo">' +
+                    '<circle cx="0" cy="14" r="9" fill="#0a0e18" stroke="' + escapeAttr(ringStroke) + '" stroke-width="0.9"></circle>' +
+                    '<image href="' + escapeAttr(logo) + '" x="-7.5" y="6.5" width="15" height="15" clip-path="circle(7px at 7.5px 7.5px)" preserveAspectRatio="xMidYMid meet"></image>' +
+                  '</g>'
+                : "";
             bob.innerHTML =
                 '<path class="map-chev-glow" d="M -11 -30 L 11 -30 L 0 -14 Z"></path>' +
                 '<path class="map-chev-shape" d="M -11 -30 L 11 -30 L 0 -14 Z"></path>' +
                 '<rect class="map-chev-plate" x="-22" y="-46" width="44" height="14" rx="3"></rect>' +
                 '<text class="map-chev-gap" x="0" y="-36" text-anchor="middle">' + sign + gap.toFixed(2) + '</text>' +
-                (label ? '<text class="map-chev-label" x="0" y="12" text-anchor="middle">' + escapeAttr(label) + '</text>' : "") +
-                (sub   ? '<text class="map-chev-sub"   x="0" y="22" text-anchor="middle">' + escapeAttr(sub)   + '</text>' : "");
+                logoMark +
+                (label ? '<text class="map-chev-label" x="0" y="32" text-anchor="middle">' + escapeAttr(label) + '</text>' : "") +
+                (sub   ? '<text class="map-chev-sub"   x="0" y="42" text-anchor="middle">' + escapeAttr(sub)   + '</text>' : "");
             counter.appendChild(bob);
             g.appendChild(counter);
             return g;
         }
 
-        // L1 chevrons — one per target country, positioned at the hand-picked
-        // anchor (not the bbox centroid — see LEAGUES table for why).
+        function makeCluster({ x, y, members, kind, dataset }) {
+            const g = document.createElementNS(SVG_NS, "g");
+            g.setAttribute("class", "map-chev " + kind + " map-chev-cluster");
+            if (dataset) for (const k of Object.keys(dataset)) g.setAttribute("data-" + k, dataset[k]);
+            g.setAttribute("data-tx", x.toFixed(2));
+            g.setAttribute("data-ty", y.toFixed(2));
+            g.setAttribute("transform", "translate(" + x.toFixed(2) + "," + y.toFixed(2) + ")");
+
+            const counter = document.createElementNS(SVG_NS, "g");
+            counter.setAttribute("class", "map-chev-counter");
+
+            const meanGap = members.reduce((s, m) => s + m.avgGap, 0) / members.length;
+            const sign = meanGap >= 0 ? "+" : "";
+            g.classList.add("is-" + (meanGap >= 0 ? "up" : "down"));
+
+            const ringStroke = members[0].color || "rgba(255,255,255,0.22)";
+            const stack = members.slice(0, 3).map((m, i) => {
+                const dx = (i - (Math.min(members.length, 3) - 1) / 2) * 8;
+                if (m.logo) {
+                    return '<g class="map-cluster-logo" transform="translate(' + dx + ', 0)">' +
+                        '<circle cx="0" cy="0" r="8" fill="#0a0e18" stroke="' + escapeAttr(ringStroke) + '" stroke-width="0.9"></circle>' +
+                        '<image href="' + escapeAttr(m.logo) + '" x="-6.5" y="-6.5" width="13" height="13" clip-path="circle(6px at 6.5px 6.5px)" preserveAspectRatio="xMidYMid meet"></image>' +
+                    '</g>';
+                }
+                return '<circle cx="' + dx + '" cy="0" r="8" fill="' + escapeAttr(m.color || "#444") + '" stroke="rgba(0,0,0,0.45)" stroke-width="0.9"></circle>';
+            }).join("");
+
+            counter.innerHTML =
+                '<rect class="map-chev-plate" x="-22" y="-22" width="44" height="14" rx="3"></rect>' +
+                '<text class="map-chev-gap" x="0" y="-12" text-anchor="middle">' + sign + meanGap.toFixed(2) + '</text>' +
+                stack +
+                '<text class="map-cluster-count" x="0" y="22" text-anchor="middle">' + members.length + ' clubs</text>';
+            g.appendChild(counter);
+            return g;
+        }
+
+        function clusterClubs(clubsList, threshold) {
+            const items = clubsList
+                .filter(c => c.coords)
+                .map(c => {
+                    const [x, y] = projection(c.coords);
+                    return { c, x, y };
+                })
+                .filter(it => isFinite(it.x) && isFinite(it.y));
+            const taken = new Set();
+            const out = [];
+            for (let i = 0; i < items.length; i++) {
+                if (taken.has(i)) continue;
+                const group = [i];
+                for (let j = i + 1; j < items.length; j++) {
+                    if (taken.has(j)) continue;
+                    const dx = items[i].x - items[j].x;
+                    const dy = items[i].y - items[j].y;
+                    if (dx * dx + dy * dy < threshold * threshold) {
+                        group.push(j);
+                        taken.add(j);
+                    }
+                }
+                taken.add(i);
+                const sx = group.reduce((s, k) => s + items[k].x, 0) / group.length;
+                const sy = group.reduce((s, k) => s + items[k].y, 0) / group.length;
+                out.push({
+                    centroid: [sx, sy],
+                    members: group.map(k => items[k].c)
+                });
+            }
+            return out;
+        }
+
         labelEls = new Map();
         for (const key of Object.keys(LEAGUES)) {
             const L = leagueStats[key];
@@ -689,29 +799,46 @@ function initLeagueMap(data) {
             labelEls.set(key, g);
         }
 
-        // Club chevrons (L2/L3). Small pin at the club's city; same geometry
-        // as the league chevron but scaled down + no sub-label.
+        // clubs sharing a ground (inter/milan, roma/lazio) collapse into one pin
         clubEls = new Map();
+        clubClusterEls = new Map();
+        const CLUSTER_THRESHOLD = 6;
         for (const key of Object.keys(leagueStats)) {
-            for (const c of leagueStats[key].clubs) {
-                if (!c.coords) continue;
-                const [x, y] = projection(c.coords);
-                if (!isFinite(x) || !isFinite(y)) continue;
-                const g = makeChevron({
-                    x, y,
-                    gap: c.avgGap,
-                    label: c.name,
-                    kind: "map-chev-club",
-                    dataset: { league: key, club: c.name }
-                });
-                clubLayer.appendChild(g);
-                clubEls.set(key + "|" + c.name, g);
+            const clusters = clusterClubs(leagueStats[key].clubs, CLUSTER_THRESHOLD);
+            for (const cluster of clusters) {
+                if (cluster.members.length === 1) {
+                    const c = cluster.members[0];
+                    const [x, y] = cluster.centroid;
+                    const g = makeChevron({
+                        x, y,
+                        gap: c.avgGap,
+                        label: c.name,
+                        kind: "map-chev-club",
+                        dataset: { league: key, club: c.name },
+                        logo: c.logo,
+                        color: c.color
+                    });
+                    clubLayer.appendChild(g);
+                    clubEls.set(key + "|" + c.name, g);
+                } else {
+                    const [x, y] = cluster.centroid;
+                    const memberKeys = cluster.members.map(m => m.name).join(",");
+                    const g = makeCluster({
+                        x, y,
+                        members: cluster.members,
+                        kind: "map-chev-club",
+                        dataset: { league: key, cluster: memberKeys }
+                    });
+                    clubLayer.appendChild(g);
+                    clubClusterEls.set(key + "|" + memberKeys, { node: g, members: cluster.members, centroid: [x, y], league: key });
+                    cluster.members.forEach(c => {
+                        clubEls.set(key + "|" + c.name, g);
+                    });
+                }
             }
         }
 
-        // Refine per-country bounds to "metropolitan clubs only" — otherwise
-        // Spain's bbox stretches to the Canaries and France's to Guyane,
-        // and the country zoom frames half the Atlantic.
+        // metropolitan clubs only, the canaries/guyane wreck the bbox
         for (const key of Object.keys(LEAGUES)) {
             const L = leagueStats[key];
             if (!L) continue;
@@ -734,40 +861,6 @@ function initLeagueMap(data) {
             }
         }
 
-        // Player chevrons (L4). Fanned around the club city in projected
-        // units; counter-scaled inner so screen size stays constant.
-        function buildPlayersFor(leagueKey, clubName) {
-            playerLayer.innerHTML = "";
-            playerEls = new Map();
-            const C = leagueStats[leagueKey]?.clubByName[clubName];
-            if (!C || !C.coords) return;
-            const [cx, cy] = projection(C.coords);
-            const players = C.players.slice().sort((a, b) => b.gap - a.gap);
-            const N = players.length;
-            // Ring radius in projected units. At L4 (k~22) we want ~110px
-            // on-screen radius, so R ~= 5 projected units.
-            const R = 5;
-            players.forEach((p, i) => {
-                const theta = (i / N) * Math.PI * 2 - Math.PI / 2;
-                const px = cx + Math.cos(theta) * R;
-                const py = cy + Math.sin(theta) * R;
-                const last = (p.name || "").split(" ").slice(-1)[0];
-                const g = makeChevron({
-                    x: px, y: py,
-                    gap: p.gap,
-                    label: last,
-                    kind: "map-chev-player",
-                    dataset: { idx: i }
-                });
-                playerLayer.appendChild(g);
-                playerEls.set(leagueKey + "|" + clubName + "|" + i, g);
-                g.addEventListener("click", (e) => { e.stopPropagation(); focusPlayer(leagueKey, clubName, i); });
-                g.addEventListener("pointermove", (e) => showPlayerTip(e, p));
-                g.addEventListener("pointerleave", () => { tip.style.opacity = "0"; });
-            });
-        }
-
-        // Vignette + top-level interactions
         const vignette = document.createElementNS(SVG_NS, "rect");
         vignette.setAttribute("x", 0); vignette.setAttribute("y", 0);
         vignette.setAttribute("width", width); vignette.setAttribute("height", height);
@@ -778,19 +871,13 @@ function initLeagueMap(data) {
         stage.innerHTML = "";
         stage.appendChild(svg);
 
-        // Zoom controls
         const controls = document.createElement("div");
         controls.className = "map-zoom-ctrls";
         controls.innerHTML =
-            '<button class="map-zoom-btn" data-zoom="in"  aria-label="Zoom in">+</button>' +
-            '<button class="map-zoom-btn" data-zoom="out" aria-label="Zoom out">\u2212</button>' +
-            '<button class="map-zoom-btn map-zoom-reset" data-zoom="reset" aria-label="Reset view">\u21BB</button>';
+            '<button class="map-zoom-btn map-zoom-reset" data-zoom="reset" aria-label="Reset to Europe">\u21BB</button>';
         stage.appendChild(controls);
-        controls.querySelector('[data-zoom="in"]').addEventListener("click",   () => nudgeZoom(1.6));
-        controls.querySelector('[data-zoom="out"]').addEventListener("click",  () => nudgeZoom(1 / 1.6));
         controls.querySelector('[data-zoom="reset"]').addEventListener("click", () => resetView());
 
-        // Level indicator pill
         const pill = document.createElement("div");
         pill.className = "map-level-pill";
         pill.id = "map-level-pill";
@@ -798,12 +885,52 @@ function initLeagueMap(data) {
             '<span class="map-level-dot l1"></span>' +
             '<span class="map-level-dot l2"></span>' +
             '<span class="map-level-dot l3"></span>' +
-            '<span class="map-level-dot l4"></span>' +
-            '<span class="map-level-label" id="map-level-label">Leagues</span>';
+            '<span class="map-level-label" id="map-level-label">Europe</span>';
         stage.appendChild(pill);
 
-        // d3.zoom. Live HTMLCollection for the counter nodes — cheaper than
-        // rescanning the DOM every zoom tick (the handler fires 60+Hz during drag).
+        const xiCluster = document.createElement("div");
+        xiCluster.className = "map-xi-cluster";
+        xiCluster.innerHTML =
+            '<div class="map-xi-picker" role="combobox" aria-haspopup="listbox" tabindex="0">' +
+                '<button class="map-xi-picker-toggle" type="button">' +
+                    '<span class="map-xi-picker-label">Pick a club</span>' +
+                    '<span class="map-xi-picker-caret">▾</span>' +
+                '</button>' +
+                '<ul class="map-xi-picker-menu" role="listbox"></ul>' +
+            '</div>';
+        xiButton = document.createElement("button");
+        xiButton.className = "map-xi-btn";
+        xiButton.type = "button";
+        xiButton.disabled = true;
+        xiButton.innerHTML =
+            '<span class="map-xi-kicker">Club View</span>' +
+            '<span class="map-xi-main">View the XI</span>' +
+            '<span class="map-xi-club"></span>';
+        xiButton.addEventListener("click", openClubXI);
+        xiCluster.appendChild(xiButton);
+        stage.appendChild(xiCluster);
+
+        const xiPicker = xiCluster.querySelector(".map-xi-picker");
+        const xiPickerToggle = xiCluster.querySelector(".map-xi-picker-toggle");
+        const xiPickerMenu = xiCluster.querySelector(".map-xi-picker-menu");
+
+        xiPickerToggle.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (xiPicker.classList.contains("is-disabled")) return;
+            xiPicker.classList.toggle("is-open");
+        });
+        xiPickerMenu.addEventListener("click", (e) => {
+            const item = e.target.closest("[data-club]");
+            if (!item) return;
+            const clubName = item.dataset.club;
+            xiPicker.classList.remove("is-open");
+            focusClub(view.leagueKey, clubName);
+        });
+        document.addEventListener("click", (e) => {
+            if (!xiPicker.contains(e.target)) xiPicker.classList.remove("is-open");
+        });
+
+        // live collection, no dom rescan per zoom tick
         const counterNodes = viewG.getElementsByClassName("map-chev-counter");
         let zoomStartK = 1, zoomStartX = 0, zoomStartY = 0;
         let suppressClickUntil = 0;
@@ -827,24 +954,31 @@ function initLeagueMap(data) {
                 currentTransform = event.transform;
                 const k = event.transform.k;
                 viewG.setAttribute("transform", "translate(" + event.transform.x.toFixed(2) + "," + event.transform.y.toFixed(2) + ") scale(" + k.toFixed(4) + ")");
-                // Counter-scale chevrons so they keep a constant screen size
-                // regardless of zoom. Outer <g> keeps its translate; inner
-                // .map-chev-counter carries scale(1/k).
+                // counter-scale chevrons to keep them a constant on-screen size
                 const invStr = "scale(" + (1 / k).toFixed(4) + ")";
                 for (let i = 0, n = counterNodes.length; i < n; i++) {
                     counterNodes[i].setAttribute("transform", invStr);
                 }
                 updateLevelFromScale(k);
             });
-        d3.select(svg).call(zoom);
+        d3.select(svg).call(zoom)
+            .on("wheel.zoom", null)
+            .on("mousedown.zoom", null)
+            .on("dblclick.zoom", null)
+            .on("touchstart.zoom", null)
+            .on("touchmove.zoom", null)
+            .on("touchend.zoom", null);
 
-        // Clicks + hover: countries light up their border in the gap colour;
-        // chevrons are clickable drill-down targets.
         liveGroup.querySelectorAll(".map-country-live").forEach(el => {
             const key = el.dataset.league;
             const L = leagueStats[key];
-            el.addEventListener("click", (e) => { e.stopPropagation(); focusLeague(key); });
+            el.addEventListener("click", (e) => {
+                if (view.level !== "europe") return;
+                e.stopPropagation();
+                focusLeague(key);
+            });
             el.addEventListener("pointerenter", () => {
+                if (view.level !== "europe") return;
                 el.classList.add("is-hover");
                 const lbl = labelEls.get(key);
                 if (lbl) lbl.classList.add("is-hover");
@@ -855,7 +989,10 @@ function initLeagueMap(data) {
                 if (lbl) lbl.classList.remove("is-hover");
                 tip.style.opacity = "0";
             });
-            el.addEventListener("pointermove", (e) => { if (L) showLeagueTip(e, L); });
+            el.addEventListener("pointermove", (e) => {
+                if (view.level !== "europe") { tip.style.opacity = "0"; return; }
+                if (L) showLeagueTip(e, L);
+            });
         });
         chevronLayer.querySelectorAll(".map-chev-league").forEach(el => {
             const key = el.dataset.league;
@@ -877,42 +1014,48 @@ function initLeagueMap(data) {
         clubLayer.querySelectorAll(".map-chev-club").forEach(el => {
             const key = el.dataset.league;
             const clubName = el.dataset.club;
-            el.addEventListener("click", (e) => { e.stopPropagation(); focusClub(key, clubName); });
+            const clusterKey = el.dataset.cluster;
             el.addEventListener("pointerenter", () => el.classList.add("is-hover"));
             el.addEventListener("pointerleave", () => { el.classList.remove("is-hover"); tip.style.opacity = "0"; });
-            el.addEventListener("pointermove", (e) => {
-                const C = leagueStats[key]?.clubByName[clubName];
-                if (C) showClubTip(e, C, leagueStats[key].label);
-            });
+            if (clusterKey) {
+                const cluster = clubClusterEls.get(key + "|" + clusterKey);
+                el.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    if (cluster && cluster.members.length) focusCluster(key, cluster);
+                });
+                el.addEventListener("pointermove", (e) => {
+                    if (cluster) showClusterTip(e, cluster.members, leagueStats[key].label);
+                });
+            } else {
+                el.addEventListener("click", (e) => { e.stopPropagation(); focusClub(key, clubName); });
+                el.addEventListener("pointermove", (e) => {
+                    const C = leagueStats[key]?.clubByName[clubName];
+                    if (C) showClubTip(e, C, leagueStats[key].label);
+                });
+            }
         });
 
-        // Background click -> pop a level (ignored if we just finished a drag)
+        // bg click pops a level, unless we just finished a drag
         svg.addEventListener("click", () => {
             if (Date.now() < suppressClickUntil) return;
-            if (view.level === "player")      setView({ level: "club",    leagueKey: view.leagueKey, clubName: view.clubName });
-            else if (view.level === "club")   setView({ level: "country", leagueKey: view.leagueKey });
+            if (view.level === "club")        setView({ level: "country", leagueKey: view.leagueKey });
+            else if (view.level === "cluster") setView({ level: "country", leagueKey: view.leagueKey });
             else if (view.level === "country") resetView();
         });
 
-        // Expose build fn for focusPlayer
-        drawMap._buildPlayersFor = buildPlayersFor;
-
-        // First paint
         paintCountries();
+        syncEntityVisibility();
+        updateXiButton();
         applyViewInstant();
     }
 
-    // ---------------------------------------------------------------
-    // Level derivation + focus transitions
-    // ---------------------------------------------------------------
     function updateLevelFromScale(k) {
         let lvl = 1;
-        if (k >= 2 && k < 5)       lvl = 2;
-        else if (k >= 5 && k < 14) lvl = 3;
-        else if (k >= 14)          lvl = 4;
+        if (k >= 2 && k < 5) lvl = 2;
+        else if (k >= 5)     lvl = 3;
         if (lvl !== currentLevel) {
             currentLevel = lvl;
-            const label = { 1: "Leagues", 2: "Country", 3: "Clubs", 4: "Players" }[lvl];
+            const label = { 1: "Europe", 2: "Country", 3: "Club", 4: "Club" }[lvl];
             const pill = document.getElementById("map-level-pill");
             const lbl = document.getElementById("map-level-label");
             if (lbl) lbl.textContent = label;
@@ -922,7 +1065,55 @@ function initLeagueMap(data) {
             }
             svg.classList.remove("lv-1", "lv-2", "lv-3", "lv-4");
             svg.classList.add("lv-" + lvl);
+            syncEntityVisibility();
+            syncAsideToLevel(lvl);
         }
+    }
+
+    // keep aside + breadcrumb in sync when the user wheel-zooms instead of clicking
+    function syncAsideToLevel(lvl) {
+        let next = view;
+        if (lvl <= 1) {
+            if (view.level !== "europe") next = { level: "europe" };
+        } else if (lvl === 2) {
+            const leagueKey = view.leagueKey || closestLeagueToViewportCenter();
+            if (leagueKey) {
+                if (view.level !== "country" || view.leagueKey !== leagueKey) {
+                    next = { level: "country", leagueKey };
+                }
+            } else if (view.level !== "europe") {
+                next = { level: "europe" };
+            }
+        } else if (lvl >= 3) {
+            const leagueKey = view.leagueKey || closestLeagueToViewportCenter();
+            if (leagueKey && view.clubName && view.level !== "club") {
+                next = { level: "club", leagueKey, clubName: view.clubName };
+            } else if (leagueKey && !view.clubName && view.level !== "country") {
+                next = { level: "country", leagueKey };
+            }
+        }
+        if (next === view) return;
+        view = next;
+        paintCountries();
+        renderAside();
+        renderBreadcrumb();
+        syncEntityVisibility();
+        updateXiButton();
+    }
+
+    function closestLeagueToViewportCenter() {
+        if (!currentTransform || !projection) return null;
+        const cx = (width / 2 - currentTransform.x) / currentTransform.k;
+        const cy = (height / 2 - currentTransform.y) / currentTransform.k;
+        let best = null, bestD = Infinity;
+        for (const key of Object.keys(LEAGUES)) {
+            const [px, py] = projection(LEAGUES[key].anchor);
+            if (!isFinite(px) || !isFinite(py)) continue;
+            const dx = px - cx, dy = py - cy;
+            const d = dx * dx + dy * dy;
+            if (d < bestD) { bestD = d; best = key; }
+        }
+        return best;
     }
 
     function focusLeague(leagueKey) {
@@ -934,14 +1125,19 @@ function initLeagueMap(data) {
         if (!L?.clubByName[clubName]) return;
         setView({ level: "club", leagueKey, clubName });
     }
-    function focusPlayer(leagueKey, clubName, playerIdx) {
-        const L = leagueStats[leagueKey];
-        if (!L?.clubByName[clubName]) return;
-        setView({ level: "player", leagueKey, clubName, playerIdx });
+    function focusCluster(leagueKey, cluster) {
+        if (!cluster || !cluster.members?.length) return;
+        const top = cluster.members.slice().sort((a, b) => Math.abs(b.avgGap) - Math.abs(a.avgGap))[0];
+        setView({
+            level: "cluster",
+            leagueKey,
+            clubName: top?.name,
+            clusterCentroid: cluster.centroid,
+            clusterMembers: cluster.members.map(m => m.name)
+        });
     }
     function resetView() { setView({ level: "europe" }); }
 
-    // Compute a d3.zoomIdentity transform that frames the given projected bbox.
     function zoomForBounds(bounds, padding) {
         const pad = padding ?? 0.15;
         const [[x0, y0], [x1, y1]] = bounds;
@@ -968,42 +1164,27 @@ function initLeagueMap(data) {
             const C = leagueStats[view.leagueKey]?.clubByName[view.clubName];
             if (C?.coords) {
                 const [x, y] = projection(C.coords);
-                const k = 9;
-                t = d3.zoomIdentity.translate(width / 2 - x * k, height / 2 - y * k).scale(k);
-            }
-        } else if (view.level === "player") {
-            const C = leagueStats[view.leagueKey]?.clubByName[view.clubName];
-            if (C?.coords) {
-                const [x, y] = projection(C.coords);
                 const k = 22;
                 t = d3.zoomIdentity.translate(width / 2 - x * k, height / 2 - y * k).scale(k);
-                if (drawMap._buildPlayersFor) drawMap._buildPlayersFor(view.leagueKey, view.clubName);
+            }
+        } else if (view.level === "cluster") {
+            const c = view.clusterCentroid;
+            if (c) {
+                const k = 14;
+                t = d3.zoomIdentity.translate(width / 2 - c[0] * k, height / 2 - c[1] * k).scale(k);
             }
         } else {
             t = d3.zoomIdentity;
         }
 
-        // Wipe player markers when leaving L4
-        if (view.level !== "player" && viewG) {
-            const pl = viewG.querySelector(".map-player-layer");
-            if (pl) pl.innerHTML = "";
-        }
-
         paintCountries();
+        syncEntityVisibility();
 
         const sel = d3.select(svg);
         if (animate) sel.transition().duration(720).ease(d3.easeCubicInOut).call(zoom.transform, t);
         else         sel.call(zoom.transform, t);
     }
 
-    function nudgeZoom(factor) {
-        if (!svg || !zoom) return;
-        d3.select(svg).transition().duration(220).call(zoom.scaleBy, factor);
-    }
-
-    // ---------------------------------------------------------------
-    // Tooltips
-    // ---------------------------------------------------------------
     function showLeagueTip(e, L) {
         const sign = L.avgGap >= 0 ? "+" : "";
         tip.innerHTML =
@@ -1016,21 +1197,32 @@ function initLeagueMap(data) {
     }
     function showClubTip(e, C, leagueLabel) {
         const sign = C.avgGap >= 0 ? "+" : "";
+        const logoMark = C.logo
+            ? '<img class="map-tip-logo" src="' + escapeAttr(C.logo) + '" alt="" />'
+            : '';
         tip.innerHTML =
-            '<div class="map-tip-name">' + escapeAttr(C.name) + '</div>' +
-            '<div class="map-tip-row"><span>' + escapeAttr(leagueLabel) + '</span></div>' +
+            '<div class="map-tip-head">' + logoMark + '<div class="map-tip-name">' + escapeAttr(C.name) + '</div></div>' +
+            '<div class="map-tip-row"><span>' + escapeAttr(leagueLabel) + '</span>' + (C.formation ? '<strong>' + escapeAttr(C.formation) + '</strong>' : '') + '</div>' +
             '<div class="map-tip-row"><span>avg gap</span><strong class="' + (C.avgGap >= 0 ? "gap-up" : "gap-down") + '">' + sign + C.avgGap.toFixed(2) + '</strong></div>' +
             '<div class="map-tip-row"><span>players</span><strong>' + C.count + '</strong></div>' +
-            '<div class="map-tip-hint">click to drill into players</div>';
+            '<div class="map-tip-hint">' + (view.level === "club" ? "use View the XI" : "click to focus club") + '</div>';
         placeTip(e);
     }
-    function showPlayerTip(e, p) {
-        const sign = p.gap >= 0 ? "+" : "";
+    function showClusterTip(e, members, leagueLabel) {
+        const sorted = members.slice().sort((a, b) => b.avgGap - a.avgGap);
+        const meanGap = members.reduce((s, m) => s + m.avgGap, 0) / members.length;
+        const sign = meanGap >= 0 ? "+" : "";
+        const list = sorted.map(m => {
+            const ms = m.avgGap >= 0 ? "+" : "";
+            const cls = m.avgGap >= 0 ? "gap-up" : "gap-down";
+            return '<div class="map-tip-row"><span>' + escapeAttr(m.name) + '</span><strong class="' + cls + '">' + ms + m.avgGap.toFixed(2) + '</strong></div>';
+        }).join("");
         tip.innerHTML =
-            '<div class="map-tip-name">' + escapeAttr(p.name) + '</div>' +
-            '<div class="map-tip-row"><span>OVR</span><strong>' + (p.ea ?? "-") + '</strong></div>' +
-            '<div class="map-tip-row"><span>composite</span><strong>' + (p.real?.toFixed ? p.real.toFixed(1) : "-") + '</strong></div>' +
-            '<div class="map-tip-row"><span>gap</span><strong class="' + (p.gap >= 0 ? "gap-up" : "gap-down") + '">' + sign + p.gap.toFixed(2) + '</strong></div>';
+            '<div class="map-tip-name">' + members.length + ' clubs &middot; same site</div>' +
+            '<div class="map-tip-row"><span>' + escapeAttr(leagueLabel) + '</span></div>' +
+            '<div class="map-tip-row"><span>cluster gap</span><strong class="' + (meanGap >= 0 ? "gap-up" : "gap-down") + '">' + sign + meanGap.toFixed(2) + '</strong></div>' +
+            list +
+            '<div class="map-tip-hint">click to drill in</div>';
         placeTip(e);
     }
     function placeTip(e) {
@@ -1039,11 +1231,7 @@ function initLeagueMap(data) {
         tip.style.top  = (e.clientY + 14) + "px";
     }
 
-    // ---------------------------------------------------------------
-    // Boot
-    // ---------------------------------------------------------------
     renderAside();
-    renderDrawer();
     renderBreadcrumb();
 
     if (!window.topojson) {
@@ -1056,11 +1244,9 @@ function initLeagueMap(data) {
         .then(r => r.ok ? r.json() : Promise.reject(new Error("map data " + r.status)))
         .then(world => { cachedWorld = world; drawMap(world); })
         .catch(err => {
-            console.error("League map failed:", err);
             stage.innerHTML = '<div class="map-error">Could not load map. ' + escapeAttr(err.message) + '</div>';
         });
 
-    // Debounced resize re-layout (keeps view state)
     let resizeTimer = null;
     let lastW = stage.clientWidth;
     window.addEventListener("resize", () => {

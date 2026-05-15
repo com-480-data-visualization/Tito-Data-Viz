@@ -7,15 +7,26 @@
     <title>The Reputation Gap</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=JetBrains+Mono:wght@500;700&display=swap">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="css/base.css?v=m3p">
+    <link rel="stylesheet" href="css/landing.css?v=m3p">
+    <link rel="stylesheet" href="css/act1.css?v=m3p">
+    <link rel="stylesheet" href="css/act1-modal.css?v=m3p">
+    <link rel="stylesheet" href="css/act1-motion.css?v=m3p">
+    <link rel="stylesheet" href="css/act2-shared.css?v=m3p">
+    <link rel="stylesheet" href="css/act2-scatter.css?v=m3p">
+    <link rel="stylesheet" href="css/act2-wall.css?v=m3p">
+    <link rel="stylesheet" href="css/act2-overlay.css?v=m3p">
+    <link rel="stylesheet" href="css/act2-map.css?v=m3p">
+    <link rel="stylesheet" href="css/act2-stadium.css?v=m3p">
+    <link rel="stylesheet" href="css/act3.css?v=m3p">
+    <link rel="stylesheet" href="css/chrome.css?v=m3p">
 </head>
 
 <body>
 
-    <!-- Landing Section -->
+    <!-- Landing -->
     <section id="landing" class="landing">
-        <!-- Subtle pitch markings background -->
         <div class="pitch-marks">
             <div class="pitch-center-circle"></div>
             <div class="pitch-center-line"></div>
@@ -40,55 +51,48 @@
         </div>
     </section>
 
-    <!-- The Ball: clickable floating ball -->
     <div id="the-ball" class="the-ball" aria-label="Menu">
         <svg class="ball-svg" viewBox="0 0 100 100">
             <defs>
-                <radialGradient id="ball-body" cx="32%" cy="28%">
+                <radialGradient id="ball-body" cx="33%" cy="28%" r="72%">
                     <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="45%" stop-color="#ececec" />
-                    <stop offset="85%" stop-color="#9e9e9e" />
-                    <stop offset="100%" stop-color="#6e6e6e" />
+                    <stop offset="34%" stop-color="#f3f1eb" />
+                    <stop offset="76%" stop-color="#d7d1c4" />
+                    <stop offset="100%" stop-color="#a79f90" />
                 </radialGradient>
-                <radialGradient id="ball-gloss" cx="28%" cy="22%" r="32%">
-                    <stop offset="0%" stop-color="rgba(255,255,255,0.92)" />
-                    <stop offset="55%" stop-color="rgba(255,255,255,0.2)" />
-                    <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+                <radialGradient id="ball-gloss" cx="29%" cy="24%" r="40%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7" />
+                    <stop offset="48%" stop-color="#ffffff" stop-opacity="0.18" />
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
                 </radialGradient>
                 <radialGradient id="ball-shade" cx="72%" cy="80%" r="55%">
-                    <stop offset="0%" stop-color="rgba(0,0,0,0)" />
-                    <stop offset="100%" stop-color="rgba(0,0,0,0.32)" />
+                    <stop offset="0%" stop-color="#000000" stop-opacity="0" />
+                    <stop offset="100%" stop-color="#000000" stop-opacity="0.26" />
                 </radialGradient>
+                <linearGradient id="ball-panel" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#1c1d21" />
+                    <stop offset="100%" stop-color="#050608" />
+                </linearGradient>
                 <clipPath id="ball-clip">
                     <circle cx="50" cy="50" r="49" />
                 </clipPath>
             </defs>
             <circle cx="50" cy="50" r="49" fill="url(#ball-body)" />
             <g class="ball-pattern" clip-path="url(#ball-clip)">
-                <polygon points="50,33 64.3,43.4 58.8,60.4 41.2,60.4 35.7,43.4" fill="#181818" />
-                <g stroke="#181818" stroke-width="1.8" stroke-linecap="round" fill="none">
-                    <line x1="50" y1="33" x2="50" y2="9" />
-                    <line x1="64.3" y1="43.4" x2="86" y2="34" />
-                    <line x1="58.8" y1="60.4" x2="73" y2="82" />
-                    <line x1="41.2" y1="60.4" x2="27" y2="82" />
-                    <line x1="35.7" y1="43.4" x2="14" y2="34" />
-                </g>
-                <g fill="#181818">
-                    <polygon points="50,9 58,3 51,-5 43,3" />
-                    <polygon points="86,34 93,27 88,16 79,22" />
-                    <polygon points="73,82 83,87 80,99 69,93" />
-                    <polygon points="27,82 17,87 20,99 31,93" />
-                    <polygon points="14,34 7,27 12,16 21,22" />
+                <g transform="translate(2.08 2.08) scale(0.78)">
+                    <path d="M61.44,0c16.97,0,32.33,6.88,43.44,18c11.12,11.12,18,26.48,18,43.44c0,16.97-6.88,32.33-18,43.44c-11.12,11.12-26.48,18-43.44,18S29.11,116,18,104.88C6.88,93.77,0,78.41,0,61.44C0,44.47,6.88,29.11,18,18C29.11,6.88,44.47,0,61.44,0z M76.85,117.08L76.73,117l6.89-23.09L69.41,78.15L52.66,78L39.38,94.62l6.66,22.32l-0.15,0.1c4.95,1.38,10.16,2.12,15.55,2.12C66.78,119.16,71.95,118.44,76.85,117.08z M12.22,91.61l24.34,0.12L49.28,75.8l-5.26-16.12l-21.42-9.3L3.78,64.08C4.23,74.14,7.26,83.53,12.22,91.61z M16.77,24.88l7.4,22.14l19.98,8.68l15.44-11.97V20.94L40.51,7.63c-7.52,2.93-14.28,7.39-19.89,13C19.27,21.98,17.98,23.4,16.77,24.88z M81.7,7.37L63.3,20.77V43.7L77.8,54.91l20.81-8.92l7.18-21.49c-1.12-1.35-2.3-2.64-3.54-3.88C96.48,14.85,89.49,10.29,81.7,7.37z M119.09,64.36l-0.02,0.01L99.09,49.82l-19.81,8.49l-6.08,18.03l13.73,15.23c0.06,0.06,0.09,0.13,0.11,0.21l23.6-0.11C115.56,83.65,118.59,74.34,119.09,64.36z"
+                        fill="url(#ball-panel)" stroke="#08090b" stroke-width="1.8" stroke-linejoin="round" />
+                    <circle cx="61.44" cy="61.44" r="52.8" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1.8"
+                        stroke-dasharray="3 4" />
                 </g>
             </g>
-            <ellipse cx="32" cy="26" rx="16" ry="8" fill="url(#ball-gloss)" transform="rotate(-25 32 26)"
-                clip-path="url(#ball-clip)" />
+            <ellipse cx="32" cy="26" rx="16" ry="8" fill="url(#ball-gloss)" transform="rotate(-25 32 26)" clip-path="url(#ball-clip)" />
             <circle cx="50" cy="50" r="49" fill="url(#ball-shade)" />
-            <circle cx="50" cy="50" r="49" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="0.8" />
+            <circle cx="50" cy="50" r="49" fill="none" stroke="rgba(212,175,55,0.28)" stroke-width="1" />
+            <circle cx="50" cy="50" r="49" fill="none" stroke="rgba(0,0,0,0.42)" stroke-width="0.9" />
         </svg>
     </div>
 
-    <!-- Sommaire panel: full size, revealed via clip-path from ball position -->
     <div id="sommaire" class="sommaire-panel">
         <div class="sp-header">
             <span class="sp-title">Contents</span>
@@ -122,90 +126,208 @@
         <p class="sp-hint">The ball follows you throughout. Click it anytime to navigate.</p>
     </div>
 
+    <section id="intro" class="intro-section">
+        <div class="intro-inner">
+            <h2 class="intro-hook" data-reveal data-reveal-group="intro">
+                <span>You play FIFA. You watch matches.</span>
+                <span class="intro-hook-accent">The ratings lie.</span>
+            </h2>
+            <p class="intro-sub" data-reveal data-reveal-group="intro">Three acts. 1,708 players. One uncomfortable question: how much of a star rating is reputation, and how much is the pitch?</p>
+
+            <div class="intro-toc" data-reveal data-reveal-group="intro">
+                <a href="#act1" class="intro-card" data-act="act1">
+                    <span class="intro-card-num">01</span>
+                    <span class="intro-card-name">Two Worlds, Two Truths</span>
+                    <span class="intro-card-desc">EA's top 10 against the numbers' top 10.</span>
+                </a>
+                <a href="#act2" class="intro-card" data-act="act2">
+                    <span class="intro-card-num">02</span>
+                    <span class="intro-card-name">The Reputation Gap</span>
+                    <span class="intro-card-desc">Who is overrated, who outruns their badge.</span>
+                </a>
+                <a href="#act3" class="intro-card" data-act="act3">
+                    <span class="intro-card-num">03</span>
+                    <span class="intro-card-name">Rebuild the Ratings</span>
+                    <span class="intro-card-desc">Tune the weights. Rewrite the top 10.</span>
+                </a>
+            </div>
+
+            <p class="intro-credits" data-reveal data-reveal-group="intro">COM-480 &middot; Data Visualization &middot; EPFL &middot; Tito Team</p>
+        </div>
+    </section>
+
     <!-- Act 1 -->
     <section id="act1" class="act-section">
-        <div class="dataset-intro">
-            <div class="di-label">The Dataset</div>
-            <h3 class="di-title">From 20,000 rows to 1,708 players</h3>
-            <p class="di-lead">
-                This piece is built on one merged dataset: EA FC 25 in-game ratings joined to
-                FBref 2024-25 match statistics from Europe's top 5 leagues. Here is how it came together.
-            </p>
+        <div class="dataset-intro" data-reveal data-reveal-group="act1-dataset">
+            <div class="di-hero" data-reveal data-reveal-group="act1-dataset">
+                <div class="di-copy">
+                    <div class="di-label">The Dataset</div>
+                    <h3 class="di-title">Three databases. One merged football reality.</h3>
+                    <p class="di-lead">
+                        To compare EA FC 25 reputation against real 2024-25 output, we merged
+                        in-game ratings, FBref match statistics, and Transfermarkt player context
+                        across Europe's top 5 leagues, then kept only players with a credible
+                        league workload.
+                    </p>
+                </div>
+                <div class="di-sample-card" data-tip="1,708 players from the top 5 European leagues with at least 600 league minutes played in 2024-25 and a confirmed match between EA and FBref. This is the population behind every chart in the project.">
+                    <div class="di-sample-label">Final sample</div>
+                    <div class="di-sample-value" id="di-final-count">1,708</div>
+                    <div class="di-sample-note">players with 600+ league minutes</div>
+                </div>
+            </div>
 
-            <div class="funnel-steps">
-                <div class="funnel-step">
+            <div class="di-subtitle" data-reveal data-reveal-group="act1-dataset">Reduction funnel</div>
+            <div class="funnel-steps" data-reveal data-reveal-group="act1-dataset">
+                <div class="funnel-step" data-tip="EA FC 25 ships with 17,737 player cards across men's and women's football. We use 56 attribute columns: overall rating, six face stats, sub-attributes, and identity fields.">
                     <div class="fs-num">17,737</div>
                     <div class="fs-src">EA FC 25</div>
-                    <div class="fs-note">every rated player</div>
+                    <div class="fs-note">56 raw columns</div>
                 </div>
                 <div class="funnel-arrow">→</div>
-                <div class="funnel-step">
+                <div class="funnel-step" data-tip="FBref publishes 9 separate season tables (standard, shooting, passing, GCA, defense, possession, playing time, misc, GK). Joined together they produce 2,854 rows and 267 raw columns before any cleanup.">
                     <div class="fs-num">2,854</div>
                     <div class="fs-src">FBref 2024-25</div>
-                    <div class="fs-note">top-5 European leagues</div>
+                    <div class="fs-note">267 raw columns</div>
                 </div>
                 <div class="funnel-arrow">→</div>
-                <div class="funnel-step">
+                <div class="funnel-step" data-tip="EA names and FBref names rarely match exactly (accents, transliterations, nicknames). We use the rapidfuzz library to do a fuzzy name + club match, then hand-check the edge cases.">
                     <div class="fs-num">2,023</div>
-                    <div class="fs-src">Merged</div>
-                    <div class="fs-note">fuzzy name match</div>
+                    <div class="fs-src">Matched rows</div>
+                    <div class="fs-note">Rapidfuzz identity merge</div>
                 </div>
                 <div class="funnel-arrow">→</div>
-                <div class="funnel-step final">
-                    <div class="fs-num" id="di-final-count">1,708</div>
+                <div class="funnel-step" data-tip="Transfermarkt context: player profile (DOB, height, foot, nationality), market value history, and injury record. Not used in the composite, it surfaces as 'context' inside the player modal.">
+                    <div class="fs-num">3 tables</div>
+                    <div class="fs-src">Transfermarkt</div>
+                    <div class="fs-note">profile, value, injuries</div>
+                </div>
+                <div class="funnel-arrow">→</div>
+                <div class="funnel-step final" data-tip="The analytical sample: 1,708 players who appeared for at least 600 league minutes in 2024-25, across the top 5 European leagues, with a confirmed EA-FBref match.">
+                    <div class="fs-num">1,708</div>
                     <div class="fs-src">Final set</div>
-                    <div class="fs-note">≥ 600 minutes played</div>
+                    <div class="fs-note">600+ minutes played</div>
                 </div>
             </div>
 
-            <div class="di-subtitle">League distribution</div>
-            <div class="league-bar" id="di-leagues"></div>
+            <div class="source-cards" data-reveal data-reveal-group="act1-dataset">
+                <button class="source-card" type="button" data-source="ea" aria-haspopup="dialog">
+                    <div class="sc-mark sc-mark-ea">EA</div>
+                    <div class="sc-body">
+                        <div class="sc-head">
+                            <div class="sc-name">EA Ratings Dossier</div>
+                            <div class="sc-open">Open</div>
+                        </div>
+                        <p class="sc-desc">Game-side reputation signal: overall rating, face stats, and detailed sub-attributes exported per player card.</p>
+                        <div class="sc-meta">
+                            <span class="sc-pill" data-tip="56 columns per EA card: identity, club, league, position, overall rating, six face stats (PAC, SHO, PAS, DRI, DEF, PHY), and ~30 sub-attributes feeding those face stats.">56 raw cols</span>
+                            <span class="sc-pill" id="di-ea-fields" data-tip="The 41 columns we keep on the EA side: OVR, the six face stats, the sub-attributes most cited by the FIFA community, and identity fields needed to match against FBref.">41 kept fields</span>
+                        </div>
+                    </div>
+                </button>
+                <button class="source-card" type="button" data-source="fbref" aria-haspopup="dialog">
+                    <div class="sc-mark sc-mark-fb">FB</div>
+                    <div class="sc-body">
+                        <div class="sc-head">
+                            <div class="sc-name">FBref Stats Dossier</div>
+                            <div class="sc-open">Open</div>
+                        </div>
+                        <p class="sc-desc">On-pitch signal: 2024-25 league production, per-90 transformations, and the position-aware metrics behind the composite score.</p>
+                        <div class="sc-meta">
+                            <span class="sc-pill" data-tip="Total columns produced when the 9 FBref season tables (standard, shooting, passing, GCA, defense, possession, playing time, misc, GK) are joined on player id.">267 raw cols</span>
+                            <span class="sc-pill" id="di-fb-usable" data-tip="After dropping duplicates and empty columns we end up with 170 distinct stats describing what a player did on the pitch in 2024-25.">170 usable cols</span>
+                            <span class="sc-pill" data-tip="Each FBref table repeats identity columns (name, club, nationality, age, matches played, minutes). The first join keeps one copy and drops 97 duplicates.">97 duplicates removed</span>
+                            <span class="sc-pill" id="di-fb-composite" data-tip="The 50 per-90 metrics that feed the position-aware composite: scoring (npxG, SoT, sh90...), creation (xAG, SCA, KP, TB...), progression (PrgC, PrgP, take-ons...), defense (Tkl+Int, aerials, blocks, recoveries...), discipline (fouls, miscontrols, offsides) and GK shot-stopping stats.">50 kept metrics</span>
+                        </div>
+                    </div>
+                </button>
+                <button class="source-card" type="button" data-source="tm" aria-haspopup="dialog">
+                    <div class="sc-mark sc-mark-tm">TM</div>
+                    <div class="sc-body">
+                        <div class="sc-head">
+                            <div class="sc-name">Transfermarkt Context Dossier</div>
+                            <div class="sc-open">Open</div>
+                        </div>
+                        <p class="sc-desc">Market and identity context: profile data, valuation history, contract information, and injury availability.</p>
+                        <div class="sc-meta">
+                            <span class="sc-pill" data-tip="Three Transfermarkt exports merged on player id: player_profiles (DOB, height, foot, nationality, position), player_market_value (transfer valuation history), player_injuries (injury record by season).">3 raw tables</span>
+                            <span class="sc-pill" id="di-tm-fields" data-tip="The 11 columns we keep: date of birth, height, preferred foot, nationality, position, citizenships, latest market value, plus identity fields used to match against EA.">11 kept fields</span>
+                            <span class="sc-pill" id="di-tm-coverage" data-tip="Of the 1,708 players in the final sample, 95%+ have a Transfermarkt market value at the start of 2024-25. The rest are flagged with a missing-value indicator.">95%+ value coverage</span>
+                        </div>
+                    </div>
+                </button>
+            </div>
 
-            <div class="di-subtitle">Some interesting statistics</div>
-            <div class="di-averages" id="di-averages"></div>
+            <div class="di-lower">
+                <div class="di-lower-block">
+                    <div class="di-subtitle">League distribution</div>
+                    <div class="league-bar" id="di-leagues"></div>
+                </div>
+                <div class="di-lower-block">
+                    <div class="di-subtitle">Sample snapshot</div>
+                    <div class="di-averages" id="di-averages"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="act-header">
-            <span class="act-label">Act 1</span>
-            <h2 class="act-title">Two Worlds, Two Truths
-                <span class="info-i"
+        <div class="act-bridge-head act1-bridge-head" data-reveal data-reveal-group="act1-compare">
+            <span class="bridge-kicker">Act 1</span>
+            <h2 class="bridge-quote">Two Worlds, Two Truths
+                <span class="info-i act1-title-info"
                     data-info="Left: EA FC 25 in-game ratings. Right: real 2024-25 performance data from FBref (top-5 European leagues, 600+ minutes played). The composite score percentile-ranks each stat within the same sub-position, then combines them as a weighted average rescaled to match the EA OVR distribution.">i</span>
             </h2>
+            <p class="bridge-sub">
+                EA Sports rewards reputation, scouting, and marketability. Match data keeps a colder memory.
+                Compare the same position through both lenses and see where the ranking breaks apart.
+            </p>
         </div>
 
-        <p class="narrative-intro">
-            On one side, EA Sports assigns ratings based on reputation, marketability, and scouting.
-            On the other, real match data tells a different story.
-            Compare the top players according to each source.
-        </p>
-
-        <div class="position-toggle" id="act1-pos-toggle">
-            <button class="pos-btn active" data-pos="ST" data-label="Strikers">ST</button>
-            <button class="pos-btn" data-pos="WG" data-label="Wingers">WG</button>
-            <button class="pos-btn" data-pos="AM" data-label="Attacking Midfielders">AM</button>
-            <button class="pos-btn" data-pos="CM" data-label="Central Midfielders">CM</button>
-            <button class="pos-btn" data-pos="DM" data-label="Defensive Midfielders">DM</button>
-            <button class="pos-btn" data-pos="FB" data-label="Full-backs">FB</button>
-            <button class="pos-btn" data-pos="CB" data-label="Centre-backs">CB</button>
-            <button class="pos-btn" data-pos="GK" data-label="Goalkeepers">GK</button>
-        </div>
-
-        <div class="split-container">
-            <div class="panel panel-ea">
-                <div class="panel-header">
-                    <span class="panel-badge ea-badge">EA FC 25</span>
-                    <h3 class="panel-title">Game Rankings</h3>
-                    <p class="panel-subtitle">Overall Rating (OVR)</p>
+        <div class="act1-compare-shell" data-reveal data-reveal-group="act1-compare">
+            <div class="act1-shell-top">
+                <div class="act1-shell-copy">
+                    <span class="kicker">Ranking duel</span>
+                    <p class="act1-shell-note">Hover any card to track shared players across both lists. Click a name to open the full player card.</p>
                 </div>
-                <div id="ea-cards" class="card-list"></div>
+
+                <div class="act1-shell-controls">
+                    <div class="position-toggle" id="act1-pos-toggle">
+                        <button class="pos-btn active" data-pos="ST" data-label="Strikers" aria-label="Strikers">ST</button>
+                        <button class="pos-btn" data-pos="WG" data-label="Wingers" aria-label="Wingers">WG</button>
+                        <button class="pos-btn" data-pos="AM" data-label="Attacking Midfielders" aria-label="Attacking Midfielders">AM</button>
+                        <button class="pos-btn" data-pos="CM" data-label="Central Midfielders" aria-label="Central Midfielders">CM</button>
+                        <button class="pos-btn" data-pos="DM" data-label="Defensive Midfielders" aria-label="Defensive Midfielders">DM</button>
+                        <button class="pos-btn" data-pos="FB" data-label="Full-backs" aria-label="Full-backs">FB</button>
+                        <button class="pos-btn" data-pos="CB" data-label="Centre-backs" aria-label="Centre-backs">CB</button>
+                        <button class="pos-btn" data-pos="GK" data-label="Goalkeepers" aria-label="Goalkeepers">GK</button>
+                    </div>
+                    <button class="act1-fullscreen-btn" id="act1-fullscreen-btn" type="button" aria-label="Open ranking focus mode" title="Open ranking focus mode">
+                        <span class="act1-fs-icon" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span class="act1-fs-label">Focus</span>
+                    </button>
+                </div>
             </div>
-            <div class="panel panel-stats">
-                <div class="panel-header">
-                    <span class="panel-badge stats-badge">Real Stats</span>
-                    <h3 class="panel-title">On-Pitch Rankings</h3>
-                    <p class="panel-subtitle">2024-25 Performance (FBref)</p>
+
+            <div class="split-container">
+                <div class="panel panel-ea">
+                    <div class="panel-header">
+                        <span class="panel-badge ea-badge">EA FC 25</span>
+                        <h3 class="panel-title">Game Rankings</h3>
+                        <p class="panel-subtitle">Overall Rating (OVR)</p>
+                    </div>
+                    <div id="ea-cards" class="card-list"></div>
                 </div>
-                <div id="stats-cards" class="card-list"></div>
+                <div class="panel panel-stats">
+                    <div class="panel-header">
+                        <span class="panel-badge stats-badge">Real Stats</span>
+                        <h3 class="panel-title">On-Pitch Rankings</h3>
+                        <p class="panel-subtitle">2024-25 Performance (FBref)</p>
+                    </div>
+                    <div id="stats-cards" class="card-list"></div>
+                </div>
             </div>
         </div>
 
@@ -217,40 +339,48 @@
 
     <!-- Act 2 -->
     <section id="act2" class="act-section">
-        <div class="act-header">
+        <div class="act-header act2-header act2-revealed">
             <span class="act-label">Act 2</span>
             <h2 class="act-title">
                 The Reputation Gap
                 <span class="info-i"
-                    data-info="For each sub-position, we fit a regression line: what composite score should a player have given their OVR? The gap is the distance from that line. A player far below the line is overrated (EA rates them too high), a player far above is underrated (they perform better than their OVR suggests).">i</span>
+                    data-info="For each sub-position, we fit a regression line between OVR and the real composite. It answers: among players EA rates this high at this position, what composite do they usually deliver? Players sitting above the line outperform their EA rating, players below underperform. The Reputation Gap is the vertical distance to that trend, not to the diagonal y = x.">i</span>
             </h2>
         </div>
 
-        <!-- Guess the Gap -->
         <div id="guess-the-gap" class="guess-section"></div>
 
-        <!-- §.01 — Section label for the Scatter -->
-        <div class="chapter-head">
+        <div class="chapter-head act2-revealed act2-signal-head">
             <span class="chapter-kicker">§ 01 &middot; THE SIGNAL</span>
             <h3 class="chapter-title">Rating, plotted against reality.</h3>
-            <p class="chapter-sub">Every player, regressed within their sub-position. The vertical gap &mdash; above the
-                line or below it &mdash; is the story.</p>
+            <p class="chapter-sub">Each wall card keeps the scatter honest: pick a role, hover a name, and the pitch of reputations snaps back to that player's sub-position.</p>
         </div>
 
-        <!-- Scatter Toolbar -->
-        <div class="scatter-toolbar">
+        <div class="scatter-toolbar act2-revealed">
             <div class="position-toggle" id="act2-pos-toggle">
-                <button class="pos-btn active" data-pos="ST" data-label="Strikers">ST</button>
-                <button class="pos-btn" data-pos="WG" data-label="Wingers">WG</button>
-                <button class="pos-btn" data-pos="AM" data-label="Attacking Midfielders">AM</button>
-                <button class="pos-btn" data-pos="CM" data-label="Central Midfielders">CM</button>
-                <button class="pos-btn" data-pos="DM" data-label="Defensive Midfielders">DM</button>
-                <button class="pos-btn" data-pos="FB" data-label="Full-backs">FB</button>
-                <button class="pos-btn" data-pos="CB" data-label="Centre-backs">CB</button>
-                <button class="pos-btn" data-pos="GK" data-label="Goalkeepers">GK</button>
+                <button class="pos-btn active" data-pos="ST" data-label="Strikers" aria-label="Strikers">ST</button>
+                <button class="pos-btn" data-pos="WG" data-label="Wingers" aria-label="Wingers">WG</button>
+                <button class="pos-btn" data-pos="AM" data-label="Attacking Midfielders" aria-label="Attacking Midfielders">AM</button>
+                <button class="pos-btn" data-pos="CM" data-label="Central Midfielders" aria-label="Central Midfielders">CM</button>
+                <button class="pos-btn" data-pos="DM" data-label="Defensive Midfielders" aria-label="Defensive Midfielders">DM</button>
+                <button class="pos-btn" data-pos="FB" data-label="Full-backs" aria-label="Full-backs">FB</button>
+                <button class="pos-btn" data-pos="CB" data-label="Centre-backs" aria-label="Centre-backs">CB</button>
+                <button class="pos-btn" data-pos="GK" data-label="Goalkeepers" aria-label="Goalkeepers">GK</button>
             </div>
 
             <div class="toolbar-right">
+                <div class="dropdown-wrapper">
+                    <label for="yaxis-select">Y-axis</label>
+                    <select id="yaxis-select" class="dropdown">
+                        <option value="composite">Composite</option>
+                        <option value="xg">xG</option>
+                        <option value="xag">xAG</option>
+                        <option value="tklint">Tkl+Int</option>
+                        <option value="goals">Goals</option>
+                        <option value="passpct">Pass %</option>
+                        <option value="xgxag">xG + xAG</option>
+                    </select>
+                </div>
                 <div class="dropdown-wrapper">
                     <label for="league-select">League</label>
                     <select id="league-select" class="dropdown">
@@ -260,32 +390,174 @@
             </div>
         </div>
 
-        <!-- Scatter Layout -->
-        <div class="scatter-layout">
+        <div class="scatter-layout act2-revealed">
             <div class="scatter-plot-area" id="scatter-plot-area"></div>
-            <div class="sidebar" id="scatter-sidebar"></div>
         </div>
-        <div class="scatter-legend-bar" id="scatter-legend-bar"></div>
+        <div class="scatter-legend-bar act2-revealed" id="scatter-legend-bar"></div>
 
-        <!-- Wall of Fame / Wall of Shame -->
-        <div id="wall-fame-shame" class="wall-section"></div>
+        <div id="wall-fame-shame" class="wall-section act2-revealed"></div>
 
-        <!-- §.03 — Multi-player Radar Overlay -->
-        <div id="overlay-section" class="overlay-section"></div>
+        <div id="map-section" class="map-section act2-revealed act2-scatter-release"></div>
 
-        <!-- §.04 — League Map -->
-        <div id="map-section" class="map-section"></div>
+        <div id="overlay-section" class="overlay-section act2-revealed act2-scatter-release"></div>
+    </section>
+
+    <section class="bridge-section act3-gate-section" id="act2-to-act3-bridge" data-reveal>
+        <div class="act-bridge-head act3-gate-head">
+            <span class="bridge-kicker">Act 3</span>
+            <h2 class="bridge-quote">The Rebuild</h2>
+            <p class="bridge-sub">EA wrote one rating. Our composite wrote another. Now you write yours.</p>
+        </div>
     </section>
 
     <!-- Act 3 -->
-    <section id="act3" class="act-section">
-        <div class="act-header">
-            <span class="act-label">Act 3</span>
-            <h2 class="act-title">What If We Rebuilt the Ratings?</h2>
+    <section id="act3" class="act-section act-section-bridge">
+
+        <div class="a3-scene a3-scene-pitch" id="a3-scene-1">
+            <div class="chapter-head a3-pitch-head">
+                <span class="chapter-kicker">STEP 1 &middot; 3</span>
+                <h3 class="chapter-title">Pick a role on the pitch.</h3>
+                <p class="chapter-sub">Each position carries its own dimensions. Hover to preview, click any slot to start.</p>
+            </div>
+            <div class="a3-pitch-stage">
+                <div class="a3-lineup-wrap">
+                    <div class="a3-lineup" id="a3-lineup"></div>
+                </div>
+                <div class="a3-pitch-preview" id="a3-pitch-preview" aria-hidden="true"></div>
+            </div>
         </div>
 
-        <div class="placeholder-box">
-            <p>Coming soon</p>
+        <div class="a3-scene a3-scene-quiz" id="a3-scene-2" hidden>
+            <div class="chapter-head">
+                <span class="chapter-kicker">STEP 2 &middot; 3</span>
+                <h3 class="chapter-title">Shape your <span id="a3-quiz-pos-label">striker</span>.</h3>
+                <p class="chapter-sub">Four quick questions. Each answer tilts the weights. You can fine-tune everything after.</p>
+            </div>
+            <header class="a3-quiz-head">
+                <div class="a3-crest" id="a3-crest-q"></div>
+                <div class="a3-quiz-dots" id="a3-quiz-dots"></div>
+            </header>
+            <div class="a3-quiz-body" id="a3-quiz-body"></div>
+            <div class="a3-quiz-foot">
+                <button class="a3-link a3-quiz-back" data-goto="1">&lsaquo; change position</button>
+                <p class="a3-quiz-tease" id="a3-quiz-tease"></p>
+                <button class="a3-btn a3-btn-primary" id="a3-quiz-done" data-goto="3" hidden>See the rankings &rsaquo;</button>
+            </div>
+        </div>
+
+        <div class="a3-scene a3-scene-build" id="a3-scene-3" hidden>
+            <div class="chapter-head">
+                <span class="chapter-kicker">STEP 3 &middot; 3</span>
+                <h3 class="chapter-title">Your <span id="a3-build-pos-label">striker</span>, rebuilt.</h3>
+                <p class="chapter-sub">Move a slider. The top 10 reacts live.</p>
+            </div>
+            <header class="a3-build-head">
+                <div class="a3-crest" id="a3-crest-b"></div>
+                <button class="a3-link a3-back" data-goto="2">&lsaquo; retune quiz</button>
+            </header>
+
+            <div class="a3-hero-card" id="a3-hero-card"></div>
+
+            <div class="a3-build-grid">
+                <div class="a3-card a3-radar-wrap">
+                    <div class="a3-radar-head">
+                        <span class="a3-radar-title">Your top 3, compared</span>
+                        <span class="a3-radar-sub">Five dimensions. One shape each. Hover a name for the profile.</span>
+                    </div>
+                    <div class="a3-radar-legend" id="a3-radar-legend"></div>
+                    <div class="a3-radar-stage">
+                        <div class="a3-stat-radar" id="a3-stat-radar"></div>
+                        <div class="a3-radar-tt" id="a3-radar-tt" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <div class="a3-card a3-impact">
+                    <div class="a3-impact-head">
+                        <div class="a3-impact-switch" id="a3-impact-switch">
+                            <button class="a3-sw active" data-view="rank">Rank</button>
+                            <button class="a3-sw" data-view="scatter">Scatter</button>
+                            <button class="a3-sw" data-view="bump">Bump</button>
+                            <button class="a3-sw" data-view="gap">Gap</button>
+                        </div>
+                    </div>
+                    <div class="a3-tip" id="a3-tip" role="status" aria-live="polite"></div>
+                    <div class="a3-impact-body" id="a3-impact-body" aria-live="polite"></div>
+                </div>
+            </div>
+
+            <div class="a3-card a3-weights">
+                <div class="a3-weights-head">
+                    <span class="a3-weights-title">Dimension weights</span>
+                    <div class="a3-presets" id="a3-presets">
+                        <button class="a3-preset" data-preset="ea">EA-like</button>
+                        <button class="a3-preset" data-preset="balanced">Balanced</button>
+                        <button class="a3-preset active" data-preset="ours">Ours</button>
+                        <button class="a3-preset" data-preset="defensive">Defensive</button>
+                        <button class="a3-preset" data-preset="creative">Creative</button>
+                    </div>
+                </div>
+                <div class="a3-sliders" id="a3-sliders"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="act3-part2" class="act-section act-section-part2">
+        <div class="chapter-head">
+            <span class="chapter-kicker">&sect; 02 &middot; YOUR TASTE</span>
+            <h3 class="chapter-title">Your taste, tested.</h3>
+            <p class="chapter-sub">Six real players. Using <em>your</em> weights. Overrated, or underrated?</p>
+        </div>
+        <div class="a3-scene a3-scene-quiz2" id="a3-scene-4">
+            <header class="a3-quiz2-head">
+                <div class="a3-quiz2-progress" id="a3-quiz2-progress"></div>
+            </header>
+            <div class="a3-quiz2-body" id="a3-quiz2-body"></div>
+        </div>
+    </section>
+
+    <!-- Conclusion -->
+    <section id="conclusion" class="conclusion-section">
+        <div class="conc-wash"></div>
+        <div class="conc-inner">
+            <div class="conc-intro">
+                <span class="conc-kicker">&sect; Conclusion</span>
+                <h2 class="conc-headline"><span class="conc-line-1">You have rebuilt</span> <span class="conc-line-2">the game.</span></h2>
+                <p class="conc-lede" id="conc-lede"></p>
+            </div>
+
+            <div class="conc-narrative">
+                <div class="conc-narrative-row">
+                    <div class="conc-step">
+                        <span class="conc-step-n">01</span>
+                        <h3 class="conc-step-h">We asked the question.</h3>
+                        <p class="conc-step-p">Does EA's Overall rating match how players actually perform? A single number, 50 to 99, speaks for every footballer in the game.</p>
+                    </div>
+                    <div class="conc-step">
+                        <span class="conc-step-n">02</span>
+                        <h3 class="conc-step-h">The data answered.</h3>
+                        <p class="conc-step-p">We built a composite from 11 to 18 real match stats tailored to each position. Each composite sits next to the EA OVR for the same player. The distance between the two is the Reputation Gap: who is overrated, who is underrated.</p>
+                    </div>
+                    <div class="conc-step">
+                        <span class="conc-step-n">03</span>
+                        <h3 class="conc-step-h">You rewrote the answer.</h3>
+                        <p class="conc-step-p">You picked a position. You moved five weights. The top 10 reshuffled around your definition of greatness. Here is the rating you just invented, next to EA's.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="conc-grid" id="conc-grid"></div>
+
+            <div class="conc-insight" id="conc-insight"></div>
+
+            <div class="conc-manifesto">
+                <p class="conc-quote">We asked. We measured. You rebuilt.</p>
+                <p class="conc-quote-sub">A rating is one answer. The Reputation Gap shows the others, and the shape it takes belongs to whoever holds the slider.</p>
+            </div>
+
+            <div class="conc-footer">
+                <span class="conc-sig">Tito Data Viz &middot; COM-480 &middot; EPFL</span>
+            </div>
         </div>
     </section>
 
@@ -294,18 +566,31 @@
     <script src="https://unpkg.com/topojson-client@3"></script>
     <script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/act1-cards.js"></script>
-    <script src="js/act1-lines.js"></script>
-    <script src="js/act1-modal.js"></script>
-    <script src="js/act1-splitscreen.js"></script>
-    <script src="js/act2-guess.js"></script>
-    <script src="js/act2-scatter.js"></script>
-    <script src="js/act2-wall.js"></script>
-    <script src="js/act2-overlay.js"></script>
-    <script src="js/act2-map.js"></script>
-    <script src="js/act2-stadium.js"></script>
+    <script src="js/utils.js?v=m3p4"></script>
+    <script src="js/reveal-on-scroll.js?v=m3p"></script>
+    <script src="js/ball-menu.js?v=m3p"></script>
+    <script src="js/dataset-intro.js?v=m3p"></script>
+    <script src="js/choreography.js?v=m3p"></script>
+    <script src="js/main.js?v=m3p"></script>
+    <script src="js/act1-dataset-modal.js?v=m3p3"></script>
+    <script src="js/act1-cards.js?v=m3p"></script>
+    <script src="js/act1-lines.js?v=m3p"></script>
+    <script src="js/act1-modal-radar.js?v=m3p"></script>
+    <script src="js/act1-modal.js?v=m3p4"></script>
+    <script src="js/act1-splitscreen.js?v=m3p"></script>
+    <script src="js/act2-guess.js?v=m3p"></script>
+    <script src="js/modal-shared.js?v=m3p"></script>
+    <script src="js/act2-modal.js?v=m3p"></script>
+    <script src="js/act2-scatter.js?v=m3p7"></script>
+    <script src="js/act2-wall.js?v=m3p8"></script>
+    <script src="js/act2-overlay.js?v=m3p7"></script>
+    <script src="js/act2-map-data.js?v=m3p"></script>
+    <script src="js/act2-map.js?v=m3p"></script>
+    <script src="js/act2-stadium-formation.js?v=m3p"></script>
+    <script src="js/act2-stadium.js?v=m3p"></script>
+    <script src="js/act3-data.js?v=m3p"></script>
+    <script src="js/act3.js?v=m3p9"></script>
+    <script src="js/conclusion.js?v=m3p"></script>
 
 </body>
 

@@ -1,7 +1,3 @@
-// --- Act 2: Wall of Fame / Wall of Shame ---
-// Two dual-scroll ledgers: Hidden Gems (underrated) vs Reputation Tax (overrated).
-// Click a card -> opens the existing Act 1 modal for the full player dossier.
-
 function initWallOfFameShame(data) {
     const section = document.getElementById("wall-fame-shame");
     if (!section || !data?.length) return;
@@ -12,7 +8,6 @@ function initWallOfFameShame(data) {
     const DIM_LABELS = { scoring: "scoring", creation: "creation", progression: "progression", defense: "defense", discipline: "discipline" };
     const DIM_TO_EA  = { scoring: "sho", creation: "pas", progression: "dri", defense: "def", discipline: "phy" };
 
-    // Shared modal (Act 1). Lazy-init our own instance so Act 2 is self-contained.
     let modalManager = null;
     const lazyModal = () => {
         if (modalManager) return modalManager;
@@ -24,8 +19,7 @@ function initWallOfFameShame(data) {
         return modalManager;
     };
 
-    // Precompute percentile ranks of subScores within each sub-position.
-    // subScorePct[subPos][dim] = function(value) -> 0..100 percentile
+    // percentile lookups, keyed by sub-position then dimension
     const subScorePct = {};
     const subPositions = ["ST", "WG", "AM", "CM", "DM", "FB", "CB", "GK"];
     for (const sp of subPositions) {
@@ -42,7 +36,6 @@ function initWallOfFameShame(data) {
         }
     }
 
-    // Rank maps for modal (ea OVR rank within 4-way position group, composite rank within sub-position).
     function buildRankMaps(posPlayers) {
         const byOvr = posPlayers.slice().sort((a, b) => (b.ea?.ovr || 0) - (a.ea?.ovr || 0));
         const byComp = posPlayers.slice().sort((a, b) => (b.composite || 0) - (a.composite || 0));
@@ -52,7 +45,6 @@ function initWallOfFameShame(data) {
         return { eaRankMap, compRankMap };
     }
 
-    // --- Static chrome ---
     section.innerHTML =
         '<div class="wall-head">' +
             '<span class="wall-kicker">\u00a7 02 \u00b7 REPUTATION LEDGER</span>' +
@@ -88,9 +80,8 @@ function initWallOfFameShame(data) {
             '<div class="wall-divider" aria-hidden="true">' +
                 '<div class="wall-divider-rule"></div>' +
                 '<div class="wall-divider-text">' +
-                    '<span class="wall-quote-mark">\u201C</span>' +
-                    '<p class="wall-quote">The gap is not a bug in the ratings \u2014 it is the ratings.</p>' +
-                    '<span class="wall-quote-caption">\u2014 regression residual, 2024\u201325</span>' +
+                    '<span class="wall-divider-mark">vs</span>' +
+                    '<span class="wall-divider-caption">rating gap</span>' +
                 '</div>' +
                 '<div class="wall-divider-rule"></div>' +
             '</div>' +
@@ -115,7 +106,6 @@ function initWallOfFameShame(data) {
 
     let activePos = "ALL";
 
-    // --- Insight generation ---
     function makeInsight(p, isGem) {
         const sp = p.subPos;
         if (!sp || !p.subScores) return "";
@@ -135,29 +125,25 @@ function initWallOfFameShame(data) {
         const subLabel = SUBPOS_LABELS[sp] || sp;
 
         if (isGem) {
-            // Underrated: lead with the strongest real-world dimension.
             if (eaVal != null) {
                 return 'P' + strongest.pct + ' in ' + strongest.d +
-                    ' among ' + subLabel + ' \u2014 EA sees only ' + eaKey.toUpperCase() + ' ' + eaVal + '.';
+                    ' among ' + subLabel + '; EA sees only ' + eaKey.toUpperCase() + ' ' + eaVal + '.';
             }
             return 'P' + strongest.pct + ' in ' + strongest.d + ' among ' + subLabel +
-                ' \u2014 the OVR ' + p.ea.ovr + ' buries it.';
+                '; the OVR ' + p.ea.ovr + ' buries it.';
         }
-        // Overrated: lead with how low even their best dimension ranks.
         return 'Top dimension is only P' + strongest.pct + ' (' + strongest.d + ') among ' + subLabel +
-            ' \u2014 production doesn\u2019t back up OVR ' + p.ea.ovr + '.';
+            '; production does not back up OVR ' + p.ea.ovr + '.';
     }
 
-    // --- Card rendering ---
     function cardHTML(p, rank, isGem) {
         const gap = p.gap || 0;
         const color = isGem ? "var(--wall-green)" : "var(--wall-red)";
         const tri = isGem ? "\u25B2" : "\u25BC";
         const subLabel = SUBPOS_LABELS[p.subPos] || p.subPos || "";
-        const ovr = p.ea?.ovr ?? "\u2013";
-        const comp = p.composite != null ? p.composite.toFixed(1) : "\u2013";
+        const ovr = p.ea?.ovr ?? "-";
+        const comp = p.composite != null ? p.composite.toFixed(1) : "-";
 
-        // Dumbbell scale: map 55..95 to 0..100% of the rail.
         const railLo = 55, railHi = 95;
         const railPct = v => Math.max(0, Math.min(100, ((v - railLo) / (railHi - railLo)) * 100));
         const ovrX = p.ea?.ovr != null ? railPct(p.ea.ovr) : 50;
@@ -224,7 +210,6 @@ function initWallOfFameShame(data) {
         gemsCount.textContent = gems.length;
         taxCount.textContent  = tax.length;
 
-        // Entrance stagger
         const allCards = section.querySelectorAll(".wall-card");
         allCards.forEach((c, i) => {
             c.style.animationDelay = (i % TOP_N) * 28 + "ms";
@@ -235,13 +220,28 @@ function initWallOfFameShame(data) {
 
     function bindCardClicks() {
         section.querySelectorAll(".wall-card").forEach(card => {
+            card.addEventListener("mouseenter", (ev) => {
+                document.dispatchEvent(new CustomEvent("highlightPlayer", {
+                    detail: { name: card.dataset.name, subPos: card.dataset.subpos }
+                }));
+                showWallTip(card, ev);
+            });
+            card.addEventListener("mousemove", (ev) => moveWallTip(ev));
+            card.addEventListener("mouseleave", () => {
+                document.dispatchEvent(new CustomEvent("unhighlightPlayer"));
+                hideWallTip();
+            });
             card.addEventListener("click", () => {
                 const name = card.dataset.name;
                 const player = data.find(p => p.name === name);
                 if (!player) return;
+                hideWallTip();
+                if (typeof window.openAct2Modal === "function") {
+                    window.openAct2Modal(player, data);
+                    return;
+                }
                 const subPos = player.subPos;
                 const group = GROUP_BY_SUBPOS[subPos] || "FW";
-                // Match Act 1's modal contract: posPlayers is the sub-position pool.
                 const posPlayers = data.filter(p => p.subPos === subPos);
                 const { eaRankMap, compRankMap } = buildRankMaps(posPlayers);
                 lazyModal().openModal(player, group, eaRankMap, compRankMap, posPlayers, null);
@@ -249,13 +249,85 @@ function initWallOfFameShame(data) {
         });
     }
 
-    // Filter buttons
+    let wallTipEl = null;
+    function ensureWallTip() {
+        if (wallTipEl) return wallTipEl;
+        wallTipEl = document.createElement("div");
+        wallTipEl.className = "wall-card-tip";
+        document.body.appendChild(wallTipEl);
+        return wallTipEl;
+    }
+    function showWallTip(card, ev) {
+        const name = card.dataset.name;
+        const p = data.find(x => x.name === name);
+        if (!p || !p.subScores) return;
+        const tip = ensureWallTip();
+        const ovr = p.ea?.ovr ?? null;
+        const comp = p.composite != null ? p.composite.toFixed(1) : "-";
+        const gap = p.gap != null ? p.gap : 0;
+        const gapStr = (gap >= 0 ? "+" : "") + gap.toFixed(1);
+        const gapColor = gap > 1 ? "var(--win,#4ade80)" : gap < -1 ? "var(--red,#ef4444)" : "var(--text-muted)";
+        const dims = ["scoring", "creation", "progression", "defense", "discipline"];
+        const subLabel = SUBPOS_LABELS[p.subPos] || p.subPos || "";
+        let bars = "";
+        for (const d of dims) {
+            const v = p.subScores[d];
+            if (v == null) continue;
+            const w = Math.max(2, Math.min(100, v));
+            bars +=
+                '<div class="wct-row">' +
+                    '<span class="wct-l">' + d + '</span>' +
+                    '<span class="wct-bar"><span class="wct-fill" style="width:' + w.toFixed(0) + '%"></span></span>' +
+                    '<span class="wct-v">' + v.toFixed(0) + '</span>' +
+                '</div>';
+        }
+        const verdict = gap > 5
+            ? "Outperforms his OVR by " + Math.abs(gap).toFixed(1) + " points."
+            : gap < -5
+                ? "Underperforms his OVR by " + Math.abs(gap).toFixed(1) + " points."
+                : "Composite is within " + Math.abs(gap).toFixed(1) + " of his OVR.";
+        tip.innerHTML =
+            '<div class="wct-head">' +
+                '<strong class="wct-name">' + p.name + '</strong>' +
+                '<span class="wct-meta">' + (p.club || "") + ' · ' + subLabel + '</span>' +
+            '</div>' +
+            '<div class="wct-stats">' +
+                '<span><b>OVR</b> ' + (ovr != null ? ovr : "-") + '</span>' +
+                '<span><b>CMP</b> ' + comp + '</span>' +
+                '<span style="color:' + gapColor + '"><b>Gap</b> ' + gapStr + '</span>' +
+            '</div>' +
+            '<div class="wct-bars">' + bars + '</div>' +
+            '<p class="wct-verdict">' + verdict + '</p>' +
+            '<div class="wct-foot">Click for the full dossier</div>';
+        tip.classList.add("show");
+        moveWallTip(ev);
+    }
+    function moveWallTip(ev) {
+        if (!wallTipEl || !wallTipEl.classList.contains("show")) return;
+        const margin = 14;
+        const w = wallTipEl.offsetWidth || 280;
+        const h = wallTipEl.offsetHeight || 220;
+        let left = ev.clientX + margin;
+        let top  = ev.clientY + margin;
+        if (left + w > window.innerWidth - 8) left = ev.clientX - w - margin;
+        if (top  + h > window.innerHeight - 8) top  = ev.clientY - h - margin;
+        if (left < 8) left = 8;
+        if (top  < 8) top  = 8;
+        wallTipEl.style.left = left + "px";
+        wallTipEl.style.top  = top + "px";
+    }
+    function hideWallTip() {
+        if (!wallTipEl) return;
+        wallTipEl.classList.remove("show");
+    }
+
     posToggle.querySelectorAll(".pos-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             posToggle.querySelectorAll(".pos-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             activePos = btn.dataset.pos;
             render();
+            document.dispatchEvent(new CustomEvent("act2WallFilter", { detail: { subPos: activePos } }));
         });
     });
 
