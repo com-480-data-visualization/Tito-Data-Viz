@@ -4,7 +4,9 @@ Scrollytelling site about EA FC 25 player ratings vs real 2024-25 match
 data. Built for COM-480 (Data Visualization, EPFL).
 
 **Live demo:** https://com-480-data-visualization.github.io/Tito-Data-Viz/
+
 **Process book:** [milestones/M3/process-book.pdf](milestones/M3/process-book.pdf)
+
 **Screencast:** [milestones/M3/screencast.mp4](milestones/M3/screencast.mp4)
 
 Scroll through the three acts on a desktop browser. The floating ball in
