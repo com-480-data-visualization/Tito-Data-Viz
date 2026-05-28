@@ -7,7 +7,7 @@ data. Built for COM-480 (Data Visualization, EPFL).
 
 **Process book:** [milestones/M3/process-book.pdf](milestones/M3/process-book.pdf)
 
-**Screencast:** [milestones/M3/screencast.mp4](milestones/M3/screencast.mp4)
+**Screencast:** [milestones/M3/screencast.mp4](milestones/M3/screencast.mp4) or [Youtube Link](https://youtu.be/MuPqG5QEpxs)
 
 Scroll through the three acts on a desktop browser. The floating ball in
 the top left opens the section nav.
