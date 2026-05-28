@@ -3,8 +3,6 @@ function escapeAttr(str) {
     return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// --- Position labels ---
-
 const POS_LABELS = { FW: "Forwards", MF: "Midfielders", DF: "Defenders", GK: "Goalkeepers" };
 
 const SUBPOS_LABELS = {
@@ -13,7 +11,11 @@ const SUBPOS_LABELS = {
     FB: "Full-backs", CB: "Centre-backs", GK: "Goalkeepers"
 };
 
-// --- EA stat labels ---
+const SUBPOS_TO_GROUP = {
+    ST: "FW", WG: "FW", AM: "MF", CM: "MF", DM: "MF",
+    FB: "DF", CB: "DF", GK: "GK"
+};
+
 
 const EA_STAT_LABELS = {
     ovr: "Overall", pac: "Pace", sho: "Shooting", pas: "Passing",
@@ -33,8 +35,6 @@ const EA_STAT_LABELS = {
     gkPositioning: "GK Positioning", gkReflexes: "GK Reflexes"
 };
 
-// --- Real stat labels ---
-
 const REAL_STAT_LABELS = {
     // Scoring
     gls: "Goals", gpa: "Goals + Assists", gpk: "Non-Penalty Goals",
@@ -48,6 +48,7 @@ const REAL_STAT_LABELS = {
     tb90: "Through Balls/90", xa90: "xA/90",
     // Progression
     prgc90: "Prog. Carries/90", prgp90: "Prog. Passes/90",
+    prgPassPct: "Prog. Pass Accuracy %",
     cpa90: "Carries into Pen. Area/90", final3rd90: "Passes into Final 3rd/90",
     // Dribbling
     to90: "Take-Ons/90", succpct: "Dribble Success %", mis90: "Miscontrols/90",
@@ -122,17 +123,15 @@ const REAL_STAT_LABELS = {
     gkOGConceded: "Own Goals (GK)"
 };
 
-// --- Stat tooltips (FBref definitions + EA context) ---
-
 const STAT_INFO = {
     // Composite & gap
     composite: "Composite performance score. Each stat is percentile-ranked within the same sub-position (e.g. all Wingers), then combined as a weighted average using position-specific weights. Rescaled to match the EA OVR distribution (mean ~75, std ~5).",
-    gap: "Composite minus the value predicted by linear regression from OVR. Positive = underrated (performs better than OVR suggests), negative = overrated.",
+    gap: "Reputation Gap = real composite minus the value predicted by linear regression of composite on OVR (fit within each sub-position). Positive = underrated, negative = overrated. We do not compare to the diagonal y = x: instead we ask 'for players with this OVR at this position, what composite do they usually deliver?' and measure the deviation from that trend.",
     composite_fw: "Forward composite: percentile-ranked stats across scoring (~30%), creation (~30%), progression (~30%) and discipline (~10%). ST weights emphasize npxG, SoT, and penalty area presence. WG weights balance scoring, creation and dribbling progression equally.",
     composite_mf: "Midfielder composite: percentile-ranked stats across creation, progression, defense, scoring and discipline. AM weights favor creation and progression. CM balances all dimensions. DM emphasizes tackles, interceptions and recoveries.",
     composite_df: "Defender composite: percentile-ranked stats. CB weights: defense ~53% (tackle win rate, aerial duels, interceptions), progression ~33% (progressive passes/carries, pass accuracy), discipline ~14%. FB weights balance progression, creation and defense.",
     composite_gk: "GK composite: 11 percentile-ranked stats. Shot-stopping (PSxG+/-/90, Save%, CS%) weighted ~55%, distribution (pass completion, launches, throws) ~10%, sweeping (actions outside box, cross stops, positioning) ~23%.",
-    trendLine: "Linear regression line: players above outperform their EA rating, below underperform.",
+    trendLine: "Linear regression fit within this sub-position: for each OVR, it predicts the typical composite of players rated that high by EA. Above the line = outperforms peers with the same OVR. Below = underperforms.",
     dotColor: "Green = underrated, Red = overrated, Grey = roughly fair.",
     dotSize: "Dot size = minutes played. Bigger = more reliable data.",
     marketValue: "Transfermarkt valuation from start of 2024-25 season (before Aug 31, 2024).",
@@ -170,6 +169,7 @@ const STAT_INFO = {
     // Progression
     prgc90: "Progressive Carries per 90 min. Carries that move the ball at least 10 yards toward the opponent goal or into the penalty area.",
     prgp90: "Progressive Passes per 90 min. Completed passes that move the ball at least 10 yards toward the opponent goal or into the penalty area.",
+    prgPassPct: "Progressive Pass Accuracy %. Share of attempted passes that count as progressive. Quality signal: high volume + high share = a midfielder who progresses without misfiring.",
     cpa90: "Carries into Penalty Area per 90 min. Number of times a player dribbled the ball into the 18-yard box.",
     final3rd90: "Passes into Final Third per 90 min. Completed passes that enter the attacking third of the pitch.",
 
@@ -216,9 +216,49 @@ const STAT_INFO = {
 
     // Playing time
     touchAttPen90: "Touches in Attacking Penalty Area per 90 min. Ball contacts inside the opponent 18-yard box.",
-};
 
-// --- Stat groups ---
+    // Passing breakdown (types of passes)
+    passLive: "Live-ball passes: open-play passes (not from set pieces or stoppages).",
+    passDead: "Dead-ball passes: passes from set pieces (free kicks, corners, throw-ins, kick-offs).",
+    passCrs:  "Crosses: completed passes from wide areas aimed into the penalty area.",
+    passTB:   "Through-balls: passes split between defenders into open space behind the defensive line.",
+    passSw:   "Switches: passes that travel more than 40 yards across the pitch (side-to-side).",
+    passFK:   "Free-kick passes: dead-ball passes taken directly from a free kick.",
+    passAtt:  "Pass attempts: total passes the player tried this season.",
+    passCmp:  "Pass completions: total passes successfully reaching a teammate.",
+    passTotDist: "Total pass distance, in yards.",
+    passPrgDist: "Progressive pass distance, in yards. Distance summed only for passes moving the ball toward the opponent goal.",
+    passBlocked: "Blocked passes: pass attempts intercepted by an opposing player before reaching their target.",
+
+    // Ball carrying
+    carries:        "Total ball carries: any moment the player controls and moves the ball with their feet.",
+    carriesTotDist: "Total carry distance, in yards. Every yard the player covered with the ball at his feet, regardless of direction.",
+    carriesPrgDist: "Forward carry distance, in yards. Sum of only the portions of each carry that advance the ball toward the opponent goal; recycling and lateral moves are excluded.",
+    carriesPrgC:    "Progressive carries: carries that advance the ball at least 10 yards toward the opponent goal, or any carry into the penalty area.",
+    carries1_3:     "Carries into the final third: carries that cross into the attacking third of the pitch.",
+    carriesCPA:     "Carries into the penalty area: carries that bring the ball into the 18-yard box.",
+    carriesDis:     "Dispossessed: times the player lost the ball after being tackled by an opponent.",
+    carriesMis:     "Miscontrols: times the player failed to control the ball with their first touch.",
+    carriesRec:     "Receptions: times the player received a pass from a teammate.",
+
+    // Team impact (on/off splits)
+    onG:           "Team goals scored while this player was on the pitch.",
+    onGA:          "Team goals conceded while this player was on the pitch.",
+    onOff:         "On-Off goal differential per 90: net goals while the player is on the pitch minus net goals while they are off. Positive = the team is measurably better with this player on.",
+    plusMinus:     "Goal differential while on the pitch (goals for minus goals against).",
+    plusMinus90:   "Goal differential per 90 minutes while on the pitch.",
+    xgPlusMinus:   "Expected-goal differential while on the pitch.",
+    xgPlusMinus90: "Expected-goal differential per 90 minutes. Same idea as plusMinus90 but using xG, which strips out finishing luck.",
+    ppm:           "Points per match while the player was on the pitch (win=3, draw=1, loss=0). 2.0+ = title pace, under 1.0 = relegation pace.",
+
+    // Workload and reliability
+    compl:  "Complete matches: games played the full 90 minutes without being substituted.",
+    mp:     "Matches Played: total games featured this season.",
+    starts: "Starts: matches in which the player was in the starting eleven.",
+    subs:   "Sub appearances: matches the player came on as a substitute.",
+    mnPerStart: "Average minutes per start.",
+    mnPerSub:   "Average minutes per sub appearance.",
+};
 
 const EA_GROUPS = {
     "Pace":        ["acceleration", "sprintSpeed"],
@@ -233,7 +273,7 @@ const EA_GROUPS = {
 const REAL_GROUPS = {
     "Scoring":      ["gls", "gpk", "xg90", "npxg90", "gxg", "npgxg", "sh90", "sot90", "sotpct", "npxgpsh", "dist", "fkGoals"],
     "Creation":     ["ast", "gpa", "xag90", "axag", "sca90", "gca90", "kp90", "ppa90", "crspa90", "tb90", "xa90"],
-    "Progression":  ["prgc90", "prgp90", "cpa90", "final3rd90"],
+    "Progression":  ["prgc90", "prgp90", "prgPassPct", "cpa90", "final3rd90"],
     "Dribbling":    ["to90", "succpct", "mis90"],
     "Defense":      ["tklint90", "tkl90", "tklpct", "int90", "blocks90", "clr90", "shblocks90", "recov90", "aerialwon"],
     "Discipline":   ["fls90", "fld90", "offsides90", "pkwon", "pkcon"],
@@ -255,8 +295,6 @@ const POS_KEY_STATS = {
     FB: ["prgc90", "sca90", "xag90", "tklint90", "recov90", "cmppct"],
     CB: ["tklint90", "aerialwon", "clr90", "blocks90", "prgp90", "cmppct"]
 };
-
-// --- Helpers ---
 
 const _PCT_STATS = new Set([
     "aerialwon", "sotpct", "succpct", "tklpct", "cmppct",
@@ -313,10 +351,11 @@ function formatMarketValue(val) {
 function compositeInfo(pos, subPos) {
     if (subPos) {
         const label = SUBPOS_LABELS[subPos] || subPos;
-        const nStats = { ST: 18, WG: 16, AM: 16, CM: 17, DM: 16, FB: 17, CB: 16, GK: 11 };
+        const nStats = { ST: 18, WG: 16, AM: 18, CM: 18, DM: 17, FB: 17, CB: 16, GK: 11 };
         return label + " composite: each of the " +
-            (nStats[subPos] || 15) + " real stats is percentile-ranked among all " + label.toLowerCase() +
-            ", then combined as a weighted average. Rescaled to match the EA OVR distribution.";
+            (nStats[subPos] || 15) + " FBref stats is percentile-ranked among all " + label.toLowerCase() +
+            ", then averaged with manual weights and rescaled onto the EA OVR distribution " +
+            "(mean ~75, narrow spread) so 80 already outperforms ~85% of peers.";
     }
     const key = "composite_" + (pos || "").toLowerCase();
     return STAT_INFO[key] || STAT_INFO.composite;
@@ -326,31 +365,99 @@ function getStatTooltip(key) {
     return STAT_INFO[key] || REAL_STAT_LABELS[key] || EA_STAT_LABELS[key] || key;
 }
 
-// Avatar img with fallback to initials on error
 function avatarHTMLString(photo, name, imgClass, fallbackClass) {
-    if (!photo) return '<div class="' + fallbackClass + '">' + initials(name) + '</div>';
-    const escaped = escapeAttr(photo);
-    const ini = initials(name);
-    return '<img class="' + imgClass + '" src="' + escaped + '" alt="" loading="lazy"' +
-        ' onerror="this.outerHTML=\'<div class=&quot;' + fallbackClass + '&quot;>' + ini + '</div>\'">';
+    if (!photo) return '<div class="' + escapeAttr(fallbackClass) + '">' + escapeAttr(initials(name)) + '</div>';
+    const ini = escapeAttr(initials(name));
+    return '<img class="' + escapeAttr(imgClass) + '" src="' + escapeAttr(photo) + '" alt="' + escapeAttr(name || "") + '" loading="lazy"' +
+        ' onerror="this.outerHTML=\'<div class=&quot;' + escapeAttr(fallbackClass) + '&quot;>' + ini + '</div>\'">';
 }
 
-// Info tooltip setup
+function attachDataTip(container) {
+    if (!container || container.dataset.tipAttached) return;
+    container.dataset.tipAttached = "1";
+    let tipEl = document.querySelector(".stat-tip");
+    if (!tipEl) {
+        tipEl = document.createElement("div");
+        tipEl.className = "stat-tip";
+        document.body.appendChild(tipEl);
+    }
+    const positionTip = (e) => {
+        const pad = 12;
+        const rect = tipEl.getBoundingClientRect();
+        const w = rect.width || 260;
+        const h = rect.height || 40;
+        const x = Math.min(window.innerWidth - w - pad, Math.max(pad, e.clientX + 12));
+        const y = Math.min(window.innerHeight - h - pad, Math.max(pad, e.clientY - 10));
+        tipEl.style.left = x + "px";
+        tipEl.style.top = y + "px";
+    };
+    container.addEventListener("mouseover", e => {
+        const t = e.target.closest("[data-tip]");
+        if (!t || !container.contains(t)) return;
+        tipEl.textContent = t.getAttribute("data-tip");
+        tipEl.classList.add("visible");
+        positionTip(e);
+    });
+    container.addEventListener("mousemove", e => {
+        if (tipEl.classList.contains("visible")) positionTip(e);
+    });
+    container.addEventListener("mouseout", e => {
+        if (e.target.closest("[data-tip]")) tipEl.classList.remove("visible");
+    });
+}
+
 function initInfoTooltips() {
     document.querySelectorAll(".info-i").forEach(function (el) {
         const text = el.getAttribute("data-info");
         if (!text || el.querySelector(".info-bubble")) return;
         const bubble = document.createElement("div");
         bubble.className = "info-bubble";
+        if (el.classList.contains("act1-title-info")) bubble.classList.add("info-bubble-act1-title");
+        if (el.classList.contains("act2-title-info")) bubble.classList.add("info-bubble-act2-title");
         bubble.textContent = text;
-        el.appendChild(bubble);
+        document.body.appendChild(bubble);
+        el._infoBubble = bubble;
 
-        el.addEventListener("mouseenter", function () {
+        function reposition() {
             bubble.classList.remove("flip-below");
-            if (bubble.getBoundingClientRect().top < 0) bubble.classList.add("flip-below");
-        });
+            const margin = 8;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const trig = el.getBoundingClientRect();
+
+            bubble.style.left = "0px";
+            bubble.style.top = "0px";
+            bubble.style.maxHeight = "min(60vh, 360px)";
+            const w = bubble.offsetWidth;
+            const h = bubble.offsetHeight;
+
+            let left = trig.left + trig.width / 2 - w / 2;
+            left = Math.max(margin, Math.min(vw - margin - w, left));
+
+            let top = trig.top - h - 8;
+            if (top < margin) {
+                top = trig.bottom + 8;
+                bubble.classList.add("flip-below");
+                if (top + h > vh - margin) {
+                    top = Math.max(margin, vh - margin - h);
+                }
+            }
+
+            bubble.style.left = left + "px";
+            bubble.style.top = top + "px";
+        }
+
+        function show() { bubble.classList.add("is-shown"); reposition(); }
+        function hide() { bubble.classList.remove("is-shown"); }
+
+        el.addEventListener("mouseenter", show);
+        el.addEventListener("mouseleave", hide);
+        el.addEventListener("focus", show);
+        el.addEventListener("blur", hide);
     });
+    window.addEventListener("scroll", () => {
+        document.querySelectorAll(".info-bubble.is-shown").forEach(b => b.classList.remove("is-shown"));
+    }, { passive: true });
 }
 
-// Numeric sort helper
 function numSort(a, b) { return a - b; }
